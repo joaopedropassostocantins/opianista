@@ -1,0 +1,43 @@
+== o03220to7313000330053-log.jez
+-rw-r--r-- 1 runner runner 101040 Oct 29 04:37 o03220to7313000330053-log.jez
+o03220to7313000330053-log.jez: Zip archive data, at least v2.0 to extract, compression method=deflate
+00000000: 504b 0304 1400 0000 0800 ac88 445d 7709  PK..........D]w.
+00000010: 9a02 3e8a 0100 975c 0800 0800 0000 6c6f  ..>....\......lo
+00000020: 6764 2e64 6174 ccbd cd92 5d47 9226 b6be  gd.dat....]G.&..
+00000030: f314 b9ec 3653 8111 e1e1 111e d8c5 6f09  ....6S........o.
+xxd: Broken pipe
+== o03220to7313000330053-bu.dat
+-rw-r--r-- 1 runner runner 7737 Oct 29 04:37 o03220to7313000330053-bu.dat
+o03220to7313000330053-bu.dat: data
+00000000: 3082 1e35 3015 1b0f 3230 3236 3130 3034  0..50...20261004
+00000010: 5431 3730 3531 3982 020c 940a 0102 a011  T170519.........
+00000020: 3008 0203 011d aa02 0121 0202 03f7 0201  0........!......
+00000030: 350a 0101 0482 1e01 3082 1dfd 3015 1b0f  5.......0...0...
+== 7z l
+Scanning the drive for archives:
+1 file, 101040 bytes (99 KiB)
+
+Listing archive: o03220to7313000330053-log.jez
+
+--
+Path = o03220to7313000330053-log.jez
+Type = zip
+Physical Size = 101040
+
+   Date      Time    Attr         Size   Compressed  Name
+------------------- ----- ------------ ------------  ------------------------
+2026-10-04 17:05:24 .....       547991       100926  logd.dat
+------------------- ----- ------------ ------------  ------------------------
+2026-10-04 17:05:24             547991       100926  1 files
+== zstd
+zstd: o03220to7313000330053-log.jez: unsupported format 
+total 544
+drwxr-xr-x 2 runner runner   4096 Oct 29 04:37 .
+drwxr-xr-x 3 runner runner   4096 Oct 29 04:37 ..
+-rw-r--r-- 1 runner runner 547991 Oct  4 17:05 logd.dat
+logd.dat: ISO-8859 text
+##/##/#### ##:##:##	INFO	########	LOGD	Início das operações do logd	CCE#D#CAA#####C#
+##/##/#### ##:##:##	INFO	########	LOGD	Urna ligada em ##/##/#### às ##:##:##	#B####B#C#DC####
+##/##/#### ##:##:##	INFO	########	SCUE	Iniciando aplicação - #º turno	##F###########A#
+##/##/#### ##:##:##	INFO	########	
+range=206
