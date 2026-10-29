@@ -8,6 +8,8 @@ O foco principal é a **TOTALIDADE DOS VOTOS das seções/urnas que encerraram t
 
 Revisão metodológica (identificabilidade, materialidade, desenho por local de votação e conflito com o bloqueio do Estudo 03): [REVISAO_METODOLOGICA_20261029.md](REVISAO_METODOLOGICA_20261029.md).
 
+**Bloqueio (decisão D4, 29/10/2026):** a análise empírica com dados do 2º turno de 2026 só começa após a aprovação do item 1.6 do Estudo 03. Até lá: desenho, pré-registro, código com dados sintéticos e placebo em eleições já abertas.
+
 O TSE publicou em 28/10/2026: **497.333 seções com encerramento depois das 17h, 24.268 depois das 17h10 e 6.766 depois das 19h.** São contagens de **seções, não de votos**. A extensão até 19h por si não prova alteração do relógio ou da contagem. O estudo conserva um laboratório de eventos após 17h somente como demonstração secundária das etapas de fechamento, não como métrica confirmatória.
 
 ## Pergunta

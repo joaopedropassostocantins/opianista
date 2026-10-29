@@ -93,6 +93,13 @@ Opcoes (decisao D4 em `PLANEJAMENTO.md`):
 3. Abrir integralmente, aceitando que o Estudo 03 perca o carater
    confirmatorio para o 2T 2026.
 
+Decisao registrada em 29/10/2026: o proponente escolheu a opcao 1. A parte
+empirica do Estudo 05 permanece bloqueada ate a aprovacao do item 1.6 do
+Estudo 03. Ate la, o trabalho admissivel limita-se a: desenho e pre-registro
+do Estudo 05; codigo testado com dados sinteticos; e execucao do mesmo
+pipeline em dados ja abertos (2o turno municipal de 2024 e 1o turno de 2026)
+como placebo e validacao.
+
 ## 5 Referencias
 
 BRASIL. Tribunal Superior Eleitoral. **Eleicoes 2026**: mais de 34 mil votos
