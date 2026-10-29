@@ -27,8 +27,8 @@ nao o detectaria. Portanto:
 
 O protocolo original exige calcular o impacto maximo possivel sobre a margem
 nacional (4.430.191 votos; votos validos 124.082.273, conforme
-`protocolos/00_prompt_preregistro_original_20261026.md`; [VERIFICAR] contra a
-divulgacao oficial do TSE). Cada voto transferido entre candidatos altera a
+`protocolos/00_prompt_preregistro_original_20261026.md`; conferidos contra a
+divulgacao oficial do TSE em `VALIDACAO_MARGEM_20261029.md`). Cada voto transferido entre candidatos altera a
 margem em 2. A fracao minima de votos validos da coorte que precisaria ser
 transferida e `q = margem / (2 x votos validos da coorte)`.
 
