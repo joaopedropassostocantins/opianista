@@ -5,6 +5,7 @@ export const navigation = [
   { id: "estudos", label: { pt: "Estudos", en: "Studies" } },
   { id: "etapas", label: { pt: "Etapas", en: "Stages" } },
   { id: "simulador", label: { pt: "Simulador", en: "Simulator" } },
+  { id: "auditoria-bu", label: { pt: "Auditoria BU", en: "BU audit" } },
   { id: "evidencias", label: { pt: "Evidências", en: "Evidence" } },
   { id: "fontes", label: { pt: "Fontes", en: "Sources" } }
 ] as const;

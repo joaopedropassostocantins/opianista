@@ -41,9 +41,15 @@ A Etapa 0 é exibida como aprovada conforme `protocolos/REGISTRO.md`. O README d
 
 A página é um ensaio de teoria da prova e um painel de pesquisa em andamento. Não apresenta evidência empírica de fraude, tampouco demonstra inexistência de fraude.
 
-### Laboratório temporal (Estudo 05)
+### Laboratório temporal e integridade de BU (Estudo 05)
 
 A nova seção interativa apresenta sequência de eventos, log e BU **fictícios**, com cenários de encerramento regular, fila, extensão válida até 19h e lacuna artificial de log, além de evento fictício posterior ao encerramento. A referência técnica é uma reconstrução do VOTA de **desenvolvimento web**; o laboratório **não executa o VOTA, não reproduz o comportamento da urna lacrada e não demonstra vulnerabilidade**. Ver [Estudo 05](../estudos/05_simulacao_temporal/README.md).
+
+### Prioridade máxima — insider e totalização
+
+O site também contém um comparador independente, com quatro conjuntos de dados **inteiramente fictícios**, para contrastar **registro de origem → BU local → BU público → totalização central**. A análise distingue adulteração hipotética a montante e divergência hipotética a jusante, sem executar código eleitoral ou manipular assinaturas. O modelo deixa explícito que coerência de arquivos de origem comum não prova a intenção do eleitor e que uma referência independente completa do voto secreto não existe para o pleito real. Cinco componentes técnicos são rastreados até arquivos da reconstrução pública do VOTA.
+
+Detalhes no [documento de prioridade](../estudos/05_simulacao_temporal/ANALISE_INSIDER_BU_TOTALIZACAO.md).
 
 ## Publicação
 

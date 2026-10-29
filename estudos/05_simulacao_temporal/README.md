@@ -48,6 +48,10 @@ Arquivos: site/src/lib/temporal-simulator.ts; site/src/components/TemporalSimula
 
 **A correspondência 1 evento de voto para 1 linha de log foi inventada como contrato do modelo. Não pode ser presumida nos logs reais sem validação técnica.** Os totais fictícios de A/B/BRANCO/NULO não são dados do TSE.
 
+## Prioridade máxima: hipótese de alteração antes do BU e na totalização
+
+Acrescentamos [análise de ameaça e matriz de hipóteses](ANALISE_INSIDER_BU_TOTALIZACAO.md) abordando a origem, os BUs preservados e o sistema central; o laboratório no site distingue coerência interna de verificação externa. As cinco prioridades de inspeção são **habilitação, terminal do mesário, contabilização, geração do BU e logs/persistência**, nessa ordem. A extensão até 19h não equivale a perda automática de salvaguardas e o novo experimento é totalmente sintético.
+
 ## Plano de verificação futura (somente fontes públicas e ambiente autorizado)
 
 1. Registrar versão/hash e limitações da reconstrução; distinguir símbolos observados de nomes inferidos.
