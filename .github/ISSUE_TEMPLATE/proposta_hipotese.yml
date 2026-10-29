@@ -1,0 +1,58 @@
+name: Proposta de hipotese ou teste
+description: Propor nova hipotese, teste, placebo ou explicacao alternativa (red team)
+title: "[Hipotese] "
+labels: ["hipotese"]
+body:
+  - type: dropdown
+    id: estudo
+    attributes:
+      label: Estudo
+      options:
+        - 01 Prorrogacao (DiD)
+        - 02 Transferencia de votos
+        - 03 Mesario pianista
+        - 04 Auditabilidade
+        - Novo estudo
+    validations:
+      required: true
+  - type: dropdown
+    id: tipo
+    attributes:
+      label: Tipo
+      options:
+        - Nova hipotese confirmatoria (exige emenda)
+        - Analise exploratoria
+        - Explicacao alternativa (red team)
+        - Placebo ou teste de robustez
+    validations:
+      required: true
+  - type: textarea
+    id: hipoteses
+    attributes:
+      label: H0 e H1
+      description: Formule as hipoteses de forma falseavel.
+    validations:
+      required: true
+  - type: textarea
+    id: dados
+    attributes:
+      label: Dados necessarios
+      description: Conjuntos do TSE ou outras fontes publicas, com URL quando souber.
+    validations:
+      required: true
+  - type: textarea
+    id: interpretacao
+    attributes:
+      label: O que cada resultado significaria
+      description: Inclua o que refutaria a hipotese.
+    validations:
+      required: true
+  - type: checkboxes
+    id: exposicao
+    attributes:
+      label: Declaracoes
+      options:
+        - label: Declaro se ja vi os dados do 2o turno de 2026 que este teste usaria.
+          required: true
+        - label: O teste pode ser aplicado de forma simetrica aos dois candidatos.
+          required: true

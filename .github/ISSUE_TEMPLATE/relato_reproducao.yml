@@ -1,0 +1,41 @@
+name: Relato de reproducao
+description: Relatar o resultado de uma reproducao independente de qualquer analise
+title: "[Reproducao] "
+labels: ["reproducao"]
+body:
+  - type: input
+    id: commit
+    attributes:
+      label: Commit reproduzido
+      description: Hash do commit do codigo que voce executou.
+    validations:
+      required: true
+  - type: textarea
+    id: ambiente
+    attributes:
+      label: Ambiente
+      description: Sistema operacional, versao do Python, saida de pip freeze se relevante.
+    validations:
+      required: true
+  - type: textarea
+    id: dados
+    attributes:
+      label: Dados usados
+      description: Arquivos, data de acesso e SHA-256.
+    validations:
+      required: true
+  - type: dropdown
+    id: resultado
+    attributes:
+      label: Resultado
+      options:
+        - Reproduzido integralmente
+        - Reproduzido com diferencas
+        - Nao reproduzido
+    validations:
+      required: true
+  - type: textarea
+    id: diferencas
+    attributes:
+      label: Diferencas encontradas
+      description: Valores obtidos versus publicados, com a saida relevante.

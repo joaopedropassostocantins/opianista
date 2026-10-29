@@ -40,9 +40,17 @@ Regras inegociaveis:
 - 1o turno: 04/10/2026. 2o turno: 25/10/2026 (Presidencia e governos de
   AC, AM, DF, ES, RN e TO, conforme fontes; confirmar lista oficial).
 - Horario regular: 8h-17h (Brasilia). Em 25/10/2026 o STF (Min. Cristiano
-  Zanin) determinou prorrogacao ate 19h; decisao divulgada por volta das
-  17h03. Esclarecimento posterior: aplica-se apenas a secoes ainda abertas.
-  TRE-DF informou impossibilidade de prorrogar. MS: ate 18h locais.
+  Zanin, Rcl 101.673/BA) determinou prorrogacao ate 19h; decisao divulgada
+  por volta das 17h03, mas o TSE so comunicou os TREs as 17h49
+  (Ofício-Circular GAB-PRES no 354/2026). Esclarecimento posterior:
+  aplica-se apenas a secoes ainda abertas. TRE-DF informou impossibilidade
+  de prorrogar. MS: ate 18h locais.
+- Este estudo e a Emenda 01 ao pre-registro 00 (ver protocolos/REGISTRO.md).
+  O teste primario do pre-registro 00 continua sendo o unico teste
+  confirmatorio primario; as hipoteses deste prompt sao secundarias.
+- Exposicao previa declarada: amostra de ~2,1% das secoes do 2T 2026 ja foi
+  examinada (15,0% sem biometria apos 17h vs 10,6% antes). Essa amostra nao
+  pode confirmar H1a; analisar com e sem ela.
 - TSE registrou 1.516 urnas substituidas ate 18h (960 em municipios
   biometricos, 527 hibridos, 29 de contingencia).
 - Procedimento: biometria tentada ate 4 vezes; falhando, presidente digita o
@@ -63,7 +71,8 @@ confundidores maiores. Comparar medias horarias brutas NAO e um teste valido.
 [ALFA]             = 0,05 com controle FDR (Benjamini-Hochberg, q = 0,05)
 [EFEITO_MINIMO]    = [___] pontos percentuais na taxa de habilitacao sem
                      biometria; [___] rajadas por secao
-[JANELA_FINAL]     = 16h00-17h00 e 17h00-19h00 (analisadas separadamente)
+[JANELA_FINAL]     = 16h00-17h00, 17h00-17h48 e 17h49-19h00 (analisadas
+                     separadamente)
 [SEED]             = 20261025
 
 ================================================================================
@@ -149,8 +158,9 @@ Tarefa:
    7h-8h locais); fuso diferente de Brasilia; secoes no exterior; logs
    truncados.
 3. Classificar cada secao do 2T 2026 quanto a prorrogacao:
-   ENCERRADA_ATE_17H05 | ABERTA_APOS_17H05 | DF_SEM_PRORROGACAO | INDEFINIDA,
-   com base no horario de encerramento do log.
+   ENCERRADA_ATE_17H00 | FILA_17H00_17H48 | ABERTA_APOS_17H49 |
+   DF_SEM_PRORROGACAO | INDEFINIDA, com base no horario do ultimo voto e do
+   encerramento no log (horario de Brasilia, convertido do fuso local).
 4. Aplicar as regras de exclusao pre-registradas e reportar o fluxograma de
    amostra (estilo CONSORT).
 
@@ -195,9 +205,9 @@ Tarefa (exatamente conforme o protocolo da Etapa 0):
 4. H1c: regressao ecologica da votacao em cada candidato sobre o indice de
    anomalia, com controles (UF, porte, modalidade biometrica, votacao no 1T,
    classe de prorrogacao); executar de forma simetrica.
-5. Experimento natural da prorrogacao: comparar ABERTA_APOS_17H05 com
-   ENCERRADA_ATE_17H05 e DF_SEM_PRORROGACAO, discutindo vies de selecao
-   (secoes abertas tinham fila).
+5. Experimento natural da prorrogacao: comparar ABERTA_APOS_17H49 com
+   FILA_17H00_17H48, ENCERRADA_ATE_17H00 e DF_SEM_PRORROGACAO, discutindo
+   vies de selecao (secoes abertas tinham fila).
 6. Reportar tamanhos de efeito com IC 95% ou intervalos de credibilidade;
    nunca apenas p-valores.
 

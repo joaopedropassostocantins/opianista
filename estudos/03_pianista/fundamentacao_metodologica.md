@@ -3,9 +3,10 @@
 ## 1 Por que comparar medias horarias nao basta
 
 1. Confundidor exogeno em 2026: em 25/10/2026 o STF (Min. Cristiano Zanin)
-   determinou a prorrogacao da votacao ate 19h; o esclarecimento posterior
-   restringiu a medida as secoes ainda abertas, e o TRE-DF informou nao ser
-   possivel prorrogar. Houve ainda crise de transporte publico (onibus parados
+   determinou a prorrogacao da votacao ate 19h; a decisao foi divulgada por
+   volta das 17h03, mas o TSE so comunicou os TREs as 17h49. O esclarecimento
+   posterior restringiu a medida as secoes ainda abertas, e o TRE-DF informou
+   nao ser possivel prorrogar. Houve ainda crise de transporte publico (onibus parados
    em Salvador, segundo o Procon-BA).
 2. Comparador inadequado: 2o turno municipal ou estadual tem saliencia e
    comparecimento distintos do presidencial. Comparadores corretos: 2o turno
