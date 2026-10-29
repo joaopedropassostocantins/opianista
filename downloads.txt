@@ -1,0 +1,10 @@
+2026 1t http=200 bytes=765142259
+841a13abdca33404623397e64b1ac9fd3a36a4b7705515b1b07571125f5bc7de  dados/2026_1t_TO.zip
+dados/2026_1t_TO.zip {'pdf': 1, 'jez': 4384, 'dat': 13152, 'vsc': 4384}
+2022 1t http=200 bytes=585805351
+6ba89216432b091b62744bbcbd700970a72af481fa63f570b3fd53abd9d45cfc  dados/2022_1t_TO.zip
+dados/2022_1t_TO.zip {'bu': 3957, 'imgbu': 3957, 'logjez': 3957, 'rdv': 3957, 'vscmr': 3957, 'pdf': 1}
+2022 2t http=200 bytes=720297733
+664855be4f7ddcffee6b0db50eb6c3ce827b96a0100bad53ff908cfc528a0a2f  dados/2022_2t_TO.zip
+dados/2022_2t_TO.zip {'imgbu': 3957, 'logjez': 3957, 'vscmr': 3957, 'bu': 3957, 'rdv': 3957, 'pdf': 1}
+ele-c http=200

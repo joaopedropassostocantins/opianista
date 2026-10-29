@@ -1,0 +1,3 @@
+logs lidos=4384 erros=4384 linhas_no_dia=0 linhas_sem_data=0 mensagens_distintas=0
+logs lidos=3957 erros=0 linhas_no_dia=17376781 linhas_sem_data=50843 mensagens_distintas=5425
+logs lidos=3957 erros=0 linhas_no_dia=11659969 linhas_sem_data=240872 mensagens_distintas=7978
