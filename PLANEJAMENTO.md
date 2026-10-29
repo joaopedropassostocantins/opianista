@@ -1,0 +1,114 @@
+# Planejamento do projeto
+
+Atualizado em 29/10/2026. Este arquivo e o painel de coordenacao: o que esta
+feito, o que vem a seguir, quem decide e o que bloqueia. Nao e protocolo e pode
+ser editado livremente.
+
+## 1 Situacao geral
+
+| Estudo | Situacao | Proximo marco |
+|--------|----------|---------------|
+| 01 Prorrogacao (DiD) | Pre-registrado (00); coleta bloqueada em 26/10 por falta de dados do 2T | Validar pipeline no 2T 2022 |
+| 02 Transferencia de votos | Exploratorio, sem codigo no repositorio | Publicar script Monte Carlo |
+| 03 Mesario pianista | GATE 0 aprovado (v1.1); Etapa 1 iniciada | Corrigir coleta.py e rodar descoberta |
+| 04 Auditabilidade | Proposta de artigo | Receber fichamento de Aranha et al. |
+
+Fato novo relevante para o Estudo 01: o TSE informou 34.393 votos registrados
+apos 17h no pais, contra margem de 4.430.191 votos. O teste de alteracao de
+resultado pelos votos tardios fica limitado por esse numero; o estudo segue util
+para documentar isonomia e para calibrar o parser compartilhado.
+
+## 2 Estudo 03 - sequencia de trabalho ate a abertura do 2T 2026
+
+Nada do 2o turno de 2026 e aberto antes do item 1.6.
+
+| No | Tarefa | Responsavel | Depende de | Situacao |
+|----|--------|-------------|------------|----------|
+| 1.1 | Corrigir coleta.py (secao 3.1) | Claude ou colaborador | - | Pendente |
+| 1.2 | Rodar coleta em modo descoberta (sem download) e revisar fontes.md | Colaborador | 1.1 | Pendente |
+| 1.3 | Confirmar nos metadados e em amostra de logs do 1T 2026 que existem modalidade de habilitacao, timestamp e secao | Colaborador + revisao humana | 1.2 | Pendente |
+| 1.4 | Catalogo de mensagens do log (Etapa 2 antecipada, so 1T 2026 e 2T 2022) | Claude | 1.3 | Pendente |
+| 1.5 | Calcular dt* no 1T 2026 e rodar diagnostico de poder com insercoes simuladas | Claude | 1.4 | Pendente |
+| 1.6 | Emenda com dt*, poder e lista de municipios com denuncia de transporte; aprovacao | Proponente | 1.5 | Pendente |
+| 1.7 | Download e abertura do 2T 2026 | Colaborador | 1.6 | Bloqueado |
+
+O parser das tarefas 1.4 e 1.5 serve tambem ao Estudo 01 (calibracao de sigma_d
+e placebo S5 no 2T 2022).
+
+## 3 Revisao das contribuicoes recebidas
+
+### 3.1 coleta.py (commit a3fb63b, direto no main)
+
+Boa base: usa a API oficial, registra URLs e SHA-256, comeca em modo descoberta.
+Problemas a corrigir antes de qualquer `--download`:
+
+1. **Abre o 2T 2026 cedo demais.** `--download` baixa todos os periodos, inclusive
+   o 2T 2026, antes do dt* e do diagnostico de poder exigidos pelo protocolo
+   v1.1. Precisa de trava: 2T 2026 so com opcao explicita e referencia a emenda
+   aprovada (item 1.6).
+2. **O filtro de UF nao e aplicado no download.** A UF so anota o registro; um
+   piloto em TO baixaria arquivos do pais inteiro.
+3. **Periodo pode sair trocado.** 1T e 2T de 2026 usam os mesmos termos de busca
+   e os conjuntos sao deduplicados pelo primeiro periodo em que aparecem; um
+   recurso do 1T pode ser rotulado e salvo como 2T, e vice-versa. O periodo
+   deve vir do nome ou dos metadados do recurso.
+4. **Dados brutos dentro do repositorio.** O diretorio padrao fica em
+   `estudos/.../01_coleta/dados_brutos`, fora do padrao `data/` do .gitignore;
+   arquivos .csv baixados poderiam ser commitados. Mudar o padrao para `data/`
+   e incluir `dados_brutos/` no .gitignore.
+5. Menor: `zipfile` importado e nao usado; falta teste com resposta simulada da
+   API.
+
+### 3.2 Branch `handoff-cadencia-site-20261029` (sem PR aberto)
+
+Contribuicao produzida em outra ferramenta, com dois blocos:
+
+- **Submodulo de cadencia:** proporcao de votos entre 16h e 17h, pareando secoes
+  do 2T presidencial de 2026 com o 2T municipal de 2024 (prefeito), e proibindo
+  qualquer eleicao presidencial anterior como referencia. Codigo testado so com
+  dados sinteticos.
+- **Material didatico:** reconstrucao estatica do site "O Paradoxo do
+  Arquiteto-Fiscal" e seu texto-base.
+
+O proprio relatorio de transferencia recomenda nao fundir esse protocolo com o
+pre-registro e trata-lo como submodulo exploratorio. Concordo, com dois
+acrescimos:
+
+1. A "proibicao de eleicao presidencial anterior" contradiz o protocolo v1.1 ja
+   aprovado, que usa o 2T 2022 como placebo. As duas coisas podem coexistir
+   apenas se o submodulo for declarado exploratorio e o v1.1 permanecer
+   intocado.
+2. O controle municipal de 2024 tem limitacoes fortes: 51 municipios grandes,
+   cargo e saliencia diferentes, e a hipotese ja foi formulada apos ver dados de
+   2026. Serve como descricao comparativa, nao como teste confirmatorio.
+
+O material do site e independente e pode entrar em `didatico/` apos revisao de
+linguagem e referencias.
+
+## 4 Decisoes pendentes do proponente
+
+| No | Decisao | Opcoes |
+|----|---------|--------|
+| D1 | Destino da branch de cadencia | (a) PR como submodulo exploratorio em `estudos/03_pianista/contribuicoes/`; (b) estudo separado (05); (c) nao incorporar |
+| D2 | Site Arquiteto-Fiscal | (a) so link para o original; (b) HTML no repositorio sem publicacao; (c) publicar via GitHub Pages |
+| D3 | Fluxo de trabalho no main | Exigir pull request para alteracoes no main (recomendado: ja houve dois commits diretos) |
+
+## 5 Pendencias de documentos
+
+| Item | Por que importa | Situacao |
+|------|-----------------|----------|
+| `protocolos/00_preregistro.md` original | Sem ele, o hash registrado nao pode ser conferido | Pendente |
+| Codigo e dados da amostra de 2,1% | Necessario para analisar com e sem a amostra exposta | Pendente |
+| Fichamento de Aranha et al. (DOCX) | Base do Estudo 04 | Pendente |
+| Tres PDFs de anotacoes | `didatico/` | Pendente |
+| Artefatos listados no relatorio de transferencia (votos invalidos 2010-2026, emenda 02 ABNT) | Possivel estudo novo; exigem protocolo proprio | Avaliar |
+
+## 6 Riscos
+
+| Risco | Mitigacao |
+|-------|-----------|
+| Abrir dados do 2T 2026 antes das emendas | Trava na coleta (3.1, item 1) e PR obrigatorio |
+| Multiplos protocolos concorrentes para a mesma hipotese | Um so confirmatorio (v1.1); demais rotulados exploratorios |
+| Logs sem campo de modalidade de habilitacao | Item 1.3 antes de qualquer outro trabalho; se ausente, H1a e H1b nao sao executaveis |
+| Licenca dos logs do 2T 2026 nao declarada | Nao redistribuir dados; publicar so agregados e codigo |
+| Leitura publica de resultados parciais como conclusao | Aviso no README; relatorios so apos red team |
