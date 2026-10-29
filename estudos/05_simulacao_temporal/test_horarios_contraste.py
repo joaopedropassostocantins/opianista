@@ -66,6 +66,15 @@ class HorariosTests(unittest.TestCase):
         self.assertEqual(row["encerramento_confirmado_log"], "17:03:05")
         self.assertEqual(row["bu_gerado_log"], "17:05:00")
 
+    def test_isolation_checks_for_first_round_2026(self):
+        z = self.path / "bu_imgbu_logjez_rdv_vscmr_2024_2t_TO.zip"
+        urn_zip(z)
+        with self.assertRaisesRegex(hor.Blocked, "posterior"):
+            hor.extract(z, "27/10/2024", max_date="06/10/2024")
+        with self.assertRaisesRegex(hor.Blocked, "marca"):
+            hor.extract(z, "27/10/2024", turno_bu="1º Turno")
+        self.assertEqual(len(hor.extract(z, "27/10/2024", max_date="27/10/2024")), 1)
+
     def test_blocks_2t2026_zip(self):
         z = self.path / "bu_imgbu_logjez_rdv_vscmr_2026_2t_TO.zip"
         urn_zip(z)

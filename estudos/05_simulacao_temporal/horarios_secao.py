@@ -88,7 +88,20 @@ def log_times(lines: list[str], date: str) -> dict:
             "votos_computados_log": len(votes)}
 
 
-def extract(path: Path, date: str, cargo: str = "PREFEITO") -> list[dict]:
+def ymd(ddmmyyyy: str) -> str:
+    return ddmmyyyy[6:10] + ddmmyyyy[3:5] + ddmmyyyy[0:2]
+
+
+def check_isolation(lines: list[str], max_date: str) -> None:
+    """Aborta se algum evento do log for posterior a max_date (dd/mm/aaaa)."""
+    limit = ymd(max_date)
+    for line in lines:
+        if re.match(r"\d{2}/\d{2}/\d{4}", line) and ymd(line[:10]) > limit:
+            raise Blocked("Log contem evento posterior a " + max_date + ": recurso nao isolado.")
+
+
+def extract(path: Path, date: str, cargo: str = "PREFEITO", max_date: str = "",
+            turno_bu: str = "") -> list[dict]:
     if BLOCKED_ZIP.search(path.name):
         raise Blocked("Arquivo do 2T2026 bloqueado pela decisao D4.")
     rows: dict[tuple, dict] = {}
@@ -104,12 +117,17 @@ def extract(path: Path, date: str, cargo: str = "PREFEITO") -> list[dict]:
             data = z.read(name)
             if kind == "imgbu.dat":
                 text = data.decode("latin1")
+                if turno_bu and turno_bu not in text:
+                    raise Blocked("Imagem do BU sem a marca '" + turno_bu + "': recurso nao isolado.")
                 row["abertura_bu"], row["fechamento_bu"] = imgbu_times(text)
                 row.update(imgbu_votes(text, cargo))
             else:
                 with zipfile.ZipFile(io.BytesIO(data)) as inner:
                     text = inner.read("logd.dat").decode("latin1")
-                row.update(log_times(text.splitlines(), date))
+                lines = text.splitlines()
+                if max_date:
+                    check_isolation(lines, max_date)
+                row.update(log_times(lines, date))
     return [rows[k] for k in sorted(rows)]
 
 
@@ -118,13 +136,15 @@ def main(argv=None) -> int:
     p.add_argument("--zip", type=Path, required=True)
     p.add_argument("--data-eleicao", required=True, help="dd/mm/aaaa")
     p.add_argument("--cargo", default="PREFEITO", help="nome do cargo como impresso no BU")
+    p.add_argument("--data-maxima", default="", help="dd/mm/aaaa; aborta se o log passar dela")
+    p.add_argument("--turno-bu", default="", help="texto exigido na imagem do BU, ex.: '1º Turno'")
     p.add_argument("--out", type=Path, required=True)
     args = p.parse_args(argv)
     if not re.fullmatch(r"\d{2}/\d{2}/\d{4}", args.data_eleicao):
         print("BLOQUEADO: data no formato dd/mm/aaaa", file=sys.stderr)
         return 2
     try:
-        rows = extract(args.zip, args.data_eleicao, args.cargo.upper())
+        rows = extract(args.zip, args.data_eleicao, args.cargo.upper(), args.data_maxima, args.turno_bu)
     except (Blocked, OSError, zipfile.BadZipFile, KeyError) as e:
         print("BLOQUEADO:", e, file=sys.stderr)
         return 2
