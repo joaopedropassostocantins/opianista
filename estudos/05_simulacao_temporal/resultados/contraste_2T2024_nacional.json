@@ -1,15 +1,15 @@
 {
   "estimavel": true,
-  "beta": -0.0006160901386244497,
-  "se_cluster": 0.00045902944047536155,
+  "beta": -0.0007449147935874923,
+  "se_cluster": 0.00043144281643639205,
   "ic95": [
-    -0.0015157878419561582,
-    0.0002836075647072589
+    -0.0015905427138028206,
+    0.00010071312662783603
   ],
-  "locais_informativos": 4614,
-  "secoes_informativas": 55472,
-  "secoes_tratadas": 9020,
-  "rotulo": "2T2024_nacional",
+  "locais_informativos": 5242,
+  "secoes_informativas": 62052,
+  "secoes_tratadas": 10493,
+  "rotulo": "2T2024_nacional_brasilia",
   "campo_horario": "ultimo_voto_log",
   "limiar": "17:00:00",
   "candidato": "vencedor",
@@ -18,9 +18,13 @@
     "incoerente_log_x_bu": 132,
     "incoerente_campo_ausente": 5
   },
-  "tratadas_total": 9046,
+  "tratadas_total": 10532,
   "municipios": 51,
-  "municipios_com_tratadas": 47,
+  "municipios_com_tratadas": 51,
+  "controle": "complemento do limiar",
+  "coluna_votos": "votos_cargo",
+  "ufs_excluidas": [],
+  "cohorte_votos_validos_tratadas": 2423561,
   "classe_relogio": "I (urna)",
   "status": "EXPLORATORIO_PLACEBO"
 }
