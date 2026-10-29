@@ -25,6 +25,8 @@ jobs:
           node-version: 22
       - name: Install pinned dependencies
         run: npm install --no-audit --no-fund
+      - name: Export dependency lock for repository reproducibility
+        run: base64 -w0 package-lock.json | sed 's/^/OPIANISTA_LOCKFILE_B64:/'
       - name: Type checking
         run: npm run typecheck
       - name: Unit and integrity tests
