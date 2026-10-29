@@ -18,6 +18,7 @@ relatados com o mesmo destaque que resultados positivos.
 | [02 Transferencia de votos](estudos/02_transferencia_votos/) | A captacao entre turnos foi atipica frente a 2022? | Exploratorio; codigo a publicar |
 | [03 Mesario pianista](estudos/03_pianista/) | Ha assinaturas de insercao de votos pela mesa nos logs? | GATE 0 aprovado (v1.1); Etapa 1 em andamento |
 | [04 Auditabilidade](estudos/04_auditabilidade/) | Que tamanho de adulteracao o sistema consegue detectar? | Proposta de artigo |
+| [05 Simulacao temporal](estudos/05_simulacao_temporal/) | Como comparar log, BU e transicoes de 17h a 19h? | Exploratorio; simulacao sintetica no site |
 
 Painel de coordenacao: [PLANEJAMENTO.md](PLANEJAMENTO.md).
 
@@ -36,7 +37,7 @@ data/           dados brutos (fora do Git)
 
 A aplicação em [site/](site/) é independente de `estudos/` e `protocolos/`: apresenta a tese do Arquiteto-Fiscal, acompanha o status dos estudos e encaminha os leitores aos documentos canônicos. Não é resultado pericial. A nova versão foi implementada a partir de texto-base preservado e reconstrução estática; o código-fonte original do ChatGPT Sites não foi exportado.
 
-Para desenvolver: `cd site && npm ci && npm run dev`. Para validar: `npm run typecheck && npm test && npm run build`. A publicação não é automática.
+Para desenvolver: `cd site && npm ci && npm run dev`. Para validar: `npm run typecheck && npm test && npm run build`. A publicação não é automática. O Estudo 05 inclui laboratório temporal **sintético**, não execução de software lacrado nem demonstração de vulnerabilidade.
 
 ## Como participar
 

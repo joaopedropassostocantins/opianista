@@ -1,6 +1,6 @@
 # Site editorial opianista
 
-Aplicação independente do repositório, construída em TypeScript e Vite. O site explica a tese conceitual **O Paradoxo do Arquiteto-Fiscal**, acompanha os quatro estudos e remete aos protocolos canônicos do GitHub.
+Aplicação independente do repositório, construída em TypeScript e Vite. O site explica a tese conceitual **O Paradoxo do Arquiteto-Fiscal**, acompanha os cinco estudos e remete aos protocolos canônicos do GitHub.
 
 ## Proveniência e limite de fidelidade
 
@@ -32,12 +32,18 @@ O projeto usa dependências fixadas em `package.json` e lockfile versionado; a C
 - `src/lib/`: criação de links e utilitários.
 - `public/arquivo/`: preservação dos materiais de referência do PR #2.
 - `tests/`: validação local de status, conteúdo, caminhos e acessibilidade estrutural.
+- `src/lib/temporal-simulator.ts`: laboratório puramente sintético de eventos 17h–19h, sem usar binário da urna.
+- `src/components/TemporalSimulator.ts`: interface didática do Estudo 05.
 
 ## Transparência
 
 A Etapa 0 é exibida como aprovada conforme `protocolos/REGISTRO.md`. O README do Estudo 03 tem um trecho posterior conflitante, identificado no painel como pendência editorial. O conteúdo do site é **snapshot em 2026-10-29**, não consulta automática ao estado do GitHub.
 
 A página é um ensaio de teoria da prova e um painel de pesquisa em andamento. Não apresenta evidência empírica de fraude, tampouco demonstra inexistência de fraude.
+
+### Laboratório temporal (Estudo 05)
+
+A nova seção interativa apresenta sequência de eventos, log e BU **fictícios**, com cenários de encerramento regular, fila, extensão válida até 19h e lacuna artificial de log. A referência técnica é uma reconstrução do VOTA de **desenvolvimento web**; o laboratório **não executa o VOTA, não reproduz o comportamento da urna lacrada e não demonstra vulnerabilidade**. Ver [Estudo 05](../estudos/05_simulacao_temporal/README.md).
 
 ## Publicação
 

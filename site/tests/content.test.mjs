@@ -9,8 +9,8 @@ import { sources } from "../src/content/sources.ts";
 import { project } from "../src/content/project.ts";
 import { glossary } from "../src/content/glossary.ts";
 const hasLocales = value => Boolean(value?.pt?.trim() && value?.en?.trim());
-test("the four studies have unique numbers, titles, questions and existing paths", () => {
-  assert.equal(studies.length, 4);
+test("the five studies have unique numbers, titles, questions and existing paths", () => {
+  assert.equal(studies.length, 5);
   assert.equal(new Set(studies.map(s => s.number)).size, 4);
   for (const study of studies) {
     assert.ok(hasLocales(study.title) && hasLocales(study.question));

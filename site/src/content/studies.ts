@@ -28,5 +28,12 @@ export const studies: Study[] = [
     question: { pt: "Quais alterações poderiam ser detectadas por evidências independentes?", en: "Which alterations could be detected by independent evidence?" },
     status: "proposta",
     repositoryPath: "estudos/04_auditabilidade/README.md"
+  },
+  {
+    number: 5,
+    title: { pt: "Simulação temporal e subsistemas", en: "Temporal and subsystem simulation" },
+    question: { pt: "O que podemos verificar ao confrontar horários, registros e relatórios de 17h a 19h?", en: "What can be verified when comparing times, events and reports from 5 p.m. to 7 p.m.?" },
+    status: "exploratorio",
+    repositoryPath: "estudos/05_simulacao_temporal/README.md"
   }
 ];
