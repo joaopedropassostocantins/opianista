@@ -62,3 +62,7 @@ Para \`1T2026\`, trocar o período e paths **somente se o arquivo for comprovada
 Sem identificação de local de votação e comprovação externa do **fim da votação** não existe contraste de efeito fixo no mesmo local: os pares devem ser marcados como **não estimáveis**, não substituídos por comparação nacional. Não usar horário de geração de BU ou recepção como indicador de eleitor ainda votando. Não tratar uma diferença estatística como fraude.
 
 O TSE pode oferecer dados por seção em CSV e artefatos por seção em ZIP com esquemas distintos; o parser CSV **não** faz engenharia reversa de BU, RDV ou log. Sua atribuição é normalizar dados tabulares. O dicionário de mensagens de log precisa de seu próprio adaptador validado e revisão humana antes do estudo confirmatório.
+
+## Atualizacao de status (29/10/2026)
+
+Este documento descreve o estado inicial, anterior ao relatorio [RESULTADO_PLACEBO_2T2024_TO_20261029.md](RESULTADO_PLACEBO_2T2024_TO_20261029.md), que informa execucao real de Palmas. Declaracoes anteriores de 'nenhuma execucao real' estao **superadas para Palmas**, mas nao equivalem a reproducao externa nem a analise nacional. Ver [auditoria](../../auditoria/AUDITORIA_TRANSVERSAL_20261029.md).

@@ -1,5 +1,8 @@
 # opianista
 
+> **Revisao transversal de 29/10/2026:** a hipotese "mesario pianista" deve abranger a jornada INTEGRAL de votacao, nao apenas 17h–19h. O protocolo v1.1 e historico e permanece imutavel; a alteracao confirmatoria depende de emenda prospectiva. Ver [auditoria](auditoria/AUDITORIA_TRANSVERSAL_20261029.md), [proposta de emenda](estudos/03_pianista/PROPOSTA_EMENDA_ESCOPO_INTEGRAL_20261029.md) e [conclusoes revisadas](relatorios/CONCLUSOES_REVISADAS_20261029.md). Nao houve reanalise de 2T2026 nesta revisao.
+
+
 Analisando o Brasil: pesquisa aberta, pre-registrada e reprodutivel sobre os
 registros publicos de urna das Eleicoes 2026, com foco no 2o turno de
 25/10/2026.
@@ -16,7 +19,7 @@ relatados com o mesmo destaque que resultados positivos.
 |--------|----------|----------|
 | [01 Prorrogacao (DiD)](estudos/01_prorrogacao_did/) | Votos apos 17h e prorrogacao alteraram a votacao por secao? | Pre-registrado; aguardando dados do 2T por secao |
 | [02 Transferencia de votos](estudos/02_transferencia_votos/) | A captacao entre turnos foi atipica frente a 2022? | Exploratorio; codigo a publicar |
-| [03 Mesario pianista](estudos/03_pianista/) | Ha assinaturas de insercao de votos pela mesa nos logs? | Piloto TO concluido: hipoteses nao sustentadas; execucao nacional pendente |
+| [03 Mesario pianista](estudos/03_pianista/) | Ha assinaturas de insercao de votos pela mesa nos logs? | Piloto TO sob janelas restritas: sem sinal reportado; nao e analise do dia inteiro; emenda de escopo integral proposta |
 | [04 Auditabilidade](estudos/04_auditabilidade/) | Que tamanho de adulteracao o sistema consegue detectar? | Proposta de artigo |
 | [05 Urnas de encerramento tardio](estudos/05_simulacao_temporal/) | Qual o perfil de TODOS os votos nas urnas que encerraram tardiamente? O relogio e verificavel? | Exploratorio; coortes e testes sinteticos |
 
