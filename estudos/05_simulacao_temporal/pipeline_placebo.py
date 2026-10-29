@@ -21,6 +21,9 @@ from pathlib import Path
 from typing import Iterable
 
 ALLOWED = {"2T2024": (2024, 2, 11), "1T2026": (2026, 1, 1)}
+# Turnos de outro periodo que podem ser ignorados linha a linha (recursos TSE por UF
+# costumam reunir 1T e 2T). Nada de 2026 e ignoravel: qualquer turno alheio bloqueia (D4).
+SKIPPABLE = {"2T2024": {(2024, 1)}, "1T2026": set()}
 FIELDS = ("ANO_ELEICAO", "NR_TURNO", "SG_UF", "CD_MUNICIPIO",
           "NR_ZONA", "NR_SECAO", "CD_CARGO", "NR_VOTAVEL", "QT_VOTOS")
 FILE_CAP = 1_500_000_000  # máximo explícito, recusar arquivo não verificado
@@ -89,7 +92,7 @@ def normalize(rows: Iterable[dict], period: str) -> dict:
     grouped: dict[tuple, dict] = defaultdict(lambda: {
         "by_number": defaultdict(int), "blank": 0, "null": 0,
         "technical_null": 0, "other_valid": 0})
-    seen = 0
+    seen = skipped = 0
     valid_ufs = set("AC AL AM AP BA CE DF ES GO MA MG MS MT PA PB PE PI PR RJ RN RO RR RS SC SE SP TO ZZ".split())
     for row in rows:
         seen += 1
@@ -98,7 +101,10 @@ def normalize(rows: Iterable[dict], period: str) -> dict:
             vote, qty = int(row["NR_VOTAVEL"]), int(row["QT_VOTOS"])
         except (KeyError, ValueError, TypeError) as e:
             raise Blocked("Campo obrigatório malformado.") from e
-        # Testar período antes de selecionar cargo; CSV misto é rejeitado por inteiro.
+        # Testar período antes de selecionar cargo; mistura com 2026 é rejeitada por inteiro.
+        if (ry, rt) in SKIPPABLE[period]:
+            skipped += 1
+            continue
         if ry != year or rt != turn:
             raise Blocked("CSV contém outro ano/turno (possível mistura 2T2026). Descartar.")
         if qty < 0 or vote < 0:
@@ -134,7 +140,7 @@ def normalize(rows: Iterable[dict], period: str) -> dict:
             "votes_by_number":{str(k):by[k] for k in sorted(by)},
             "local_id":None,"closure_status":"indeterminado"
         })
-    return {"period":period,"input_rows":seen,"sections":sections,
+    return {"period":period,"input_rows":seen,"skipped_other_turn_rows":skipped,"sections":sections,
             "section_count":len(sections),
             "total_votes":sum(x["votes_total"] for x in sections),
             "total_valid":sum(x["votes_valid"] for x in sections),
@@ -169,7 +175,7 @@ def main(argv=None) -> int:
         args.out.write_text(json.dumps(obj, ensure_ascii=False, indent=2), "utf-8")
         print("OK:", obj["period"], obj["section_count"], "seções; teste de horário NÃO ESTIMÁVEL")
         return 0
-    except (Blocked, OSError, csv.Error, json.JSONDecodeError, zipfile.BadZipFile) as e:
+    except (Blocked, OSError, csv.Error, json.JSONDecodeError, zipfile.BadZipFile, UnicodeDecodeError) as e:
         print("BLOQUEADO:", e, file=sys.stderr)
         return 2
 

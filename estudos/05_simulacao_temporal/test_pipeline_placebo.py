@@ -101,6 +101,24 @@ class PlaceboTests(unittest.TestCase):
         code=pipe.main(["--period","2T2026","--csv",str(f),"--manifest",str(m),"--out",str(out)])
         self.assertEqual(code,2)
         self.assertFalse(out.exists())
+    def test_2024_resource_with_both_turns_keeps_only_second(self):
+        data=(HEADER+row(2024,1,10,11,40,99)+row(2024,2,10,11,40,35)+row(2024,2,10,11,50,30)).encode()
+        f,m=self.fixture("2T2024",data)
+        result=pipe.parse_file(f,m,"2T2024")
+        self.assertEqual(result["skipped_other_turn_rows"],1)
+        self.assertEqual(result["total_valid"],65)
+    def test_2024_resource_with_any_2026_row_is_blocked(self):
+        data=(HEADER+row(2024,2,10,11,40,35)+row(2026,2,10,1,13,1)).encode()
+        f,m=self.fixture("2T2024",data)
+        with self.assertRaisesRegex(pipe.Blocked, "outro ano/turno"):
+            pipe.parse_file(f,m,"2T2024")
+    def test_invalid_encoding_is_blocked_without_output(self):
+        data=HEADER.encode()+b"2024;2;TO;100;1;10;11;40;\x81\n"
+        f,m=self.fixture("2T2024",data)
+        out=self.path/"result.json"
+        code=pipe.main(["--period","2T2024","--csv",str(f),"--manifest",str(m),"--out",str(out)])
+        self.assertEqual(code,2)
+        self.assertFalse(out.exists())
 
 if __name__=="__main__":
     unittest.main()
