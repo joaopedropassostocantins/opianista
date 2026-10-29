@@ -28,7 +28,6 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
-import zipfile
 from dataclasses import dataclass, asdict
 from datetime import datetime, timezone
 from pathlib import Path
@@ -184,6 +183,26 @@ def infer_type(name: str, package_name: str) -> str:
     return "OUTRO"
 
 
+PERIODO_NA_URL = re.compile(r"_(20\d{2})_([12])t_", re.IGNORECASE)
+
+
+def detect_period(resource: dict[str, Any]) -> str | None:
+    """Detecta o periodo pelo proprio recurso (URL ou nome), nunca pelo termo de busca."""
+    url = str(resource.get("url", ""))
+    match = PERIODO_NA_URL.search(url)
+    if match:
+        return f"{match.group(2)}T{match.group(1)}"
+    name = str(resource.get("name", "")).lower()
+    year_match = re.search(r"(20\d{2})", url + " " + name)
+    if year_match is None:
+        return None
+    if "primeiro turno" in name:
+        return f"1T{year_match.group(1)}"
+    if "segundo turno" in name:
+        return f"2T{year_match.group(1)}"
+    return None
+
+
 def resource_matches_uf(resource: dict[str, Any], uf: str) -> bool:
     text = " ".join(str(resource.get(key, "")) for key in ("name", "description", "url")).upper()
     return bool(re.search(rf"(?:^|[^A-Z]){re.escape(uf)}(?:$|[^A-Z])", text))
@@ -222,7 +241,12 @@ def discover(
                     resource_url = str(resource.get("url", ""))
                     if not resource_url:
                         continue
+                    detected = detect_period(resource)
+                    if detected is not None and detected != period:
+                        continue
                     selected_ufs = [uf for uf in ufs if resource_matches_uf(resource, uf)]
+                    if set(ufs) != set(ALL_UFS) and not selected_ufs:
+                        continue
                     uf_value = ",".join(selected_ufs) if selected_ufs else "TODAS_OU_NAO_IDENTIFICADA"
                     records.append(SourceRecord(
                         consulta_utc=timestamp,
@@ -237,7 +261,10 @@ def discover(
                         resource_size=str(resource.get("size") or ""),
                         license_id=str(package.get("license_id") or package.get("license_title") or ""),
                         status="DESCOBERTO",
-                        observacao=f"UF(s) inferidas apenas pelo nome/descrição: {uf_value}; validar manualmente.",
+                        observacao=(
+                            f"UF(s) inferidas pelo nome/descrição: {uf_value}; "
+                            f"período {'detectado no recurso' if detected else 'NAO detectado no recurso'}; validar manualmente."
+                        ),
                     ))
     return records, packages
 
@@ -274,12 +301,16 @@ def write_sources(path: Path, records: list[SourceRecord], action_base: str, res
             handle.write("Nenhum recurso foi descoberto. Registrar o erro de consulta antes de prosseguir.\n")
 
 
+PERIODOS_BLOQUEADOS = ("2T2026",)
+
+
 def maybe_download(
     records: list[SourceRecord],
     download_dir: Path,
     inventory_path: Path,
     timeout: int,
     max_bytes: int | None,
+    liberar_2t2026: bool = False,
 ) -> list[ResourceRecord]:
     inventory: list[ResourceRecord] = []
     seen_urls: set[str] = set()
@@ -287,6 +318,8 @@ def maybe_download(
         if record.resource_url in seen_urls:
             continue
         seen_urls.add(record.resource_url)
+        if record.periodo in PERIODOS_BLOQUEADOS and not liberar_2t2026:
+            continue
         filename = safe_filename(Path(urllib.parse.urlparse(record.resource_url).path).name or record.resource_name)
         turn, year = infer_turn_year(record.periodo)
         destination = download_dir / year / f"{turn}T" / filename
@@ -350,6 +383,12 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--output-dir", type=Path, default=Path(__file__).resolve().parent, help="diretório de saídas")
     parser.add_argument("--data-dir", type=Path, default=None, help="diretório dos arquivos baixados")
     parser.add_argument("--user-agent", default=USER_AGENT, help=argparse.SUPPRESS)
+    parser.add_argument(
+        "--emenda-liberacao-2t2026",
+        type=Path,
+        default=None,
+        help="caminho da emenda aprovada que congela dt* e o poder; sem ela, o 2T 2026 nunca e baixado",
+    )
     return parser.parse_args(argv)
 
 
@@ -361,17 +400,21 @@ def main(argv: list[str] | None = None) -> int:
         normalize_period(period)
         if period not in SEARCH_TERMS:
             raise SystemExit(f"período sem estratégia de descoberta: {period}")
-    # D4 do PLANEJAMENTO: um recurso de 2026 pode misturar 1T/2T.
-    # Nunca permitir download a partir das buscas ambíguas deste coletor.
-    if args.download and any(p in ("2T2026", "1T2026") for p in periods):
-        raise SystemExit("BLOQUEADO D4: download de 2026 (1T ou 2T) por busca CKAN ambígua. "
-                         "Use pipeline_placebo.py com arquivo de 1T isolado e manifesto SHA-256; "
-                         "2T2026 segue vedado até GATE 1.6.")
     if args.rows < 1 or args.timeout < 1:
         raise SystemExit("--rows e --timeout devem ser positivos")
 
     output_dir = args.output_dir.resolve()
-    data_dir = (args.data_dir or Path(__file__).resolve().parents[4] / "data" / "coleta_03").resolve()
+    repo_root = Path(__file__).resolve().parents[4]
+    data_dir = (args.data_dir or repo_root / "data" / "coleta").resolve()
+    liberar = False
+    if args.emenda_liberacao_2t2026 is not None:
+        emenda = args.emenda_liberacao_2t2026
+        if not emenda.is_file():
+            raise SystemExit(f"emenda de liberacao inexistente: {emenda}")
+        texto = emenda.read_text(encoding="utf-8")
+        if "dt*" not in texto or "poder" not in texto.lower():
+            raise SystemExit("a emenda informada nao registra dt* e o diagnostico de poder")
+        liberar = True
     output_dir.mkdir(parents=True, exist_ok=True)
     print(f"Consulta oficial: {args.portal_api}")
     print(f"Escopo UF: {','.join(ufs)}; períodos: {','.join(periods)}; seed: {SEED}")
@@ -393,7 +436,10 @@ def main(argv: list[str] | None = None) -> int:
             inventory_path,
             args.timeout,
             args.max_bytes,
+            liberar,
         )
+        if not liberar and any(r.periodo in PERIODOS_BLOQUEADOS for r in source_records):
+            print("2T2026 descoberto mas NAO baixado: exige --emenda-liberacao-2t2026 (protocolo v1.1).")
     else:
         write_discovery_inventory(inventory_path, source_records)
         inventory = []

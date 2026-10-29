@@ -40,6 +40,7 @@ valido.
 | 02 | `estudos/03_pianista/etapas/00_protocolo/02_protocolo_preregistro_etapa0_20261029.md` | 2026-10-29 | `160fca67437e45e4d269f728ee495202b60edddbb44582808269625be94ff05f` | Substituida pela versao 1.1 (entrada 03); arquivo mantido sem alteracao |
 | 02a | `estudos/03_pianista/etapas/00_protocolo/02_checklist_etapa0_20261029.md` | 2026-10-29 | `807e87210dace19b42639dd38c56f389251cb85e2f122fd54484d78e4e8e6284` | Checklist da entrega 02 |
 | 03 | `estudos/03_pianista/etapas/00_protocolo/03_protocolo_preregistro_etapa0_v1.1_20261029.md` | 2026-10-29 | `b75a5a502d1747518a238a36765a67c49afbecf454c8cccd29a4d9f81e71af2c` | GATE 0: versao 1.1, substitui a 02 para aprovacao; a 02 permanece inalterada |
+| 04 | `protocolos/02_emenda_20261029_calibracao_piloto_TO.md` | 2026-10-29 | `34be261a7f2fa6d2e3ffb4efa9e58b07c152752463d76ff6be16c540e218c9d6` | Emenda 02: dt* = 60 s, poder, mapeamento validado; piloto TO; registrada antes da abertura do 2T 2026 |
 
 A entrega 02 é adicional e não reconstitui nem substitui o arquivo histórico `00_preregistro.md` mencionado acima.
 

@@ -26,11 +26,11 @@ etapas/00_protocolo ... 07_relatorio
 | Etapa | Agente      | Status   |
 |-------|-------------|----------|
 | 0     | Protocolo   | Aprovado em 29/10/2026 (versao 1.1) |
-| 1     | Coleta      | Pendente |
-| 2     | Parser      | Pendente |
+| 1     | Coleta      | Piloto TO concluido (1T/2T 2026, 1T/2T 2022) |
+| 2     | Parser      | Concluido; validado contra o BU |
 | 3     | Qualidade   | Pendente |
 | 4     | Descritivo  | Pendente |
-| 5     | Inferencia  | Pendente |
+| 5     | Inferencia  | Piloto TO concluido: hipoteses nao sustentadas (ver resultados_piloto_TO) |
 | 6     | Red team    | Pendente |
 | 7     | Relatorio   | Pendente |
 

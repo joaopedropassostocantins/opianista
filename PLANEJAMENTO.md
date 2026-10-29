@@ -10,7 +10,7 @@ ser editado livremente.
 |--------|----------|---------------|
 | 01 Prorrogacao (DiD) | Pre-registrado (00); coleta bloqueada em 26/10 por falta de dados do 2T | Validar pipeline no 2T 2022 |
 | 02 Transferencia de votos | Exploratorio, sem codigo no repositorio | Publicar script Monte Carlo |
-| 03 Mesario pianista | GATE 0 aprovado (v1.1); Etapa 1 iniciada | Corrigir coleta.py e rodar descoberta |
+| 03 Mesario pianista | Piloto TO concluido (emenda 02): nenhuma hipotese sustentada | Execucao nacional, priorizando UFs com votacao apos 17h49 |
 | 04 Auditabilidade | Proposta de artigo | Receber fichamento de Aranha et al. |
 
 Fato novo relevante para o Estudo 01: o TSE informou 34.393 votos registrados

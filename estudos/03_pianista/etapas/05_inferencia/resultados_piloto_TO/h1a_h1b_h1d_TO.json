@@ -1,0 +1,140 @@
+{
+  "dtstar": 60.0,
+  "controle": {
+    "t26_2": {
+      "secoes": 4384,
+      "habilitacoes": 687219,
+      "DESC": 0
+    },
+    "t26_1": {
+      "secoes": 4384,
+      "habilitacoes": 770020,
+      "DESC": 0
+    },
+    "t22_2": {
+      "secoes": 3957,
+      "habilitacoes": 623289,
+      "DESC": 0
+    },
+    "t22_1": {
+      "secoes": 3957,
+      "habilitacoes": 712750,
+      "DESC": 1
+    }
+  },
+  "H1a": {
+    "J1": {
+      "n_secoes_2026": 4352,
+      "n_secoes_2022": 3935,
+      "media_2026": 0.004970996966833815,
+      "media_2022": 0.014844834857767447,
+      "delta": -0.009873837890933632,
+      "ep_bootstrap": 0.002771486120210757,
+      "ic95": [
+        -0.015790044966156207,
+        -0.004876191140839545
+      ],
+      "p_unilateral": 0.999816435718539,
+      "estimavel": true,
+      "comparacao_2022": "sim",
+      "materialmente_relevante": false
+    },
+    "J2": {
+      "n_secoes_2026": 81,
+      "n_secoes_2022": 100,
+      "media_2026": 0.028933358574499097,
+      "media_2022": 0.06772802442608494,
+      "delta": -0.03879466585158585,
+      "ep_bootstrap": 0.05718536658192176,
+      "ic95": [
+        -0.16455589122487632,
+        0.05897366586142155
+      ],
+      "p_unilateral": 0.7512415726249676,
+      "estimavel": true,
+      "comparacao_2022": "sim",
+      "materialmente_relevante": false
+    },
+    "J3": {
+      "n_secoes_2026": 0,
+      "n_secoes_2022": 0,
+      "media_2026": NaN,
+      "media_2022": NaN,
+      "delta": NaN,
+      "ep_bootstrap": NaN,
+      "ic95": [
+        NaN,
+        NaN
+      ],
+      "p_unilateral": NaN,
+      "estimavel": false,
+      "comparacao_2022": "nao (rebaixado a exploratorio)",
+      "materialmente_relevante": false
+    }
+  },
+  "H1b": {
+    "J1": {
+      "n_secoes_2026": 4384,
+      "n_secoes_2022": 3957,
+      "dif_2026": 0.0,
+      "dif_2022": 0.00025271670457417233,
+      "delta": -0.00025271670457417233,
+      "ep_bootstrap": 0.0002685777178547805,
+      "ic95": [
+        -0.0009091253966064285,
+        0.0
+      ],
+      "p_unilateral": 0.8266333284023231,
+      "secoes_K2_2026_2T": 0,
+      "secoes_K2_2026_1T": 0
+    },
+    "J2": {
+      "n_secoes_2026": 4384,
+      "n_secoes_2022": 3957,
+      "dif_2026": 0.0,
+      "dif_2022": 0.0,
+      "delta": 0.0,
+      "ep_bootstrap": 0.0,
+      "ic95": [
+        NaN,
+        NaN
+      ],
+      "p_unilateral": NaN,
+      "secoes_K2_2026_2T": 0,
+      "secoes_K2_2026_1T": 0
+    },
+    "J3": {
+      "n_secoes_2026": 4384,
+      "n_secoes_2022": 3957,
+      "dif_2026": 0.0,
+      "dif_2022": 0.0,
+      "delta": 0.0,
+      "ep_bootstrap": 0.0,
+      "ic95": [
+        NaN,
+        NaN
+      ],
+      "p_unilateral": NaN,
+      "secoes_K2_2026_2T": 0,
+      "secoes_K2_2026_1T": 0
+    }
+  },
+  "H1d": {
+    "conjuntas_observadas": 0,
+    "esperado_sob_independencia": 0.0,
+    "p_unilateral": 1.0,
+    "n_secoes": 4384,
+    "sinalizadas_H1a": 12,
+    "sinalizadas_H1b": 0
+  },
+  "familia_S_PIANISTA_q_bh": {
+    "H1a-J1": 1.0,
+    "H1a-J2": 1.0,
+    "H1a-J3": NaN,
+    "H1b-J1": 1.0,
+    "H1b-J2": NaN,
+    "H1b-J3": NaN,
+    "H1d": 1.0
+  },
+  "observacao": "H1c-Lula e H1c-Flavio entram na familia quando calculados (modulo com BU); q-valores serao recalculados com os 9 testes."
+}

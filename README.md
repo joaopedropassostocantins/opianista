@@ -16,7 +16,7 @@ relatados com o mesmo destaque que resultados positivos.
 |--------|----------|----------|
 | [01 Prorrogacao (DiD)](estudos/01_prorrogacao_did/) | Votos apos 17h e prorrogacao alteraram a votacao por secao? | Pre-registrado; aguardando dados do 2T por secao |
 | [02 Transferencia de votos](estudos/02_transferencia_votos/) | A captacao entre turnos foi atipica frente a 2022? | Exploratorio; codigo a publicar |
-| [03 Mesario pianista](estudos/03_pianista/) | Ha assinaturas de insercao de votos pela mesa nos logs? | GATE 0 aprovado (v1.1); Etapa 1 em andamento |
+| [03 Mesario pianista](estudos/03_pianista/) | Ha assinaturas de insercao de votos pela mesa nos logs? | Piloto TO concluido: hipoteses nao sustentadas; execucao nacional pendente |
 | [04 Auditabilidade](estudos/04_auditabilidade/) | Que tamanho de adulteracao o sistema consegue detectar? | Proposta de artigo |
 | [05 Urnas de encerramento tardio](estudos/05_simulacao_temporal/) | Qual o perfil de TODOS os votos nas urnas que encerraram tardiamente? O relogio e verificavel? | Exploratorio; coortes e testes sinteticos no site |
 

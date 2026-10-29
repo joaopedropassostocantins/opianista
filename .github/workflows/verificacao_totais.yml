@@ -1,0 +1,46 @@
+name: Verificacao - totais oficiais de TO (presidente, 1T e 2T 2026)
+on:
+  push:
+    branches: [etapa1-pipeline]
+    paths: [".github/workflows/verificacao_totais.yml"]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  totais:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Totais oficiais (dados simplificados do Portal Resultados)
+        run: |
+          mkdir -p out
+          for e in 6257 6258; do
+            u="https://resultados.tse.jus.br/oficial/ele2026/$e/dados-simplificados/to/to-c0001-e00$e-r.json"
+            curl -sS -m 60 -o out/to_e$e.json -w "$u http=%{http_code}\n" "$u" | tee -a out/verificacao.txt
+            python3 - out/to_e$e.json <<'PY' | tee -a out/verificacao.txt
+          import json, sys
+          try:
+              d = json.load(open(sys.argv[1]))
+          except Exception as e:
+              print("sem json", e); sys.exit(0)
+          print({k: d.get(k) for k in ("ele", "dg", "hg", "s", "st", "pst", "e", "c", "pc", "a", "pa", "vb", "vn", "tv", "vv")})
+          for c in d.get("cand", []):
+              if c.get("n") in ("13", "22"):
+                  print("cand", c.get("n"), c.get("nm"), c.get("vap"), c.get("pvap"))
+          PY
+          done
+      - name: Publica
+        if: always()
+        run: |
+          mkdir -p pub && cd pub
+          git init -q -b saidas-actions
+          git config user.name "opianista-actions"
+          git config user.email "actions@users.noreply.github.com"
+          git remote add origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          for i in 1 2 3 4 5; do
+            git fetch -q origin saidas-actions && git checkout -q -B saidas-actions FETCH_HEAD || git checkout -q -B saidas-actions
+            mkdir -p verificacao && cp ../out/verificacao.txt verificacao/
+            git add -A && git commit -qm "Verificacao totais TO (run ${{ github.run_id }})" || true
+            git push -q origin saidas-actions && break
+            sleep 7
+          done

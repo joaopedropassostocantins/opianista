@@ -17,3 +17,7 @@ venv/
 # Sistema
 .DS_Store
 Thumbs.db
+
+# Saidas locais da coleta
+dados_brutos/
+estudos/**/01_coleta/descoberta.json

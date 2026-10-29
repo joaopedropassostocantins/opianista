@@ -1,0 +1,79 @@
+name: Etapa 1 - abertura do 2T 2026 (TO, apos emenda 02)
+on:
+  push:
+    branches: [etapa1-pipeline]
+    paths: [".github/workflows/etapa1_2t2026.yml"]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  segundo_turno:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -q py7zr==1.1.4 asn1tools==0.169.0
+      - name: Baixa log e BU por secao do 2T 2026 (pleito 3221), com a emenda 02 como liberacao
+        run: |
+          mkdir -p out
+          python3 estudos/03_pianista/etapas/01_coleta/resultados_secoes.py --uf TO --pleito 3221 \
+            --extensoes=-log.jez,-bu.dat --saida d2t --manifesto out/manifesto_TO_2T2026.json --workers 12 \
+            --emenda-liberacao-2t2026 protocolos/02_emenda_20261029_calibracao_piloto_TO.md | tail -1 | tee out/coleta.txt
+      - name: Extrai habilitacoes e decodifica BU
+        run: |
+          git clone -q --depth 1 https://github.com/igoroalonge/urna-vota-decompiled asnrepo
+          python3 estudos/03_pianista/etapas/02_parser/eventos.py --origem d2t/arquivos --data 2026-10-25 --uf TO --periodo 2T2026 \
+            --saida out/hab_TO_2T2026.csv.gz --resumo out/resumo_TO_2T2026.csv | tee -a out/coleta.txt
+          python3 estudos/03_pianista/etapas/02_parser/bu.py --origem d2t/arquivos --asn asnrepo/src/asn1 --uf TO --periodo 2T2026 \
+            --saida out/bu_TO_2T2026.csv | tee -a out/coleta.txt
+      - name: Locais de votacao (Eleitorado 2026)
+        run: |
+          python3 - <<'PY' | tee -a out/coleta.txt
+          import json, urllib.request
+          d = json.load(urllib.request.urlopen("https://dadosabertos.tse.jus.br/api/3/action/package_show?id=eleitorado-2026", timeout=90))
+          for r in d["result"]["resources"]:
+              print("RECURSO", r.get("name"), "|", r.get("url"))
+          PY
+          url=$(grep -i "RECURSO" out/coleta.txt | grep -i "local" | grep -i "vota" | head -1 | awk -F'| ' '{print $2}')
+          echo "url local: $url" | tee -a out/coleta.txt
+          if [ -n "$url" ]; then
+            curl -sS -m 1800 -o local.zip "$url" && python3 - <<'PY' | tee -a out/coleta.txt
+          import zipfile, io, csv
+          z = zipfile.ZipFile("local.zip")
+          nomes = [n for n in z.namelist() if n.lower().endswith(".csv")]
+          print("csvs", nomes[:5])
+          alvo = [n for n in nomes if "_TO" in n.upper()] or nomes
+          saida = open("out/local_votacao_TO_2026.csv", "w", newline="", encoding="utf-8")
+          w = None
+          for n in alvo:
+              f = io.TextIOWrapper(z.open(n), encoding="latin-1")
+              r = csv.DictReader(f, delimiter=";")
+              for row in r:
+                  if row.get("SG_UF") != "TO":
+                      continue
+                  keep = {k: row.get(k) for k in ("SG_UF", "CD_MUNICIPIO", "NR_ZONA", "NR_SECAO", "NR_LOCAL_VOTACAO", "NR_TURNO") if k in row}
+                  if w is None:
+                      w = csv.DictWriter(saida, fieldnames=list(keep.keys())); w.writeheader()
+                  w.writerow(keep)
+          saida.close()
+          print("local ok")
+          PY
+          fi
+      - name: Publica saidas
+        if: always()
+        run: |
+          mkdir -p pub && cd pub
+          git init -q -b saidas-actions
+          git config user.name "opianista-actions"
+          git config user.email "actions@users.noreply.github.com"
+          git remote add origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          for i in 1 2 3 4 5; do
+            git fetch -q origin saidas-actions && git checkout -q -B saidas-actions FETCH_HEAD || git checkout -q -B saidas-actions
+            mkdir -p segundo_turno_TO && cp -r ../out/* segundo_turno_TO/
+            git add -A && git commit -qm "2T 2026 TO (run ${{ github.run_id }})" || true
+            git push -q origin saidas-actions && break
+            sleep 7
+          done
