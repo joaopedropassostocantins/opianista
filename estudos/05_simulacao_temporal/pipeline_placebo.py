@@ -16,7 +16,9 @@ import re
 import sys
 import zipfile
 from collections import defaultdict
+from contextlib import contextmanager
 from pathlib import Path
+from typing import Iterable
 
 ALLOWED = {"2T2024": (2024, 2, 11), "1T2026": (2026, 1, 1)}
 FIELDS = ("ANO_ELEICAO", "NR_TURNO", "SG_UF", "CD_MUNICIPIO",
@@ -59,7 +61,10 @@ def load_manifest(path: Path, period: str) -> dict:
         raise Blocked("Origem oficial HTTPS obrigatória.")
     return obj
 
-def read_csv_text(path: Path, expected: str) -> str:
+
+@contextmanager
+def open_rows(path: Path):
+    """Leitura streaming: não carrega todo o ZIP/CSV em memória nem o extrai em disco."""
     if path.stat().st_size > FILE_CAP:
         raise Blocked("Arquivo muito grande; revisão manual.")
     if path.suffix.lower() == ".zip":
@@ -71,19 +76,15 @@ def read_csv_text(path: Path, expected: str) -> str:
             member = members[0]
             if BAD_PATTERN.search(member.filename) or member.file_size > FILE_CAP:
                 raise Blocked("Membro bloqueado ou tamanho excessivo.")
-            raw = z.read(member)
+            with z.open(member) as binary, io.TextIOWrapper(binary, encoding="cp1252", newline="") as fp:
+                yield csv.DictReader(fp, delimiter=";")
     elif path.suffix.lower() == ".csv":
-        raw = path.read_bytes()
+        with path.open("r", encoding="cp1252", newline="") as fp:
+            yield csv.DictReader(fp, delimiter=";")
     else:
         raise Blocked("Somente .csv ou .zip com CSV único.")
-    for encoding in ("utf-8-sig", "cp1252"):
-        try:
-            return raw.decode(encoding)
-        except UnicodeDecodeError:
-            pass
-    raise Blocked("Codificação CSV desconhecida.")
 
-def normalize(rows: list[dict], period: str) -> dict:
+def normalize(rows: Iterable[dict], period: str) -> dict:
     year, turn, job = guard_period(period)
     grouped: dict[tuple, dict] = defaultdict(lambda: {
         "by_number": defaultdict(int), "blank": 0, "null": 0,
@@ -147,11 +148,10 @@ def parse_file(path: Path, manifest_path: Path, period: str) -> dict:
     found = sha256(path)
     if found != manifest["sha256"]:
         raise Blocked("SHA-256 não corresponde ao manifesto: abortar ANTES do parser.")
-    text = read_csv_text(path, period)
-    reader = csv.DictReader(io.StringIO(text), delimiter=";")
-    if not reader.fieldnames or set(FIELDS) - set(reader.fieldnames):
-        raise Blocked("CSV sem cabeçalho TSE obrigatório; recusar mapeamento presumido.")
-    obj = normalize(list(reader), period)
+    with open_rows(path) as reader:
+        if not reader.fieldnames or set(FIELDS) - set(reader.fieldnames):
+            raise Blocked("CSV sem cabeçalho TSE obrigatório; recusar mapeamento presumido.")
+        obj = normalize(reader, period)
     obj["provenance"] = {k:manifest[k] for k in ("period","origin_url","resource_id","license","sha256")}
     return obj
 
