@@ -1,4 +1,4 @@
-{'logs': 4384, 'erros': 4384}
+{'logs': 4384, 'erros': 0, 'BIO': 886006, 'NB_MAN': 51886, 'DESC': 27448}
 {'logs': 3957, 'erros': 0, 'NB_MAN': 86996, 'BIO': 735662, 'NB_SEM': 66744, 'DESC': 1}
 {'logs': 3957, 'erros': 0, 'BIO': 733977, 'NB_MAN': 70305, 'NB_SEM': 64686}
-logs lidos=4384 erros=4384 linhas_no_dia=0 linhas_sem_data=0 mensagens_distintas=0
+logs lidos=4384 erros=0 linhas_no_dia=21203989 linhas_sem_data=14377 mensagens_distintas=6014
