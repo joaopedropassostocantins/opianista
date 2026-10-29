@@ -1,0 +1,4 @@
+https://resultados.tse.jus.br/oficial/ele2026/6257/dados-simplificados/to/to-c0001-e006257-r.json http=404
+sem json Expecting value: line 1 column 1 (char 0)
+https://resultados.tse.jus.br/oficial/ele2026/6258/dados-simplificados/to/to-c0001-e006258-r.json http=404
+sem json Expecting value: line 1 column 1 (char 0)
