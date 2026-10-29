@@ -1,0 +1,49 @@
+name: Etapa 1 - decodificacao dos BU (TO, 1T 2026)
+on:
+  push:
+    branches: [etapa1-pipeline]
+    paths: [".github/workflows/etapa1_bu.yml", "estudos/03_pianista/etapas/02_parser/bu.py"]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  bu:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -q asn1tools==0.169.0
+      - uses: actions/cache/restore@v4
+        with:
+          path: dados
+          key: tse-to-2026_1t-2022_1t-2022_2t-v1
+      - name: Especificacao ASN.1 (reconstrucao publica, nao versionada aqui)
+        run: |
+          git clone -q --depth 1 https://github.com/igoroalonge/urna-vota-decompiled asnrepo
+          (cd asnrepo && git log -1 --format='%H %ad') | tee asn_commit.txt
+      - name: Decodifica BU do 1T 2026
+        run: |
+          mkdir -p out
+          ls -la dados || true
+          if [ ! -s dados/2026_1t_TO.zip ]; then curl -sS -m 3000 --retry 3 -o dados/2026_1t_TO.zip https://cdn.tse.jus.br/estatistica/sead/eleicoes/eleicoes2026/arqurnatot/bu_imgbu_logjez_rdv_vscmr_2026_1t_TO.zip; fi
+          cp asn_commit.txt out/
+          python3 estudos/03_pianista/etapas/02_parser/bu.py --origem dados/2026_1t_TO.zip --asn asnrepo/src/asn1 --uf TO --periodo 1T2026 --saida out/bu_TO_1T2026.csv | tee out/bu_resumo.txt
+          head -5 out/bu_TO_1T2026.csv >> out/bu_resumo.txt
+      - name: Publica saidas
+        if: always()
+        run: |
+          mkdir -p pub && cd pub
+          git init -q -b saidas-actions
+          git config user.name "opianista-actions"
+          git config user.email "actions@users.noreply.github.com"
+          git remote add origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          for i in 1 2 3 4 5; do
+            git fetch -q origin saidas-actions && git checkout -q -B saidas-actions FETCH_HEAD || git checkout -q -B saidas-actions
+            mkdir -p bu_TO && cp -r ../out/* bu_TO/
+            git add -A && git commit -qm "BU TO 1T 2026 (run ${{ github.run_id }})" || true
+            git push -q origin saidas-actions && break
+            sleep 7
+          done
