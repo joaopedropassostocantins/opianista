@@ -62,3 +62,8 @@ Build: `npm run build` gera `site/dist`. Para GitHub Pages, usar `GITHUB_PAGES=t
 ## Licença
 
 Código MIT; textos CC BY 4.0, conforme README do repositório raiz.
+## Auditoria transversal e escopo integral — 29/10/2026
+
+O estudo do **mesario pianista** deve abranger toda a jornada de habilitacoes, inclusive 08h–09h, 15h–16h e eventos apos 19h. O simulador temporal deste site tem natureza **didatica** e nao equivale a execucao da nova analise integral. Ver [proposta de emenda](../estudos/03_pianista/PROPOSTA_EMENDA_ESCOPO_INTEGRAL_20261029.md), [auditoria](../auditoria/AUDITORIA_TRANSVERSAL_20261029.md) e [conclusoes revisadas](../relatorios/CONCLUSOES_REVISADAS_20261029.md).
+
+Esta pasta foi restaurada de um snapshot identificado pelo Git commit `48d9d6c`, pois desaparecera da branch corrente do PR #3. Restauracao nao implica build testado ou publicacao; CI e revisao de diff permanecem obrigatorios.

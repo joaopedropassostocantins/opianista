@@ -18,7 +18,7 @@ export const studies: Study[] = [
   {
     number: 3,
     title: { pt: "Hipótese do mesário pianista", en: "Poll-worker insertion hypothesis" },
-    question: { pt: "Logs apresentam assinaturas temporais incompatíveis com a operação regular?", en: "Do voting-machine logs show timing inconsistent with normal operation?" },
+    question: { pt: "Durante TODA a jornada de votação, os logs apresentam padrões temporais incompatíveis com a operação regular?", en: "Across the FULL voting day, do voting-machine logs show timing inconsistent with normal operation?" },
     status: "em_andamento",
     repositoryPath: "estudos/03_pianista/README.md"
   },
