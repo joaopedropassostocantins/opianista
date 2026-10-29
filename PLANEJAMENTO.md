@@ -112,3 +112,21 @@ linguagem e referencias.
 | Logs sem campo de modalidade de habilitacao | Item 1.3 antes de qualquer outro trabalho; se ausente, H1a e H1b nao sao executaveis |
 | Licenca dos logs do 2T 2026 nao declarada | Nao redistribuir dados; publicar so agregados e codigo |
 | Leitura publica de resultados parciais como conclusao | Aviso no README; relatorios so apos red team |
+
+## 7 Prioridade maxima - Estudo 05 (insider, BU e totalizacao)
+
+**Novo estudo exploratorio:** [simulacao temporal](estudos/05_simulacao_temporal/README.md) e [analise de origem e totalizacao](estudos/05_simulacao_temporal/ANALISE_INSIDER_BU_TOTALIZACAO.md).
+
+Perguntas tecnicas prioritarias, em ordem:
+
+1. Habilitacao do eleitor: condicoes de abertura de sessoes e controles de horario.
+2. Terminal do mesario: intervencoes do operador e estados de autorizacao.
+3. Contabilizacao: votos nominais, brancos, nulos, sessoes incompletas e RDV.
+4. Geracao do BU: origem dos totais e fixacao do resultado local.
+5. Logs e persistencia: quais eventos ficam observaveis e quais nao.
+
+**Duas hipoteses separadas:** (A) origem comprometida antes da emissao do BU, que nao e refutada por coerencia entre registros do mesmo subsistema; (B) diferenca de totalizacao central comparada aos BUs locais preservados independentemente, verificavel por recontagem por secao. Suspensao da recepcao e da totalizacao ate 19h nao prova vulnerabilidade e nao pode ser confundida com recebimento tardio normal.
+
+**Entrega existente no PR #3:** painel didatico com fixtures totalmente sinteticas, sem execucao de urna real; testes automatizados e links ao codigo reconstruido de desenvolvimento do simulador VOTA. Revisao humana obrigatoria antes de confundir hipoteses, anomalias e prova.
+
+**Proximos gates:** (i) validar fontes e horario de cada registro; (ii) obter BUs e logs oficiais com hashes; (iii) identificar copias preservadas fora do canal central; (iv) verificar compatibilidade da reconstrucao web com a versao de producao autorizada; (v) preregistrar testes confirmatorios antes dos dados-alvo. Sem alteracao de pre-registros anteriores.
