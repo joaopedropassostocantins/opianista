@@ -11,7 +11,7 @@ import { glossary } from "../src/content/glossary.ts";
 const hasLocales = value => Boolean(value?.pt?.trim() && value?.en?.trim());
 test("the five studies have unique numbers, titles, questions and existing paths", () => {
   assert.equal(studies.length, 5);
-  assert.equal(new Set(studies.map(s => s.number)).size, 4);
+  assert.equal(new Set(studies.map(s => s.number)).size, 5);
   for (const study of studies) {
     assert.ok(hasLocales(study.title) && hasLocales(study.question));
     assert.ok(existsSync(resolve("..", study.repositoryPath)), study.repositoryPath);
