@@ -18,7 +18,7 @@ relatados com o mesmo destaque que resultados positivos.
 | [02 Transferencia de votos](estudos/02_transferencia_votos/) | A captacao entre turnos foi atipica frente a 2022? | Exploratorio; codigo a publicar |
 | [03 Mesario pianista](estudos/03_pianista/) | Ha assinaturas de insercao de votos pela mesa nos logs? | Piloto TO concluido: hipoteses nao sustentadas; execucao nacional pendente |
 | [04 Auditabilidade](estudos/04_auditabilidade/) | Que tamanho de adulteracao o sistema consegue detectar? | Proposta de artigo |
-| [05 Urnas de encerramento tardio](estudos/05_simulacao_temporal/) | Qual o perfil de TODOS os votos nas urnas que encerraram tardiamente? O relogio e verificavel? | Exploratorio; coortes e testes sinteticos no site |
+| [05 Urnas de encerramento tardio](estudos/05_simulacao_temporal/) | Qual o perfil de TODOS os votos nas urnas que encerraram tardiamente? O relogio e verificavel? | Exploratorio; coortes e testes sinteticos |
 
 Painel de coordenacao: [PLANEJAMENTO.md](PLANEJAMENTO.md).
 
@@ -28,16 +28,9 @@ Painel de coordenacao: [PLANEJAMENTO.md](PLANEJAMENTO.md).
 protocolos/     pre-registros e emendas (imutaveis), com hashes
 estudos/        um diretorio por estudo
 didatico/       material de aula, separado da pesquisa
-site/          site editorial independente (Vite + TypeScript)
 .github/        modelos de issue e de pull request
 data/           dados brutos (fora do Git)
 ```
-
-## Site editorial
-
-A aplicação em [site/](site/) é independente de `estudos/` e `protocolos/`: apresenta a tese do Arquiteto-Fiscal, acompanha o status dos estudos e encaminha os leitores aos documentos canônicos. Não é resultado pericial. A nova versão foi implementada a partir de texto-base preservado e reconstrução estática; o código-fonte original do ChatGPT Sites não foi exportado.
-
-Para desenvolver: `cd site && npm ci && npm run dev`. Para validar: `npm run typecheck && npm test && npm run build`. A publicação não é automática. O Estudo 05 inclui laboratório temporal **sintético**, não execução de software lacrado nem demonstração de vulnerabilidade.
 
 ## Como participar
 
