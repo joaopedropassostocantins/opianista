@@ -1,0 +1,32 @@
+{
+  "padrao": "fragmentado",
+  "secoes_injetadas": 300,
+  "falso_positivo_H1a": 0.013480055020632738,
+  "por_k": {
+    "5": {
+      "sensibilidade_H1a": 0.71,
+      "sensibilidade_H1b": 0.0,
+      "falso_positivo_H1b": 0.0,
+      "sensibilidade_conjunta": 0.0
+    },
+    "10": {
+      "sensibilidade_H1a": 0.8966666666666666,
+      "sensibilidade_H1b": 0.2833333333333333,
+      "falso_positivo_H1b": 0.0,
+      "sensibilidade_conjunta": 0.24333333333333335
+    },
+    "20": {
+      "sensibilidade_H1a": 0.97,
+      "sensibilidade_H1b": 0.96,
+      "falso_positivo_H1b": 0.0,
+      "sensibilidade_conjunta": 0.9333333333333333
+    },
+    "50": {
+      "sensibilidade_H1a": 0.9933333333333333,
+      "sensibilidade_H1b": 1.0,
+      "falso_positivo_H1b": 0.0,
+      "sensibilidade_conjunta": 0.9933333333333333
+    }
+  },
+  "menor_k_poder_080": 10
+}
