@@ -1,0 +1,37 @@
+{"url_config": "https://resultados.tse.jus.br/oficial/ele2026/arquivo-urna/3221/config/to/to-p003221-cs.json", "sha256_config": "e3ca7d4864d8aef1d324d2af261776af2477725cfa34228f192a83512ae7ae9a", "secoes": 4490, "chaves_topo": ["abr", "cdp", "dg", "f", "hg", "idg"], "dg": "25/10/2026", "hg": "23:22:31", "arquivos_pedidos": 8768, "falhas": 106}
+{'logs': 4384, 'erros': 0, 'BIO': 880202, 'NB_MAN': 47822, 'DESC': 26584}
+{'bus': 4384, 'erros': 0, 'campos': ['municipio', 'periodo', 'secao', 'uf', 'zona', 'aptos', 'branco', 'bu_por_biografia', 'bu_por_biometria', 'bu_sem_biometria', 'comparecimento', 'comparecimento_cargo', 'nulo', 'v13', 'v22']}
+RECURSO Eleitorado - 2026 | https://cdn.tse.jus.br/estatistica/sead/odsele/perfil_eleitorado/perfil_eleitorado_2026.zip
+RECURSO Perfil do eleitorado com deficiência - 2026 | https://cdn.tse.jus.br/estatistica/sead/odsele/perfil_eleitor_deficiente/perfil_eleitor_deficiencia_2026.zip
+RECURSO Eleitorado por local de votação - 2026 | https://cdn.tse.jus.br/estatistica/sead/odsele/eleitorado_locais_votacao/eleitorado_local_votacao_2026.zip
+RECURSO Transferência temporária do eleitorado - 2026 | https://cdn.tse.jus.br/estatistica/sead/odsele/perfil_eleitor_tte/transferencia_temporaria_2026.zip
+RECURSO Transferência temporária do eleitorado por seção - 2026 | https://cdn.tse.jus.br/estatistica/sead/odsele/perfil_eleitor_tte/transf_temporaria_secao_2026.zip
+RECURSO AC - Perfil do eleitorado por seção eleitoral - 2026 | https://cdn.tse.jus.br/estatistica/sead/odsele/perfil_eleitor_secao/perfil_eleitor_secao_2026_AC.zip
+RECURSO AL - Perfil do eleitorado por seção eleitoral - 2026 | https://cdn.tse.jus.br/estatistica/sead/odsele/perfil_eleitor_secao/perfil_eleitor_secao_2026_AL.zip
+RECURSO AM - Perfil do eleitorado por seção eleitoral - 2026 | https://cdn.tse.jus.br/estatistica/sead/odsele/perfil_eleitor_secao/perfil_eleitor_secao_2026_AM.zip
+RECURSO AP - Perfil do eleitorado por seção eleitoral - 2026 | https://cdn.tse.jus.br/estatistica/sead/odsele/perfil_eleitor_secao/perfil_eleitor_secao_2026_AP.zip
+RECURSO BA - Perfil do eleitorado por seção eleitoral - 2026 | https://cdn.tse.jus.br/estatistica/sead/odsele/perfil_eleitor_secao/perfil_eleitor_secao_2026_BA.zip
+RECURSO CE - Perfil do eleitorado por seção eleitoral - 2026 | https://cdn.tse.jus.br/estatistica/sead/odsele/perfil_eleitor_secao/perfil_eleitor_secao_2026_CE.zip
+RECURSO DF - Perfil do eleitorado por seção eleitoral - 2026 | https://cdn.tse.jus.br/estatistica/sead/odsele/perfil_eleitor_secao/perfil_eleitor_secao_2026_DF.zip
+RECURSO ES - Perfil do eleitorado por seção eleitoral - 2026 | https://cdn.tse.jus.br/estatistica/sead/odsele/perfil_eleitor_secao/perfil_eleitor_secao_2026_ES.zip
+RECURSO GO - Perfil do eleitorado por seção eleitoral - 2026 | https://cdn.tse.jus.br/estatistica/sead/odsele/perfil_eleitor_secao/perfil_eleitor_secao_2026_GO.zip
+RECURSO MA - Perfil do eleitorado por seção eleitoral - 2026 | https://cdn.tse.jus.br/estatistica/sead/odsele/perfil_eleitor_secao/perfil_eleitor_secao_2026_MA.zip
+RECURSO MG - Perfil do eleitorado por seção eleitoral - 2026 | https://cdn.tse.jus.br/estatistica/sead/odsele/perfil_eleitor_secao/perfil_eleitor_secao_2026_MG.zip
+RECURSO MS - Perfil do eleitorado por seção eleitoral - 2026 | https://cdn.tse.jus.br/estatistica/sead/odsele/perfil_eleitor_secao/perfil_eleitor_secao_2026_MS.zip
+RECURSO MT - Perfil do eleitorado por seção eleitoral - 2026 | https://cdn.tse.jus.br/estatistica/sead/odsele/perfil_eleitor_secao/perfil_eleitor_secao_2026_MT.zip
+RECURSO PA - Perfil do eleitorado por seção eleitoral - 2026 | https://cdn.tse.jus.br/estatistica/sead/odsele/perfil_eleitor_secao/perfil_eleitor_secao_2026_PA.zip
+RECURSO PB - Perfil do eleitorado por seção eleitoral - 2026 | https://cdn.tse.jus.br/estatistica/sead/odsele/perfil_eleitor_secao/perfil_eleitor_secao_2026_PB.zip
+RECURSO PE - Perfil do eleitorado por seção eleitoral - 2026 | https://cdn.tse.jus.br/estatistica/sead/odsele/perfil_eleitor_secao/perfil_eleitor_secao_2026_PE.zip
+RECURSO PI - Perfil do eleitorado por seção eleitoral - 2026 | https://cdn.tse.jus.br/estatistica/sead/odsele/perfil_eleitor_secao/perfil_eleitor_secao_2026_PI.zip
+RECURSO PR - Perfil do eleitorado por seção eleitoral - 2026 | https://cdn.tse.jus.br/estatistica/sead/odsele/perfil_eleitor_secao/perfil_eleitor_secao_2026_PR.zip
+RECURSO RJ - Perfil do eleitorado por seção eleitoral - 2026 | https://cdn.tse.jus.br/estatistica/sead/odsele/perfil_eleitor_secao/perfil_eleitor_secao_2026_RJ.zip
+RECURSO RN - Perfil do eleitorado por seção eleitoral - 2026 | https://cdn.tse.jus.br/estatistica/sead/odsele/perfil_eleitor_secao/perfil_eleitor_secao_2026_RN.zip
+RECURSO RO - Perfil do eleitorado por seção eleitoral - 2026 | https://cdn.tse.jus.br/estatistica/sead/odsele/perfil_eleitor_secao/perfil_eleitor_secao_2026_RO.zip
+RECURSO RR - Perfil do eleitorado por seção eleitoral - 2026 | https://cdn.tse.jus.br/estatistica/sead/odsele/perfil_eleitor_secao/perfil_eleitor_secao_2026_RR.zip
+RECURSO RS - Perfil do eleitorado por seção eleitoral - 2026 | https://cdn.tse.jus.br/estatistica/sead/odsele/perfil_eleitor_secao/perfil_eleitor_secao_2026_RS.zip
+RECURSO SE - Perfil do eleitorado por seção eleitoral - 2026 | https://cdn.tse.jus.br/estatistica/sead/odsele/perfil_eleitor_secao/perfil_eleitor_secao_2026_SE.zip
+RECURSO SC - Perfil do eleitorado por seção eleitoral - 2026 | https://cdn.tse.jus.br/estatistica/sead/odsele/perfil_eleitor_secao/perfil_eleitor_secao_2026_SC.zip
+RECURSO SP - Perfil do eleitorado por seção eleitoral - 2026 | https://cdn.tse.jus.br/estatistica/sead/odsele/perfil_eleitor_secao/perfil_eleitor_secao_2026_SP.zip
+RECURSO TO - Perfil do eleitorado por seção eleitoral - 2026 | https://cdn.tse.jus.br/estatistica/sead/odsele/perfil_eleitor_secao/perfil_eleitor_secao_2026_TO.zip
+RECURSO ZZ - Perfil do eleitorado por seção eleitoral - 2026 | https://cdn.tse.jus.br/estatistica/sead/odsele/perfil_eleitor_secao/perfil_eleitor_secao_2026_ZZ.zip
+url local: Eleitorado
