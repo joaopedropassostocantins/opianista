@@ -1,0 +1,55 @@
+name: Etapa 1 - eventos de habilitacao (TO, 1T 2026 e 2022)
+on:
+  push:
+    branches: [etapa1-pipeline]
+    paths: [".github/workflows/etapa1_eventos.yml", "estudos/03_pianista/etapas/02_parser/eventos.py"]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  eventos:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -q py7zr==1.1.4
+      - uses: actions/cache@v4
+        with:
+          path: dados
+          key: tse-to-2026_1t-2022_1t-2022_2t-v1
+      - name: Baixa pacotes de TO (se nao estiverem em cache)
+        run: |
+          mkdir -p dados out
+          for spec in "2026 1t" "2022 1t" "2022 2t"; do
+            set -- $spec
+            f="dados/$1_$2_TO.zip"
+            if [ ! -s "$f" ]; then
+              curl -sS -m 3000 --retry 3 -o "$f" "https://cdn.tse.jus.br/estatistica/sead/eleicoes/eleicoes$1/arqurnatot/bu_imgbu_logjez_rdv_vscmr_$1_$2_TO.zip"
+            fi
+            sha256sum "$f" | tee -a out/manifesto.txt
+          done
+          python3 -c "import zipfile;n=zipfile.ZipFile('dados/2026_1t_TO.zip').namelist();import re;print([x for x in n[:12]])" | tee out/nomes_2026_1t.txt
+      - name: Extrai habilitacoes
+        run: |
+          P=estudos/03_pianista/etapas/02_parser/eventos.py
+          python3 $P --origem dados/2026_1t_TO.zip --data 2026-10-04 --uf TO --periodo 1T2026 --saida out/hab_TO_1T2026.csv.gz --resumo out/resumo_TO_1T2026.csv | tee -a out/totais.txt
+          python3 $P --origem dados/2022_1t_TO.zip --data 2022-10-02 --uf TO --periodo 1T2022 --saida out/hab_TO_1T2022.csv.gz --resumo out/resumo_TO_1T2022.csv | tee -a out/totais.txt
+          python3 $P --origem dados/2022_2t_TO.zip --data 2022-10-30 --uf TO --periodo 2T2022 --saida out/hab_TO_2T2022.csv.gz --resumo out/resumo_TO_2T2022.csv | tee -a out/totais.txt
+          python3 estudos/03_pianista/etapas/02_parser/logs_urna.py catalogo --zip dados/2026_1t_TO.zip --data 2026-10-04 --saida out/catalogo_2026_1t_TO.csv | tee -a out/totais.txt
+      - name: Publica saidas
+        if: always()
+        run: |
+          git fetch -q origin saidas-actions || true
+          mkdir -p pub && cd pub
+          git init -q -b saidas-actions
+          git config user.name "opianista-actions"
+          git config user.email "actions@users.noreply.github.com"
+          git remote add origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          git fetch -q origin saidas-actions && git checkout -q -B saidas-actions FETCH_HEAD || true
+          mkdir -p eventos_TO && cp -r ../out/* eventos_TO/
+          git add -A
+          git commit -qm "Eventos de habilitacao TO (run ${{ github.run_id }})"
+          git push -q origin saidas-actions

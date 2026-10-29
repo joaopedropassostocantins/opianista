@@ -34,8 +34,8 @@ from typing import Iterator
 import py7zr
 
 SEED = 20261025
-NOME_LOG = re.compile(r"(?P<base>[^/]+)\.logjez$", re.IGNORECASE)
-SECAO_NO_NOME = re.compile(r"-(?P<mun>\d{5})(?P<zona>\d{4})(?P<secao>\d{4})\.logjez$", re.IGNORECASE)
+NOME_LOG = re.compile(r"(?P<base>[^/]+)\.(?:logjez|jez)$", re.IGNORECASE)
+SECAO_NO_NOME = re.compile(r"(?P<mun>\d{5})(?P<zona>\d{4})(?P<secao>\d{4})(?:\D[^/]*)?\.(?:logjez|jez)$", re.IGNORECASE)
 DIGITOS = re.compile(r"\d+")
 FORMATO_DATA = "%d/%m/%Y %H:%M:%S"
 
