@@ -124,3 +124,77 @@ dois caminhos, ambos a decidir **antes do congelamento**:
    Estudo 03.
 3. Estender o placebo 2T2024 aos demais municipios com 2o turno (51 no pais),
    para estimar a heterogeneidade entre municipios exigida pelo plano de poder.
+
+## 8 Extensao nacional do placebo 2T2024 (todos os municipios com 2o turno)
+
+Atualizacao de 29/10/2026. Arquivos transmitidos do 2T2024 das 20 UFs que tiveram
+2o turno (51 municipios), processados um a um e apagados apos a extracao. URL,
+Last-Modified e SHA-256 de cada arquivo: `resultados/manifesto_arqurna_2T2024.tsv`.
+Fonte dos votos e do local: imagem do BU (validada contra `votacao_secao` em
+Palmas: 0 divergencias em 629 secoes). Desfecho: fracao do vencedor de cada
+municipio nos votos validos da secao. Verificacoes de coerencia da emenda 01
+aplicadas.
+
+### 8.1 Cobertura e exclusoes
+
+| Item | Valor |
+|---|---:|
+| Secoes extraidas | 97.391 |
+| Excluidas: votos no log diferentes do comparecimento do BU | 132 |
+| Excluidas: campo de horario ausente | 5 |
+| Secoes usadas | 97.254 |
+
+Nas 135 secoes em que o log tem menos votos que o BU (132 excluidas por esse
+motivo e 3 entre as de campo ausente), o log comeca no meio do dia (exemplo:
+primeiro voto as 14h55 em secao com 332 votantes). O padrao e compativel com
+substituicao de urna, caso que a emenda 01 (secao 3, item 5) ja manda tratar
+como indeterminado. Nao foi verificado individualmente.
+
+### 8.2 Horarios (relogio da urna, classe I)
+
+| Evento | > 17h00 | > 17h10 | > 18h | > 19h | Maximo |
+|---|---:|---:|---:|---:|---|
+| Ultimo voto computado | 9.059 | 13 | 0 | 0 | 17:57:54 |
+| Fechamento da UE (BU) | 88.847 | 747 | 3 | 0 | 18:07:13 |
+
+O fechamento depois das 17h00 ocorre em 91% das secoes (em Palmas, 100%). Em 2024
+nao houve secao com ultimo voto depois das 19h: os cortes primario (> 19h) e
+secundario (> 17h10, 13 secoes) sao **nao estimaveis** neste placebo. Apenas o
+contraste de fila (ultimo voto > 17h00) e estimavel.
+
+### 8.3 Contraste de fila dentro do local de votacao
+
+| Medida | Valor |
+|---|---|
+| beta (fila x sem fila, efeito fixo de local) | -0,06 p.p. |
+| Erro-padrao agrupado por local | 0,046 p.p. |
+| IC 95% | -0,15 a +0,03 p.p. |
+| Locais informativos / secoes informativas / tratadas | 4.614 / 55.472 / 9.020 |
+| Municipios / municipios com secoes tratadas | 51 / 47 |
+| Efeito minimo detectavel (80%, alfa 5%) | cerca de 0,13 p.p. |
+
+Heterogeneidade entre os 47 municipios com ao menos 10 locais informativos:
+Q de Cochran = 40,3 com 46 graus de liberdade, I2 = 0%. A dispersao das
+estimativas municipais (desvio-padrao 0,49 p.p.) e compativel com erro amostral.
+
+### 8.4 Leitura
+
+1. Num pleito sem prorrogacao, secoes com fila nao diferem, em composicao de
+   votos, das demais secoes do mesmo local. O desenho nao gera falso positivo
+   neste placebo.
+2. Com escala nacional, o desenho detecta diferencas da ordem de 0,1 a 0,2 p.p.
+   no contraste de fila; esse valor alimenta o plano de poder do E05-0.
+3. O placebo nao informa sobre os cortes de 17h10 e 19h, que nao ocorreram em
+   2024. O poder para o contraste primario do 2T2026 dependera do numero de
+   secoes com ultimo voto depois das 19h, ainda nao observado (D4).
+4. Todos os horarios sao do relogio da urna; vale a limitacao descrita no
+   README do Estudo 05.
+
+## 9 Placebo 1T2026: trava acionada
+
+O arquivo `bu_imgbu_logjez_rdv_vscmr_2026_1t_TO.zip` (Last-Modified 22/10/2026)
+foi bloqueado pela trava da emenda 01 (secao 5.2): 14 de 4.384 logs tem eventos
+entre 05/10 e 12/10/2026. Nenhum evento em ou apos 25/10/2026. So as datas foram
+contadas; o arquivo foi apagado sem analise. Usar os arquivos do 1T2026 exige
+emenda que troque o criterio por "nenhum evento em ou apos 25/10/2026". TO esta
+excluido das analises confirmatorias do Estudo 05 pela emenda 02.

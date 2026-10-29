@@ -1,0 +1,26 @@
+{
+  "estimavel": true,
+  "beta": -0.0006160901386244497,
+  "se_cluster": 0.00045902944047536155,
+  "ic95": [
+    -0.0015157878419561582,
+    0.0002836075647072589
+  ],
+  "locais_informativos": 4614,
+  "secoes_informativas": 55472,
+  "secoes_tratadas": 9020,
+  "rotulo": "2T2024_nacional",
+  "campo_horario": "ultimo_voto_log",
+  "limiar": "17:00:00",
+  "candidato": "vencedor",
+  "secoes_usadas": 97254,
+  "perdas": {
+    "incoerente_log_x_bu": 132,
+    "incoerente_campo_ausente": 5
+  },
+  "tratadas_total": 9046,
+  "municipios": 51,
+  "municipios_com_tratadas": 47,
+  "classe_relogio": "I (urna)",
+  "status": "EXPLORATORIO_PLACEBO"
+}
