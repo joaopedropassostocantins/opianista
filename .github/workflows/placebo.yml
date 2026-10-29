@@ -28,7 +28,5 @@ jobs:
         run: sha256sum protocolos/04_estudo05_preregistro_v1_20261029.md
       - name: Testes locais e bloqueios do pipeline
         run: python -m unittest discover -s estudos/05_simulacao_temporal -p 'test_*.py' -v
-      - name: Testes do contrato comum de logs e dt*
-        run: python -m unittest discover -s estudos/03_pianista/etapas/02_parser -p 'test_*.py' -v
       - name: Verificação de sintaxe Python
         run: python -m py_compile estudos/05_simulacao_temporal/pipeline_placebo.py

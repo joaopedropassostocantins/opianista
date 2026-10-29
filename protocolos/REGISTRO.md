@@ -48,7 +48,7 @@ A entrega 02 é adicional e não reconstitui nem substitui o arquivo histórico 
 
 | Ordem | Arquivo | Data (UTC) | SHA-256 | Situação |
 |---|---|---|---|---|
-| 04 | `protocolos/04_estudo05_preregistro_v1_20261029.md` | 2026-10-29 | `9c6aaad29074c854982561a054d8bec726fb0cbb5820b311111ea55afc34e142` | **Texto congelado e registrado em branch/PR; aprovação humana E05-0 PENDENTE; abertura de microdados 2T2026 bloqueada por D4/1.6 do Estudo 03.** |
+| 05 | `protocolos/04_estudo05_preregistro_v1_20261029.md` | 2026-10-29 | `9c6aaad29074c854982561a054d8bec726fb0cbb5820b311111ea55afc34e142` | Pre-registro E05-0, aprovado (ver Aprovacoes de GATE). Renumerado de 04 para 05 neste indice em 29/10/2026, porque a ordem 04 ja estava ocupada pela Emenda 02 do Estudo 03; o arquivo nao foi alterado. |
 
 O SHA-256 foi computado por `sha256sum` no GitHub Actions (run 40820750825). Esta entrada não é declaração de aprovação do proponente e não supera o bloqueio D4. O texto já explicita o contato prévio com totais nacionais e contagens agregadas de horário, portanto a qualificação de "pré" limita-se aos microdados de seção ainda não abertos por este estudo. Após aprovação, qualquer modificação dependerá de emenda datada, sem sobrescrever a versão registrada.
 
@@ -66,12 +66,18 @@ de 2026.
 
 | Ordem | Arquivo | Data (UTC) | SHA-256 | Situacao |
 |---|---|---|---|---|
-| 05 | `protocolos/05_emenda01_estudo05_20261029.md` | 2026-10-29 | `eb5144a95b8b7c47498eff69813bb2a856b831d71772d74645400d22d0ce0861` | Emenda 01 ao E05-0: encerramento pelo ultimo voto, analise P-I condicional ao relogio da urna, verificacoes de coerencia, placebos e pedido LAI |
+| 06 | `protocolos/05_emenda01_estudo05_20261029.md` | 2026-10-29 | `eb5144a95b8b7c47498eff69813bb2a856b831d71772d74645400d22d0ce0861` | Emenda 01 ao E05-0: encerramento pelo ultimo voto, analise P-I condicional ao relogio da urna, verificacoes de coerencia, placebos e pedido LAI |
 
 | Estudo | Gate | Versao aprovada | Data | Aprovado por |
 |--------|------|-----------------|------|--------------|
-| 05 Coortes de encerramento tardio | GATE E05-0 | Entrada 04 (SHA-256 9c6aaad2...afc34e142) com a emenda 01 (entrada 05) | 2026-10-29 | Proponente (joaopedropassostocantins), mensagem "Tudo aprovado" na sessao de trabalho |
+| 05 Coortes de encerramento tardio | GATE E05-0 | Entrada 05 (SHA-256 9c6aaad2...afc34e142) com a emenda 01 (entrada 06) | 2026-10-29 | Proponente (joaopedropassostocantins), mensagem "Tudo aprovado" na sessao de trabalho |
 
-A aprovacao do E05-0 nao desbloqueia o 2T2026: o bloqueio D4 depende do item 1.6
-do Estudo 03 (emenda com dt*, diagnostico de poder e lista de municipios), que
-ainda nao foi redigido.
+Atualizacao de 29/10/2026: o item 1.6 do Estudo 03 foi cumprido para o piloto do
+Tocantins (Emenda 02 do Estudo 03, entrada 04, incorporada com o PR #4). Para as demais
+UFs, o Estudo 03 ainda depende de uma emenda nacional (dt* com todas as UFs). A liberacao
+dos microdados do 2T 2026 para o Estudo 05 continua sendo decisao do proponente (D4 em
+PLANEJAMENTO.md).
+
+| Ordem | Arquivo | Data (UTC) | SHA-256 | Situacao |
+|---|---|---|---|---|
+| 07 | `protocolos/07_emenda02_estudo05_exposicao_TO_20261029.md` | 2026-10-29 | `55aff69832263cae05c15e4d33880eeda3d8fe09f04ec50e619fff358ccdaddf` | Emenda 02 ao E05-0: declara a exposicao aos microdados do Tocantins e exclui TO das analises confirmatorias do Estudo 05 |
