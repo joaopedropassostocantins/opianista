@@ -23,10 +23,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Install pinned dependencies
-        run: npm install --no-audit --no-fund
-      - name: Export dependency lock for repository reproducibility
-        run: base64 -w0 package-lock.json | sed 's/^/OPIANISTA_LOCKFILE_B64:/'
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+      - name: Install from committed lockfile
+        run: npm ci --no-audit --no-fund
       - name: Type checking
         run: npm run typecheck
       - name: Unit and integrity tests
