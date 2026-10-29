@@ -31,8 +31,8 @@ export const studies: Study[] = [
   },
   {
     number: 5,
-    title: { pt: "Simulação temporal e subsistemas", en: "Temporal and subsystem simulation" },
-    question: { pt: "O que podemos verificar ao confrontar horários, registros e relatórios de 17h a 19h?", en: "What can be verified when comparing times, events and reports from 5 p.m. to 7 p.m.?" },
+    title: { pt: "Urnas de encerramento tardio: BU integral e relógio", en: "Late-closing sections: full BU and clock integrity" },
+    question: { pt: "Qual o perfil de TODOS os votos das seções que encerraram tardiamente, e como verificar seus horários?", en: "What is the profile of ALL votes in late-closing sections, and how trustworthy are their timestamps?" },
     status: "exploratorio",
     repositoryPath: "estudos/05_simulacao_temporal/README.md"
   }

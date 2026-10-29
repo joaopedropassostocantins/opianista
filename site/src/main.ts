@@ -5,6 +5,7 @@ import "./styles/components.css";
 import "./styles/responsive.css";
 import "./styles/lab.css";
 import "./styles/integrity.css";
+import "./styles/cohort.css";
 import { getLanguage } from "./app/router.ts";
 import { enhanceAccessibility } from "./app/accessibility.ts";
 import { Header } from "./components/Header.ts";
@@ -19,6 +20,7 @@ import { SourceList } from "./components/SourceList.ts";
 import { Footer } from "./components/Footer.ts";
 import { TemporalSimulator, attachTemporalSimulator } from "./components/TemporalSimulator.ts";
 import { IntegrityAudit, attachIntegrityAudit } from "./components/IntegrityAudit.ts";
+import { LateClosureCohorts, attachLateClosureCohorts } from "./components/LateClosureCohorts.ts";
 import { studies } from "./content/studies.ts";
 import { evidence } from "./content/evidence.ts";
 
@@ -43,8 +45,9 @@ app.innerHTML = [
   ...studies.map(s => StudyCard(s, lang)),
   '</div></div></section>',
   StatusTimeline(lang),
-  TemporalSimulator(lang),
+  LateClosureCohorts(lang),
   IntegrityAudit(lang),
+  TemporalSimulator(lang),
   '<section class="section" id="evidencias"><div class="container">',
   '<div class="section-top"><p class="eyebrow">05 / ' + (lang === "pt" ? "TEORIA DA PROVA" : "EVIDENCE THEORY") + '</p><h2>' +
     (lang === "pt" ? "O que cada evidência realmente permite concluir" : "What each evidence type can actually support") +
@@ -58,3 +61,4 @@ app.innerHTML = [
 enhanceAccessibility();
 attachTemporalSimulator(lang);
 attachIntegrityAudit(lang);
+attachLateClosureCohorts(lang);

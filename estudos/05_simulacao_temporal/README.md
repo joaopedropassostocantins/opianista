@@ -1,6 +1,12 @@
-# Estudo 05 — simulação temporal dos eventos, logs e relatórios (17h–19h)
+# Estudo 05 — coortes de urnas, horários e integridade da contabilização
 
 **Status:** exploratório; criado em 29/10/2026. Este novo estudo não modifica pré-registros aprovados dos Estudos 01 ou 03.
+
+## Escopo prioritário corrigido — leitura obrigatória
+
+O foco principal é a **TOTALIDADE DOS VOTOS das seções/urnas que encerraram tardiamente**, e NÃO os votos computados após as 17h. A pergunta metodológica passa a ser: *a composição de todos os votos dessas seções, selecionadas com cronologia verificável, difere de controles comparáveis?* Em paralelo, os registros temporais internos podem ser não independentes da própria hipótese de comprometimento. O horário isolado de emissão do BU ou recepção não é prova de votação em andamento. Consultar [o desenho de coortes e relógio não confiável](COORTES_HORARIO_NAO_CONFIAVEL.md).
+
+O TSE publicou em 28/10/2026: **497.333 seções com encerramento depois das 17h, 24.268 depois das 17h10 e 6.766 depois das 19h.** São contagens de **seções, não de votos**. A extensão até 19h por si não prova alteração do relógio ou da contagem. O estudo conserva um laboratório de eventos após 17h somente como demonstração secundária das etapas de fechamento, não como métrica confirmatória.
 
 ## Pergunta
 

@@ -45,6 +45,10 @@ A página é um ensaio de teoria da prova e um painel de pesquisa em andamento. 
 
 A nova seção interativa apresenta sequência de eventos, log e BU **fictícios**, com cenários de encerramento regular, fila, extensão válida até 19h e lacuna artificial de log, além de evento fictício posterior ao encerramento. A referência técnica é uma reconstrução do VOTA de **desenvolvimento web**; o laboratório **não executa o VOTA, não reproduz o comportamento da urna lacrada e não demonstra vulnerabilidade**. Ver [Estudo 05](../estudos/05_simulacao_temporal/README.md).
 
+### Prioridade máxima — coortes de urnas, não votos depois das 17h
+
+O módulo [Estudo 05](../estudos/05_simulacao_temporal/COORTES_HORARIO_NAO_CONFIAVEL.md) seleciona urnas/seções **pela hora de encerramento**, avaliando **TODOS os votos presentes no BU integral** daquelas urnas. O laboratório apresenta classes >17h10 e >19h e compara o relógio interno (potencialmente não independente) a uma confirmação externa fictícia. Não classifica votos por horário individual; não presume capacidade real de alterar relógio ou BU. O TSE informou 497.333 seções encerradas depois das 17h, 24.268 depois das 17h10 e 6.766 depois das 19h; esses números se referem a **seções**, não votos, e incluem etapas de fechamento administrativo.
+
 ### Prioridade máxima — insider e totalização
 
 O site também contém um comparador independente, com quatro conjuntos de dados **inteiramente fictícios**, para contrastar **registro de origem → BU local → BU público → totalização central**. A análise distingue adulteração hipotética a montante e divergência hipotética a jusante, sem executar código eleitoral ou manipular assinaturas. O modelo deixa explícito que coerência de arquivos de origem comum não prova a intenção do eleitor e que uma referência independente completa do voto secreto não existe para o pleito real. Cinco componentes técnicos são rastreados até arquivos da reconstrução pública do VOTA.

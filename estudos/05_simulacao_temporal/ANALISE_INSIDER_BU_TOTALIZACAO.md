@@ -2,6 +2,10 @@
 
 **29/10/2026 — investigação exploratória e modelagem de ameaças.** Não modifica pré-registros congelados dos Estudos 01 e 03. Não constitui conclusão de fraude ou demonstração de vulnerabilidade.
 
+## Esclarecimento obrigatório de escopo
+
+A amostra prioritária compreende seções com encerramento registrado tardiamente. **O resultado sob análise é a TOTALIDADE dos votos de cada seção selecionada, ainda que tenham sido lançados antes de 17h.** Eventos registrados após 17h, usados anteriormente no simulador, são apenas material explicativo sobre a sequência de procedimentos. O estudo deve validar a classificação das seções diante da hipótese de relógio/log não confiável; não presumir que houve adulteração dos horários. Especificação: [COORTES_HORARIO_NAO_CONFIAVEL.md](COORTES_HORARIO_NAO_CONFIAVEL.md).
+
 ## Pergunta principal
 
 A extensão excepcional de votação até 19h nas seções ainda abertas às 17h permitiria, ou coincidiria com, uma condição de software em que:

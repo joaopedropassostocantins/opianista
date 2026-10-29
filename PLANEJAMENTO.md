@@ -113,7 +113,12 @@ linguagem e referencias.
 | Licenca dos logs do 2T 2026 nao declarada | Nao redistribuir dados; publicar so agregados e codigo |
 | Leitura publica de resultados parciais como conclusao | Aviso no README; relatorios so apos red team |
 
-## 7 Prioridade maxima - Estudo 05 (insider, BU e totalizacao)
+## 7 Prioridade maxima - Estudo 05 (urnas de encerramento tardio, BU integral, relogio e insider)
+
+**Reorientacao de 29/10/2026:** a unidade de analise e a **secao/urna que encerrou tarde**; analisar **TODOS os votos** de cada BU dessa coorte, sem limitar a votos registrados depois das 17h. O horario registrado na propria urna e uma observacao interna com confiabilidade a validar, nao uma fonte independente. A pergunta "e se o relogio puder ser alterado?" torna obrigatoria a triangulacao por observacoes externas e testes de sensibilidade; nenhuma alteracao intencional foi demonstrada. O simulador de votos apos 17h e apenas educativo, subordinado ao novo painel de coortes.
+
+Dados publicados TSE (28/10/2026): 497.333 secoes encerradas depois de 17h; 24.268 apos 17h10; **6.766 apos 19h**. Estes numeros contam secoes, nao votos, e podem abranger procedimentos de encerramento apos o ultimo voto. Consultar [plano revisado](estudos/05_simulacao_temporal/COORTES_HORARIO_NAO_CONFIAVEL.md). Metodo historico principal para cadencia: **segundos turnos municipais**, nunca turnos presidenciais como paradigma de fila.
+
 
 **Novo estudo exploratorio:** [simulacao temporal](estudos/05_simulacao_temporal/README.md) e [analise de origem e totalizacao](estudos/05_simulacao_temporal/ANALISE_INSIDER_BU_TOTALIZACAO.md).
 
