@@ -10,6 +10,23 @@ Revisão metodológica (identificabilidade, materialidade, desenho por local de 
 
 Primeiro placebo executado (2T2024, Palmas), validação de esquema e inventário de fontes de horário: [RESULTADO_PLACEBO_2T2024_TO_20261029.md](RESULTADO_PLACEBO_2T2024_TO_20261029.md).
 
+## Limitação central: o horário vem do relógio da própria urna
+
+A análise principal adotada (emenda 01, análise P-I) classifica cada seção pelo horário do último voto registrado no log da urna. Não existe, em dados públicos, outra fonte desse horário para todas as seções.
+
+O que a análise **pode** mostrar:
+
+1. Se as seções que, segundo a urna, votaram até mais tarde têm composição de votos diferente das seções do mesmo local que encerraram no horário.
+2. Se os registros da urna são coerentes entre si (votos no log iguais ao comparecimento do BU; fechamento igual ao encerramento confirmado; ordem dos eventos).
+
+O que a análise **não pode** mostrar:
+
+1. Que o horário registrado corresponde ao horário real. Um relógio errado, ou um software que registrasse horários incorretos, produziria registros coerentes entre si e passaria em todas as verificações internas.
+2. Que um comprometimento do software não ocorreu. Se ele atingisse todas as urnas igualmente, as seções tardias e as de controle seriam afetadas da mesma forma e a comparação daria resultado nulo.
+3. Causalidade. Seções com fila são diferentes por natureza (maiores, mais urbanas); o efeito fixo de local reduz, mas não elimina, essa diferença.
+
+Por isso, todo resultado da análise P-I é apresentado com a frase: "válido sob a hipótese de que o relógio e o log da urna registram corretamente o horário dos eventos". A única forma de remover essa condição é uma fonte externa (horário de recebimento do BU pelo TSE e atas das mesas), objeto do pedido de acesso à informação em [PEDIDO_LAI_TSE_20261029.md](PEDIDO_LAI_TSE_20261029.md).
+
 **Bloqueio (decisão D4, 29/10/2026):** a análise empírica com dados do 2º turno de 2026 só começa após a aprovação do item 1.6 do Estudo 03. Até lá: desenho, pré-registro, código com dados sintéticos e placebo em eleições já abertas.
 
 O TSE publicou em 28/10/2026: **497.333 seções com encerramento depois das 17h, 24.268 depois das 17h10 e 6.766 depois das 19h.** São contagens de **seções, não de votos**. A extensão até 19h por si não prova alteração do relógio ou da contagem. O estudo conserva um laboratório de eventos após 17h somente como demonstração secundária das etapas de fechamento, não como métrica confirmatória.
