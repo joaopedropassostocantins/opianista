@@ -28,9 +28,16 @@ Painel de coordenacao: [PLANEJAMENTO.md](PLANEJAMENTO.md).
 protocolos/     pre-registros e emendas (imutaveis), com hashes
 estudos/        um diretorio por estudo
 didatico/       material de aula, separado da pesquisa
+site/           site editorial independente (Vite + TypeScript)
 .github/        modelos de issue e de pull request
 data/           dados brutos (fora do Git)
 ```
+
+## Site editorial
+
+A aplicacao em [site/](site/) e independente de `estudos/` e `protocolos/`: apresenta a tese do Arquiteto-Fiscal, acompanha o status dos estudos e encaminha os leitores aos documentos canonicos. Nao e resultado pericial. Foi implementada a partir do texto-base preservado; o codigo-fonte original do ChatGPT Sites nao foi exportado.
+
+Para desenvolver: `cd site && npm ci && npm run dev`. Para validar: `npm run typecheck && npm test && npm run build`. A publicacao nao e automatica.
 
 ## Como participar
 
