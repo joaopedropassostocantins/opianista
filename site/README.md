@@ -22,7 +22,7 @@ npm test
 npm run build
 ```
 
-O projeto usa dependências fixadas no package.json; o lockfile deve ser gerado e incorporado antes do deploy de produção e a CI deverá então usar `npm ci`.
+O projeto usa dependências fixadas em `package.json` e lockfile versionado; a CI instala com `npm ci` para builds reprodutíveis.
 
 ## Estrutura
 
