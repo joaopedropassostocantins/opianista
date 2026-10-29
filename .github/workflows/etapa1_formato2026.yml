@@ -1,0 +1,47 @@
+name: Etapa 1 - formato dos arquivos de 2026 (1T)
+on:
+  push:
+    branches: [etapa1-pipeline]
+    paths: [".github/workflows/etapa1_formato2026.yml"]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  formato:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get install -y -q p7zip-full poppler-utils zstd file >/dev/null
+      - name: Baixa uma secao do 1T 2026 e examina
+        run: |
+          mkdir -p out s && cd s
+          B=https://resultados.tse.jus.br/oficial/ele2026/arquivo-urna/3220/dados/to/73130/0033/0053
+          curl -sS -m 60 -o aux.json "$B/p003220-to-m73130-z0033-s0053-aux.json"
+          H=$(python3 -c "import json;d=json.load(open('aux.json'));print(d['hashes'][-1]['hash'])")
+          for f in o03220to7313000330053-log.jez o03220to7313000330053-bu.dat; do curl -sS -m 60 -o $f "$B/$H/$f"; done
+          {
+          for f in *.jez *.dat; do echo "== $f"; ls -l $f; file $f; xxd $f | head -4; done
+          echo "== 7z l"; 7z l o03220to7313000330053-log.jez 2>&1 | tail -15
+          echo "== zstd"; zstd -t o03220to7313000330053-log.jez 2>&1 | tail -2
+          } > ../out/formato.txt 2>&1
+          mkdir -p x && (cd x && 7z x -y ../o03220to7313000330053-log.jez >/dev/null 2>&1; ls -la; for g in *; do file "$g"; head -c 300 "$g" | iconv -f latin1 -t utf8 | sed -E 's/[0-9]/#/g'; echo; done) >> ../out/formato.txt 2>&1
+      - name: Leiame do pacote do 1T 2026 (TO)
+        run: |
+          cd s
+          curl -sS -m 900 -r 0-0 -o /dev/null -w "range=%{http_code}\n" https://cdn.tse.jus.br/estatistica/sead/eleicoes/eleicoes2026/arqurnatot/bu_imgbu_logjez_rdv_vscmr_2026_1t_TO.zip >> ../out/formato.txt
+      - name: Publica saidas
+        if: always()
+        run: |
+          mkdir -p pub && cd pub
+          git init -q -b saidas-actions
+          git config user.name "opianista-actions"
+          git config user.email "actions@users.noreply.github.com"
+          git remote add origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          for i in 1 2 3 4 5; do
+            git fetch -q origin saidas-actions && git checkout -q -B saidas-actions FETCH_HEAD || git checkout -q -B saidas-actions
+            mkdir -p formato2026 && cp -r ../out/* formato2026/
+            git add -A && git commit -qm "Formato 2026 (run ${{ github.run_id }})" || true
+            git push -q origin saidas-actions && break
+            sleep 7
+          done
