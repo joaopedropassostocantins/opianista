@@ -59,7 +59,7 @@ Problemas a corrigir antes de qualquer `--download`:
 5. Menor: `zipfile` importado e nao usado; falta teste com resposta simulada da
    API.
 
-### 3.2 Branch `handoff-cadencia-site-20261029` (sem PR aberto)
+### 3.2 PR #2 - branch `handoff-cadencia-site-20261029`
 
 Contribuicao produzida em outra ferramenta, com dois blocos:
 
@@ -89,8 +89,8 @@ linguagem e referencias.
 
 | No | Decisao | Opcoes |
 |----|---------|--------|
-| D1 | Destino da branch de cadencia | (a) PR como submodulo exploratorio em `estudos/03_pianista/contribuicoes/`; (b) estudo separado (05); (c) nao incorporar |
-| D2 | Site Arquiteto-Fiscal | (a) so link para o original; (b) HTML no repositorio sem publicacao; (c) publicar via GitHub Pages |
+| D1 | Destino do modulo de cadencia (PR #2) | (a) PR como submodulo exploratorio em `estudos/03_pianista/contribuicoes/`; (b) estudo separado (05); (c) nao incorporar |
+| D2 | Site Arquiteto-Fiscal (PR #2; HTML autocontido, sem recursos externos) | (a) so link para o original; (b) HTML no repositorio sem publicacao; (c) publicar via GitHub Pages |
 | D3 | Fluxo de trabalho no main | Exigir pull request para alteracoes no main (recomendado: ja houve dois commits diretos) |
 
 ## 5 Pendencias de documentos
