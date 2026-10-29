@@ -1,0 +1,34 @@
+name: Sonda TSE
+on:
+  push:
+    branches: [etapa1-pipeline]
+    paths: [".github/workflows/sonda_tse.yml"]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  sonda:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Consulta a API CKAN do TSE
+        run: |
+          set -u
+          for q in "resultados-2026-arquivos-transmitidos-para-totalizacao" "resultados-2022-arquivos-transmitidos-para-totalizacao"; do
+            echo "== $q"
+            curl -sS -m 60 "https://dadosabertos.tse.jus.br/api/3/action/package_show?id=$q" -o "$q.json" -w "http=%{http_code}\n" || true
+            python3 - "$q.json" <<'PY'
+          import json, sys
+          try:
+              d = json.load(open(sys.argv[1]))
+          except Exception as e:
+              print("sem json:", e); sys.exit(0)
+          r = d.get("result", {})
+          print("titulo:", r.get("title"), "| licenca:", r.get("license_id"), "| recursos:", len(r.get("resources", [])))
+          for x in r.get("resources", []):
+              print(" -", x.get("name"), "|", x.get("format"), "|", x.get("size"), "|", x.get("url"))
+          PY
+          done
+      - name: Testa cabecalho de um recurso
+        run: |
+          curl -sSI -m 60 "https://cdn.tse.jus.br/estatistica/sead/eleicoes/eleicoes2022/arqurnatot/bu_imgbu_logjez_rdv_vscmr_2022_2t_TO.zip" | head -15 || true
