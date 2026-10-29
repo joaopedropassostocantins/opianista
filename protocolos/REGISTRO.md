@@ -31,3 +31,13 @@ os arquivos de log do 2o turno de 2026 ainda nao estavam publicados. Nenhum
 teste confirmatorio foi executado. Conclusao registrada: o desenho nao teve
 dados para decidir; a hipotese permanece nao testada e o pre-registro continua
 valido.
+
+
+## Nova entrega registrada em 2026-10-29
+
+| Ordem | Arquivo | Data (UTC) | SHA-256 | Situação |
+|-------|---------|------------|---------|----------|
+| 02 | `estudos/03_pianista/etapas/00_protocolo/02_protocolo_preregistro_etapa0_20261029.md` | 2026-10-29 | `160fca67437e45e4d269f728ee495202b60edddbb44582808269625be94ff05f` | GATE 0: aguardando aprovação humana |
+| 02a | `estudos/03_pianista/etapas/00_protocolo/02_checklist_etapa0_20261029.md` | 2026-10-29 | `807e87210dace19b42639dd38c56f389251cb85e2f122fd54484d78e4e8e6284` | Checklist da entrega 02 |
+
+A entrega 02 é adicional e não reconstitui nem substitui o arquivo histórico `00_preregistro.md` mencionado acima.

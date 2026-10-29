@@ -35,3 +35,13 @@ etapas/00_protocolo ... 07_relatorio
 | 7     | Relatorio   | Pendente |
 
 O parser de logs (Etapa 2) e compartilhado com o Estudo 01.
+
+
+## Nova entrega da Etapa 0 — 2026-10-29
+
+Foi acrescentado o protocolo produzido nesta execução em:
+
+- `etapas/00_protocolo/02_protocolo_preregistro_etapa0_20261029.md`
+- `etapas/00_protocolo/02_checklist_etapa0_20261029.md`
+
+Esta entrega é um artefato adicional e não substitui o pré-registro histórico nem a Emenda 01. O documento permanece em **GATE 0**, aguardando aprovação humana explícita. Nenhum dado-alvo foi aberto nesta execução.
