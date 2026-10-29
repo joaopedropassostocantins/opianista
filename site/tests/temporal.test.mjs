@@ -54,6 +54,16 @@ test("artificial log loss is detected without any claim about real machines",()=
   assert.ok(Object.values(scenarioDescriptions).every(s=>s.pt.length && s.en.length));
 });
 
+test("artificial event after closing is flagged and does not alter BU snapshot",()=>{
+  const original=runSimulation("prorrogacao",minuteOf("19:07"));
+  const altered=runSimulation("sequencia_invalida",minuteOf("19:07"));
+  assert.equal(altered.bu.total,original.bu.total);
+  assert.equal(altered.totals.B,original.totals.B+1);
+  assert.equal(altered.checks.find(x=>x.id==="VOTO_APOS_ENCERRAMENTO").status,"alerta");
+  assert.equal(altered.checks.find(x=>x.id==="CONTAGEM_BU_SINTETICO").status,"alerta");
+  assert.equal(original.checks.find(x=>x.id==="CONTAGEM_BU_SINTETICO").status,"ok");
+});
+
 test("separate exploratory study is documented",()=>{
   assert.ok(existsSync(resolve("..","estudos/05_simulacao_temporal/README.md")));
   assert.ok(existsSync(resolve("..","estudos/05_simulacao_temporal/MATRIZ_VERIFICACAO.md")));

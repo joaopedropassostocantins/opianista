@@ -3,7 +3,7 @@
  * NÃO executa, reproduz nem valida o binário de produção do TSE ou a build WASM.
  * Relatórios e linhas de log são inventados para exercitar consistência.
  */
-export type Scenario = "regular" | "fila" | "prorrogacao" | "discordancia";
+export type Scenario = "regular" | "fila" | "prorrogacao" | "discordancia" | "sequencia_invalida";
 export type EventKind = "situacao" | "fila" | "extensao" | "voto" | "fechamento" | "bu" | "relatorio" | "verificacao" | "sistema";
 export interface ModelEvent {
   minute: number;
@@ -85,12 +85,14 @@ const discrepancy: ModelEvent[] = extension.map(e =>
     ? {...e, log:false, details:"Evento contabilizado no modelo, mas linha didática foi suprimida para testar a auditoria."}
     : e
 );
-const scenarioTail: Record<Scenario, ModelEvent[]> = { regular, fila, prorrogacao:extension, discordancia:discrepancy };
+const postClosing: ModelEvent[] = [...extension, ev("19:07","voto","Evento de voto pós-fechamento (injetado pelo simulador)","Anomalia proposital em um modelo fictício; não descreve comportamento de urna real.",true,"B")];
+const scenarioTail: Record<Scenario, ModelEvent[]> = { regular, fila, prorrogacao:extension, discordancia:discrepancy, sequencia_invalida:postClosing };
 export const scenarioDescriptions: Record<Scenario, { pt:string; en:string }> = {
   regular: {pt:"17h: sem fila e encerramento regular", en:"5 p.m.: no queue, normal closing"},
   fila: {pt:"Fila com senhas: votos após 17h", en:"Queue with tickets: votes after 5 p.m."},
   prorrogacao: {pt:"Extensão excepcional até 19h", en:"Exceptional extension to 7 p.m."},
-  discordancia: {pt:"Extensão com lacuna artificial de log", en:"Extension with artificial log gap"}
+  discordancia: {pt:"Extensão com lacuna artificial de log", en:"Extension with artificial log gap"},
+  sequencia_invalida: {pt:"Evento artificial depois do encerramento", en:"Artificial event after closing"}
 };
 
 const initial = { A:102, B:99, BRANCO:3, NULO:2 } as const;
@@ -106,12 +108,15 @@ export function runSimulation(scenario:Scenario, minute:number):SimulationState 
   const buEvent=displayEvents.find(e=>e.kind==="bu");
   const loggedVotes=displayEvents.filter(e=>e.kind==="voto" && e.log).length;
   const votedAfterStart=displayEvents.filter(e=>e.kind==="voto").length;
-  const bu=buEvent ? {minute:buEvent.minute,total:total(votes),votes:{...votes}} : null;
+  // Snapshot: o relatório não se modifica retroativamente quando o modelo recebe evento posterior.
+  const votesAtBu: Record<"A"|"B"|"BRANCO"|"NULO",number> = {...initial};
+  if(buEvent) for(const e of displayEvents){if(e.kind==="voto" && e.vote && e.minute<=buEvent.minute)votesAtBu[e.vote]++;}
+  const bu=buEvent ? {minute:buEvent.minute,total:total(votesAtBu),votes:{...votesAtBu}} : null;
   const closed=Boolean(displayEvents.find(e=>e.kind==="verificacao"));
   const hasExtension=displayEvents.some(e=>e.kind==="extensao");
   let state:SimulationState["state"]="ABERTA";
   if(scenario==="fila" && minute>=minuteOf("17:00") && !close)state="CONTINUIDADE_FILA";
-  if((scenario==="prorrogacao" || scenario==="discordancia") && hasExtension && !close)state="JANELA_EXCEPCIONAL";
+  if((scenario==="prorrogacao" || scenario==="discordancia" || scenario==="sequencia_invalida") && hasExtension && !close)state="JANELA_EXCEPCIONAL";
   if(close)state=closed?"ENCERRADA":"ENCERRANDO";
   const logLines=displayEvents.filter(e=>e.log).map(e=>"["+hhmm(e.minute)+":00] SIM|"+e.kind.toUpperCase()+"|"+e.title);
   const checks:AuditCheck[]=[
@@ -119,6 +124,8 @@ export function runSimulation(scenario:Scenario, minute:number):SimulationState 
       explanation:bu?(loggedVotes===votedAfterStart?"Correspondência no contrato didático 1 evento = 1 linha. Não se deve presumir esse contrato nos logs oficiais.":"A lacuna artificial foi detectada. Não é evidência de falha ou fraude da urna real."):"Aguardando elaboração do BU no cenário."},
     {id:"VOTO_APOS_ENCERRAMENTO",status:close ? (displayEvents.some(e=>e.kind==="voto" && e.minute>=close.minute)?"alerta":"ok"):"nao_avaliado",
       explanation:close?"Checagem de ordem temporal em eventos sintéticos.":"Encerramento ainda não iniciado."},
+    {id:"CONTAGEM_BU_SINTETICO",status:bu?(total(votes)===bu.total?"ok":"alerta"):"nao_avaliado",
+      explanation:bu?(total(votes)===bu.total?"O relatório fictício coincide com o total do modelo no momento exibido.":"Evento artificial posterior à elaboração do BU gera diferença no modelo. Não representa urna real."):"Sem relatório, comparação não aplicável."},
     {id:"LIMITE_HORARIO",status:displayEvents.some(e=>e.kind==="voto" && e.minute>minuteOf("17:00") && scenario==="regular")?"alerta":"ok",
       explanation:"Votos após 17h exigem contexto normativo: fila já existente ou autorização excepcional; horário isolado não demonstra irregularidade."},
     {id:"ARQUIVOS_ASSINATURA",status:"nao_avaliado",explanation:"O simulador não gera BU, RDV nem assinaturas criptográficas reais; hashes e assinaturas devem ser avaliados em documentos oficiais."}

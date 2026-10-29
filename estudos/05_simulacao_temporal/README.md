@@ -39,9 +39,9 @@ Foram examinados no repositório público:
 ## Produto implementado
 
 O site apresenta um laboratório interativo que percorre 16:55–19:15 e mostra:
-- Cenário regular sem fila; continuação dos eleitores que já estavam na fila; extensão excepcional assumida válida; e extensão com lacuna de log **artificialmente criada no modelo**.
+- Cenário regular sem fila; continuação dos eleitores que já estavam na fila; extensão excepcional assumida válida; e extensão com lacuna de log **artificialmente criada no modelo**; e injeção fictícia de evento posterior ao encerramento.
 - Estado temporal, eventos da seção, linhas de log fictícias e totais de BU fictício.
-- Alarmes de consistência do próprio modelo e marcadores ainda não avaliados quando seria necessária evidência real.
+- Alarmes de consistência do próprio modelo, detecção de eventos posteriores ao BU sem alterar retroativamente seu conteúdo e marcadores ainda não avaliados quando seria necessária evidência real.
 - Testes unitários que demonstram a detecção da lacuna artificial, sem atribuí-la ao software eleitoral.
 
 Arquivos: site/src/lib/temporal-simulator.ts; site/src/components/TemporalSimulator.ts; site/tests/temporal.test.mjs.

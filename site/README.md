@@ -43,7 +43,7 @@ A página é um ensaio de teoria da prova e um painel de pesquisa em andamento. 
 
 ### Laboratório temporal (Estudo 05)
 
-A nova seção interativa apresenta sequência de eventos, log e BU **fictícios**, com cenários de encerramento regular, fila, extensão válida até 19h e lacuna artificial de log. A referência técnica é uma reconstrução do VOTA de **desenvolvimento web**; o laboratório **não executa o VOTA, não reproduz o comportamento da urna lacrada e não demonstra vulnerabilidade**. Ver [Estudo 05](../estudos/05_simulacao_temporal/README.md).
+A nova seção interativa apresenta sequência de eventos, log e BU **fictícios**, com cenários de encerramento regular, fila, extensão válida até 19h e lacuna artificial de log, além de evento fictício posterior ao encerramento. A referência técnica é uma reconstrução do VOTA de **desenvolvimento web**; o laboratório **não executa o VOTA, não reproduz o comportamento da urna lacrada e não demonstra vulnerabilidade**. Ver [Estudo 05](../estudos/05_simulacao_temporal/README.md).
 
 ## Publicação
 
