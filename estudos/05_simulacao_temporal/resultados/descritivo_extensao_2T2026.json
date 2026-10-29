@@ -1,0 +1,20 @@
+{
+  "fechamento_apos_19h": {
+    "secoes": 6336,
+    "lula": 987279,
+    "flavio": 801812,
+    "frac_lula": 0.551832746349962,
+    "votos_validos": 1789091
+  },
+  "demais": {
+    "secoes": 491561,
+    "lula": 63068799,
+    "flavio": 58852732,
+    "frac_lula": 0.5172900838983067,
+    "votos_validos": 121921531
+  },
+  "materialidade_fechamento_19h": {
+    "votos_validos": 1789091,
+    "fracao_minima_para_inverter": 1.2381125387137937
+  }
+}

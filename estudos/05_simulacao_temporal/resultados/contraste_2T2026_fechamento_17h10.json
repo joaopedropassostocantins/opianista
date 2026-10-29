@@ -1,0 +1,36 @@
+{
+  "estimavel": true,
+  "beta": 0.0001290211197370328,
+  "se_cluster": 0.000625995741774802,
+  "ic95": [
+    -0.001097930534141579,
+    0.0013559727736156446
+  ],
+  "locais_informativos": 3823,
+  "secoes_informativas": 30000,
+  "secoes_tratadas": 6584,
+  "rotulo": "fechamento_17h10",
+  "campo_horario": "fechamento_bu",
+  "limiar": "17:10:00",
+  "candidato": "13",
+  "secoes_usadas": 448790,
+  "perdas": {
+    "entre_controle_e_limiar": 43288,
+    "incoerente_log_x_bu": 1412,
+    "incoerente_campo_ausente": 20,
+    "incoerente_fechamento": 3,
+    "uf_excluida": 5665
+  },
+  "tratadas_total": 13225,
+  "municipios": 5432,
+  "municipios_com_tratadas": 1499,
+  "controle": "17:05:00",
+  "coluna_votos": "votos_cargo",
+  "ufs_excluidas": [
+    "TO",
+    "ZZ"
+  ],
+  "cohorte_votos_validos_tratadas": 3580419,
+  "classe_relogio": "I (urna)",
+  "status": "EXPLORATORIO_2T2026"
+}
