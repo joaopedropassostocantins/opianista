@@ -1,0 +1,6 @@
+{'bus': 4384, 'erros': 0, 'campos': ['municipio', 'periodo', 'secao', 'uf', 'zona', 'aptos', 'branco', 'bu_por_biografia', 'bu_por_biometria', 'bu_sem_biometria', 'comparecimento', 'comparecimento_cargo', 'nulo', 'v13', 'v14', 'v16', 'v21', 'v22', 'v27', 'v28']}
+municipio,periodo,secao,uf,zona,aptos,branco,bu_por_biografia,bu_por_biometria,bu_sem_biometria,comparecimento,comparecimento_cargo,nulo,v13,v14,v16,v21,v22,v27,v28,v29,v30,v35,v55,v70,v80
+73008,1T2026,0135,TO,0007,243,3,16,162,4,182,182,4,88,2,,,77,,,,,,6,2,
+73008,1T2026,0136,TO,0007,242,,10,175,3,188,188,7,86,,,,87,,,,,,2,6,
+73008,1T2026,0137,TO,0007,250,2,15,199,2,216,216,5,101,,,,103,,,,,,4,1,
+73008,1T2026,0138,TO,0007,255,3,17,190,7,214,214,5,93,2,,,105,,,,,,4,2,
