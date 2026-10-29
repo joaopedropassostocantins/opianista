@@ -42,3 +42,13 @@ valido.
 | 03 | `estudos/03_pianista/etapas/00_protocolo/03_protocolo_preregistro_etapa0_v1.1_20261029.md` | 2026-10-29 | `b75a5a502d1747518a238a36765a67c49afbecf454c8cccd29a4d9f81e71af2c` | GATE 0: versao 1.1, substitui a 02 para aprovacao; a 02 permanece inalterada |
 
 A entrega 02 é adicional e não reconstitui nem substitui o arquivo histórico `00_preregistro.md` mencionado acima.
+
+## Aprovacoes de GATE
+
+| Estudo | Gate | Versao aprovada | Data | Aprovado por |
+|--------|------|-----------------|------|--------------|
+| 03 Pianista | GATE 0 | Entrada 03 (protocolo v1.1, SHA-256 b75a5a50...e71af2c) | 2026-10-29 | Proponente (joaopedropassostocantins) |
+
+A partir desta aprovacao, os parametros da versao 1.1 estao congelados. Qualquer
+alteracao exige emenda nova, registrada antes da abertura dos dados do 2o turno
+de 2026.
