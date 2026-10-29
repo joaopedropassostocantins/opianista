@@ -52,6 +52,10 @@ def carregar(caminho: Path) -> pd.DataFrame:
     df = df[df["secao"].notna() & (df["secao"] != "")]
     df["chave"] = df["uf"] + "-" + df["municipio"] + "-" + df["zona"] + "-" + df["secao"]
     df["cluster"] = df["uf"] + "-" + df["municipio"] + "-" + df["zona"]
+    # Software de 2026 (VOTA 10.23) nao registra "O eleitor nao possui biometria": a habilitacao sem
+    # biometria cadastrada fica sem marcador (DESC). Validado contra o BU do 1T 2026 de TO (emenda 02).
+    em_2026 = df["periodo"].astype(str).str.contains("2026")
+    df.loc[em_2026 & (df["modo"] == "DESC"), "modo"] = "NB_SEM"
     df["nb"] = df["modo"].isin(NB_MODOS)
     df = df.sort_values(["chave", "seg"], kind="stable").reset_index(drop=True)
     return df
@@ -312,14 +316,22 @@ def h1d(flag_a: pd.Series, flag_b: pd.Series, municipio: pd.Series, rng, reps: i
 
 # ----------------------------------------------------------------------------- poder
 
-def injetar(df: pd.DataFrame, chaves: np.ndarray, k: int, rng) -> pd.DataFrame:
-    """Insere k habilitacoes NB_MAN em rajada (intervalos de 5 a 15 s) dentro de J1 das secoes sorteadas."""
+def injetar(df: pd.DataFrame, chaves: np.ndarray, k: int, rng, padrao: str = "bloco") -> pd.DataFrame:
+    """Insere k habilitacoes NB_MAN em J1 das secoes sorteadas.
+
+    padrao 'bloco': uma unica sequencia com intervalos de 5 a 15 s.
+    padrao 'fragmentado': grupos de 4 com intervalos de 5 a 15 s, separados por 3 a 6 min.
+    """
     novos = []
     ini, fim = JANELAS["J1"]
     base = df.drop_duplicates("chave").set_index("chave")
     for c in chaves:
-        t0 = rng.integers(ini, fim - 15 * k)
-        segs = t0 + np.cumsum(rng.integers(5, 16, size=k))
+        if padrao == "bloco":
+            passos = rng.integers(5, 16, size=k)
+        else:
+            passos = np.array([rng.integers(180, 361) if (i > 0 and i % 4 == 0) else rng.integers(5, 16) for i in range(k)])
+        t0 = rng.integers(ini, max(ini + 1, fim - int(passos.sum()) - 1))
+        segs = t0 + np.cumsum(passos)
         r = base.loc[c]
         for s in segs:
             novos.append({"uf": r["uf"], "periodo": r["periodo"], "municipio": r["municipio"], "zona": r["zona"],
@@ -330,20 +342,21 @@ def injetar(df: pd.DataFrame, chaves: np.ndarray, k: int, rng) -> pd.DataFrame:
 
 
 def poder(alvo: pd.DataFrame, antes: pd.DataFrame, limiar: float, rng, n_secoes: int, ks=(5, 10, 20, 50),
-          reps_secao: int = 2000) -> dict:
+          reps_secao: int = 2000, padrao: str = "bloco") -> dict:
     """Sensibilidade da sinalizacao por secao (H1a e H1b) e falsos positivos, injetando no 'alvo'."""
     t_antes = tabela_secoes(antes, limiar)
     t_base = tabela_secoes(alvo, limiar)
     ivals = intervalos_j0_por_secao(alvo)
     elegiveis = t_base.index.intersection(t_antes.index)
-    elegiveis = elegiveis[(t_base.loc[elegiveis, "H_J1"] > 0) & (t_base.loc[elegiveis, "H_J0"] > 0)]
+    elegiveis = elegiveis[(t_base.loc[elegiveis, "H_J1"] > 0) & (t_base.loc[elegiveis, "H_J0"] > 0)
+                          & (t_antes.loc[elegiveis, "H_J1"] > 0) & (t_antes.loc[elegiveis, "H_J0"] > 0)]
     sorteio = rng.choice(np.asarray(elegiveis), size=min(n_secoes, len(elegiveis)), replace=False)
     controle = np.setdiff1d(np.asarray(elegiveis), sorteio)
     pa_base = prob_excesso(t_base, t_antes, "J1", rng)
-    fp_a = float((pa_base.loc[controle].dropna() >= 0.95).mean())
-    res = {"secoes_injetadas": int(len(sorteio)), "falso_positivo_H1a": fp_a, "por_k": {}}
+    fp_a = float((pa_base.reindex(controle).dropna() >= 0.95).mean())
+    res = {"padrao": padrao, "secoes_injetadas": int(len(sorteio)), "falso_positivo_H1a": fp_a, "por_k": {}}
     for k in ks:
-        df_k = injetar(alvo, sorteio, k, rng)
+        df_k = injetar(alvo, sorteio, k, rng, padrao)
         t_k = tabela_secoes(df_k[df_k["chave"].isin(sorteio)], limiar)
         pa = prob_excesso(t_k, t_antes.loc[sorteio], "J1", rng)
         sens_a = float((pa.dropna() >= 0.95).mean())
@@ -378,6 +391,7 @@ def main(argv=None) -> int:
     b.add_argument("--antes", type=Path, required=True, help="periodo de comparacao da mesma secao (ex.: 1T2022)")
     b.add_argument("--dtstar", type=float, required=True)
     b.add_argument("--secoes", type=int, default=300)
+    b.add_argument("--padrao", choices=("bloco", "fragmentado"), default="bloco")
     b.add_argument("--saida", type=Path, required=True)
     c = sub.add_parser("testes")
     c.add_argument("--t26-2", type=Path, required=True)
@@ -394,7 +408,7 @@ def main(argv=None) -> int:
     if args.cmd == "dtstar":
         res = dtstar(carregar(args.calibracao))
     elif args.cmd == "poder":
-        res = poder(carregar(args.alvo), carregar(args.antes), args.dtstar, rng, args.secoes)
+        res = poder(carregar(args.alvo), carregar(args.antes), args.dtstar, rng, args.secoes, padrao=args.padrao)
     else:
         dfs = {n: carregar(getattr(args, n)) for n in ("t26_2", "t26_1", "t22_2", "t22_1")}
         if args.excluir is not None:
