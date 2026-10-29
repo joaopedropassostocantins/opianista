@@ -43,6 +43,14 @@ valido.
 
 A entrega 02 é adicional e não reconstitui nem substitui o arquivo histórico `00_preregistro.md` mencionado acima.
 
+## Novo pré-registro do Estudo 05 — proposto para GATE E05-0
+
+| Ordem | Arquivo | Data (UTC) | SHA-256 | Situação |
+|---|---|---|---|---|
+| 04 | `protocolos/04_estudo05_preregistro_v1_20261029.md` | 2026-10-29 | `9c6aaad29074c854982561a054d8bec726fb0cbb5820b311111ea55afc34e142` | **Texto congelado e registrado em branch/PR; aprovação humana E05-0 PENDENTE; abertura de microdados 2T2026 bloqueada por D4/1.6 do Estudo 03.** |
+
+O SHA-256 foi computado por `sha256sum` no GitHub Actions (run 40820750825). Esta entrada não é declaração de aprovação do proponente e não supera o bloqueio D4. O texto já explicita o contato prévio com totais nacionais e contagens agregadas de horário, portanto a qualificação de "pré" limita-se aos microdados de seção ainda não abertos por este estudo. Após aprovação, qualquer modificação dependerá de emenda datada, sem sobrescrever a versão registrada.
+
 ## Aprovacoes de GATE
 
 | Estudo | Gate | Versao aprovada | Data | Aprovado por |
