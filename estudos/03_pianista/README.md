@@ -25,7 +25,7 @@ etapas/00_protocolo ... 07_relatorio
 
 | Etapa | Agente      | Status   |
 |-------|-------------|----------|
-| 0     | Protocolo   | Pendente |
+| 0     | Protocolo   | Aprovado em 29/10/2026 (versao 1.1) |
 | 1     | Coleta      | Pendente |
 | 2     | Parser      | Pendente |
 | 3     | Qualidade   | Pendente |
