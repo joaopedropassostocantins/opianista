@@ -361,11 +361,17 @@ def main(argv: list[str] | None = None) -> int:
         normalize_period(period)
         if period not in SEARCH_TERMS:
             raise SystemExit(f"período sem estratégia de descoberta: {period}")
+    # D4 do PLANEJAMENTO: um recurso de 2026 pode misturar 1T/2T.
+    # Nunca permitir download a partir das buscas ambíguas deste coletor.
+    if args.download and any(p in ("2T2026", "1T2026") for p in periods):
+        raise SystemExit("BLOQUEADO D4: download de 2026 (1T ou 2T) por busca CKAN ambígua. "
+                         "Use pipeline_placebo.py com arquivo de 1T isolado e manifesto SHA-256; "
+                         "2T2026 segue vedado até GATE 1.6.")
     if args.rows < 1 or args.timeout < 1:
         raise SystemExit("--rows e --timeout devem ser positivos")
 
     output_dir = args.output_dir.resolve()
-    data_dir = (args.data_dir or output_dir / "dados_brutos").resolve()
+    data_dir = (args.data_dir or Path(__file__).resolve().parents[4] / "data" / "coleta_03").resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
     print(f"Consulta oficial: {args.portal_api}")
     print(f"Escopo UF: {','.join(ufs)}; períodos: {','.join(periods)}; seed: {SEED}")
