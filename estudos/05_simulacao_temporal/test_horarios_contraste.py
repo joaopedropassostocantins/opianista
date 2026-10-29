@@ -2,6 +2,7 @@
 """Testes offline de horarios_secao.py e contraste_local.py com dados sinteticos."""
 import importlib.util
 import io
+import json
 import tempfile
 import unittest
 import zipfile
@@ -86,6 +87,27 @@ class ContrasteTests(unittest.TestCase):
         self.assertTrue(res["estimavel"])
         self.assertAlmostEqual(res["beta"], 0.05 - 0.0015, delta=0.002)
         self.assertEqual(res["locais_informativos"], 10)
+
+    def test_coherence_checks_of_amendment_01(self):
+        ok = {"comparecimento": "2", "votos_computados_log": "2", "fechamento_bu": "17:03:05",
+              "encerramento_confirmado_log": "17:03:04", "ultimo_voto_log": "17:02:10",
+              "bu_gerado_log": "17:05:00"}
+        self.assertEqual(con.coherence_failure(ok), "")
+        self.assertEqual(con.coherence_failure({**ok, "votos_computados_log": "3"}), "incoerente_log_x_bu")
+        self.assertEqual(con.coherence_failure({**ok, "fechamento_bu": "17:03:09"}), "incoerente_fechamento")
+        self.assertEqual(con.coherence_failure({**ok, "ultimo_voto_log": "17:04:00"}), "incoerente_ordem")
+        self.assertEqual(con.coherence_failure({**ok, "bu_gerado_log": ""}), "incoerente_campo_ausente")
+
+    def test_winner_outcome_is_per_municipality(self):
+        rows = []
+        for mun, win in (("1", "10"), ("2", "20")):
+            for i, t in enumerate(("16:59:00", "17:01:00")):
+                rows.append({"uf": "TO", "municipio": mun, "zona": "1", "local": "9",
+                             "votos_cargo": json.dumps({"10": 60 if win == "10" else 40, "20": 40 if win == "10" else 60}),
+                             "ultimo_voto_log": t})
+        units, lost, winners = con.build_units(rows, "ultimo_voto_log", "17:00:00", "vencedor", coerencia=False)
+        self.assertEqual(winners, {"TO/1": "10", "TO/2": "20"})
+        self.assertTrue(all(abs(u["y"] - 0.6) < 1e-9 for u in units))
 
     def test_locals_without_both_classes_do_not_contribute(self):
         units = [{"local": 1, "w": 1, "T": 1, "y": 0.9}, {"local": 1, "w": 1, "T": 1, "y": 0.8},

@@ -6,7 +6,8 @@ secao, extrai da imagem do BU e do log da urna (log.jez -> logd.dat):
 
 - abertura e fechamento da UE declarados na imagem do BU;
 - primeiro e ultimo "O voto do eleitor foi computado" na data da eleicao;
-- "Procedimento de encerramento confirmado" e geracao do bu.dat.
+- "Procedimento de encerramento confirmado" e geracao do bu.dat;
+- local de votacao, comparecimento e votos do cargo escolhido (imagem do BU).
 
 Todos esses horarios vem do RELOGIO DA PROPRIA URNA (classe I do pre-registro
 E05-0). Nao sao fonte externa. Linhas com titulo de eleitor ou CPF nunca sao
@@ -18,6 +19,7 @@ from __future__ import annotations
 import argparse
 import csv
 import io
+import json
 import re
 import sys
 import zipfile
@@ -25,7 +27,8 @@ from pathlib import Path
 
 NAME = re.compile(r"^o\d+([a-z]{2})(\d{5})(\d{4})(\d{4})-(log\.jez|imgbu\.dat)$")
 BLOCKED_ZIP = re.compile(r"_2026_2t_", re.I)
-OUT_FIELDS = ("uf", "municipio", "zona", "secao", "abertura_bu", "fechamento_bu",
+OUT_FIELDS = ("uf", "municipio", "zona", "secao", "local", "comparecimento", "votos_cargo",
+              "brancos", "nulos", "total_apurado", "abertura_bu", "fechamento_bu",
               "primeiro_voto_log", "ultimo_voto_log", "encerramento_confirmado_log",
               "bu_gerado_log", "votos_computados_log", "fonte_relogio")
 
@@ -38,6 +41,28 @@ def imgbu_times(text: str) -> tuple[str, str]:
     a = re.search(r"Hor.rio de abertura\s+(\d{2}:\d{2}:\d{2})", text)
     f = re.search(r"Hor.rio de fechamento\s+(\d{2}:\d{2}:\d{2})", text)
     return (a.group(1) if a else "", f.group(1) if f else "")
+
+
+def imgbu_votes(text: str, cargo: str) -> dict:
+    """Votos do cargo na imagem do BU; cargo como impresso (ex.: PREFEITO, PRESIDENTE)."""
+    out = {"local": "", "comparecimento": "", "votos_cargo": "", "brancos": "", "nulos": "",
+           "total_apurado": ""}
+    loc = re.search(r"Local de Vota..o\s+(\d+)", text)
+    com = re.search(r"Comparecimento\s+(\d+)", text)
+    out["local"] = str(int(loc.group(1))) if loc else ""
+    out["comparecimento"] = int(com.group(1)) if com else ""
+    block = re.search(r"-{3,}" + re.escape(cargo) + r"-{3,}(.*?)Total Apurado\s+(\d+)", text, re.S)
+    if not block:
+        return out
+    body = block.group(1)
+    votes = {}
+    for m in re.finditer(r"^\s+\S.*?\s(\d{1,5})\s+(\d{4,})\s*$", body, re.M):
+        votes[str(int(m.group(1)))] = votes.get(str(int(m.group(1))), 0) + int(m.group(2))
+    b = re.search(r"^Brancos\s+(\d+)", body, re.M)
+    n = re.search(r"^Nulos\s+(\d+)", body, re.M)
+    out.update({"votos_cargo": json.dumps(votes, sort_keys=True), "brancos": int(b.group(1)) if b else 0,
+                "nulos": int(n.group(1)) if n else 0, "total_apurado": int(block.group(2))})
+    return out
 
 
 def log_times(lines: list[str], date: str) -> dict:
@@ -63,7 +88,7 @@ def log_times(lines: list[str], date: str) -> dict:
             "votos_computados_log": len(votes)}
 
 
-def extract(path: Path, date: str) -> list[dict]:
+def extract(path: Path, date: str, cargo: str = "PREFEITO") -> list[dict]:
     if BLOCKED_ZIP.search(path.name):
         raise Blocked("Arquivo do 2T2026 bloqueado pela decisao D4.")
     rows: dict[tuple, dict] = {}
@@ -78,7 +103,9 @@ def extract(path: Path, date: str) -> list[dict]:
                                         "secao": key[3], "fonte_relogio": "urna (classe I)"})
             data = z.read(name)
             if kind == "imgbu.dat":
-                row["abertura_bu"], row["fechamento_bu"] = imgbu_times(data.decode("latin1"))
+                text = data.decode("latin1")
+                row["abertura_bu"], row["fechamento_bu"] = imgbu_times(text)
+                row.update(imgbu_votes(text, cargo))
             else:
                 with zipfile.ZipFile(io.BytesIO(data)) as inner:
                     text = inner.read("logd.dat").decode("latin1")
@@ -90,13 +117,14 @@ def main(argv=None) -> int:
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--zip", type=Path, required=True)
     p.add_argument("--data-eleicao", required=True, help="dd/mm/aaaa")
+    p.add_argument("--cargo", default="PREFEITO", help="nome do cargo como impresso no BU")
     p.add_argument("--out", type=Path, required=True)
     args = p.parse_args(argv)
     if not re.fullmatch(r"\d{2}/\d{2}/\d{4}", args.data_eleicao):
         print("BLOQUEADO: data no formato dd/mm/aaaa", file=sys.stderr)
         return 2
     try:
-        rows = extract(args.zip, args.data_eleicao)
+        rows = extract(args.zip, args.data_eleicao, args.cargo.upper())
     except (Blocked, OSError, zipfile.BadZipFile, KeyError) as e:
         print("BLOQUEADO:", e, file=sys.stderr)
         return 2

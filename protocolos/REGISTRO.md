@@ -60,3 +60,17 @@ O SHA-256 foi computado por `sha256sum` no GitHub Actions (run 40820750825). Est
 A partir desta aprovacao, os parametros da versao 1.1 estao congelados. Qualquer
 alteracao exige emenda nova, registrada antes da abertura dos dados do 2o turno
 de 2026.
+
+## Emenda 01 do Estudo 05 e aprovacao do GATE E05-0 (2026-10-29)
+
+| Ordem | Arquivo | Data (UTC) | SHA-256 | Situacao |
+|---|---|---|---|---|
+| 05 | `protocolos/05_emenda01_estudo05_20261029.md` | 2026-10-29 | `eb5144a95b8b7c47498eff69813bb2a856b831d71772d74645400d22d0ce0861` | Emenda 01 ao E05-0: encerramento pelo ultimo voto, analise P-I condicional ao relogio da urna, verificacoes de coerencia, placebos e pedido LAI |
+
+| Estudo | Gate | Versao aprovada | Data | Aprovado por |
+|--------|------|-----------------|------|--------------|
+| 05 Coortes de encerramento tardio | GATE E05-0 | Entrada 04 (SHA-256 9c6aaad2...afc34e142) com a emenda 01 (entrada 05) | 2026-10-29 | Proponente (joaopedropassostocantins), mensagem "Tudo aprovado" na sessao de trabalho |
+
+A aprovacao do E05-0 nao desbloqueia o 2T2026: o bloqueio D4 depende do item 1.6
+do Estudo 03 (emenda com dt*, diagnostico de poder e lista de municipios), que
+ainda nao foi redigido.
