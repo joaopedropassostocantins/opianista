@@ -136,3 +136,15 @@ Perguntas tecnicas prioritarias, em ordem:
 **Entrega existente no PR #3:** painel didatico com fixtures totalmente sinteticas, sem execucao de urna real; testes automatizados e links ao codigo reconstruido de desenvolvimento do simulador VOTA. Revisao humana obrigatoria antes de confundir hipoteses, anomalias e prova.
 
 **Proximos gates:** (i) validar fontes e horario de cada registro; (ii) obter BUs e logs oficiais com hashes; (iii) identificar copias preservadas fora do canal central; (iv) verificar compatibilidade da reconstrucao web com a versao de producao autorizada; (v) preregistrar testes confirmatorios antes dos dados-alvo. Sem alteracao de pre-registros anteriores.
+
+## 8 Missoes preparatorias do Estudo 05 — 29/10/2026
+
+| Missao | Estado comprovado | Bloqueio remanescente |
+|---|---|---|
+| 1. Pre-registrar E05 | protocolo v1.0 versionado; SHA-256 registrado na ordem 04 de protocolos/REGISTRO.md; exposicao previa aos totais nacionais declarada. | **Aprovacao humana E05-0 pendente**; dados 2T2026 bloqueados por D4 ate GATE 1.6 do Estudo 03. |
+| 2. Pipeline com placebos | pipeline_placebo.py agrega votos integrais (2T2024 e 1T2026), exige manifesto e SHA-256; coleta.py legado blindado contra downloads ambiguos 2026; contrato_eventos.py implementa contrato, catalogo abstrato e percentil 1 de dt*. Testes sinteticos em CI. | **Nenhuma execucao de CSV/log REAL**; recurso oficial isolado, local de votacao, validacao de logs, catalogo empirico e dt* seguem pendentes. |
+| 3. Margem oficial | **Confirmada** 4.430.191 votos; 64.256.232 - 59.826.041; validos = 124.082.273; ver estudos/05_simulacao_temporal/VALIDACAO_MARGEM_20261029.md. | Nenhum numero agregado adicional requerido para esta verificacao. |
+
+O item 1.1 do Estudo 03 teve a trava de download corrigida no PR #3, mas os demais riscos de descoberta e filtro de UF do coletor original exigem auditoria antes de liberar downloads. O pipeline placebo nao baixa recursos automaticamente. O contrato de eventos ainda NAO decodifica .logjez oficial; portanto H1a/H1b e dt* nao foram calculadas.
+
+**Alerta ao coordenador:** o pre-registro E05 foi redigido apos conhecimento de agregados nacionais do 2T2026 e mencao a possivel exposicao previa de amostra de 2,1%. Sua validade confirmatoria exige declaracao completa de exposicoes, aprovacao e congelamento antes de microdados por secao. Nao marcar como liberado o bloqueio D4.
