@@ -1,0 +1,6 @@
+{
+  "routes": [
+    { "path": "/", "file": "/index.html", "description": "Site editorial opianista" }
+  ],
+  "fallback": "/index.html"
+}
