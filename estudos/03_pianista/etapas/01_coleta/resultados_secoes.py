@@ -44,24 +44,30 @@ def baixar(url: str, tentativas: int = 4, timeout: int = 60) -> bytes:
 
 
 def secoes_do_config(cfg: dict) -> list[dict]:
-    """Percorre abr -> mu -> zon -> sec -> hash; devolve uma entrada por secao com o hash escolhido."""
+    """Percorre abr -> mu -> zon -> sec; devolve (municipio, zona, secao). Formato de 2026: sec = {ns, da, ha}."""
     saida = []
     for abr in cfg.get("abr", []):
         for mu in abr.get("mu", []):
             for zon in mu.get("zon", []):
                 for sec in zon.get("sec", []):
-                    hashes = sec.get("hash", []) or []
-                    totalizados = [h for h in hashes if str(h.get("st", "")).lower().startswith("totaliz")]
-                    escolhido = (totalizados or hashes or [None])[-1]
-                    saida.append({
-                        "municipio": str(mu.get("cd", "")), "zona": str(zon.get("cd", "")),
-                        "secao": str(sec.get("ns", "")),
-                        "hash": None if escolhido is None else str(escolhido.get("hash", "")),
-                        "situacao": None if escolhido is None else str(escolhido.get("st", "")),
-                        "arquivos": [] if escolhido is None else list(escolhido.get("nmarq", []) or []),
-                        "n_hashes": len(hashes),
-                    })
+                    saida.append({"municipio": str(mu.get("cd", "")), "zona": str(zon.get("cd", "")),
+                                  "secao": str(sec.get("ns", ""))})
     return saida
+
+
+def arquivos_da_secao(raiz: str, uf: str, pleito: str, s: dict) -> dict:
+    """Le o aux.json da secao e escolhe o ultimo hash com situacao 'Totalizado'."""
+    nome = f"p{int(pleito):06d}-{uf}-m{s['municipio']}-z{s['zona']}-s{s['secao']}-aux.json"
+    url = f"{raiz}/dados/{uf}/{s['municipio']}/{s['zona']}/{s['secao']}/{nome}"
+    aux = json.loads(baixar(url).decode("utf-8"))
+    hashes = aux.get("hashes", []) or []
+    tot = [h for h in hashes if str(h.get("st", "")).lower().startswith("totaliz")]
+    h = (tot or hashes or [None])[-1]
+    if h is None:
+        return {**s, "hash": None, "situacao": aux.get("st"), "arquivos": [], "n_hashes": 0}
+    arquivos = [a.get("nm") for a in (h.get("arq") or []) if a.get("nm")] or list(h.get("nmarq", []) or [])
+    return {**s, "hash": str(h.get("hash")), "situacao": h.get("st"), "arquivos": arquivos,
+            "n_hashes": len(hashes)}
 
 
 def main(argv=None) -> int:
@@ -69,7 +75,7 @@ def main(argv=None) -> int:
     ap.add_argument("--uf", required=True)
     ap.add_argument("--pleito", required=True, help="3220 (1T 2026) ou 3221 (2T 2026)")
     ap.add_argument("--ciclo", default="ele2026")
-    ap.add_argument("--extensoes", default="logjez,jez,imgbu", help="extensoes a baixar, separadas por virgula")
+    ap.add_argument("--extensoes", default="-log.jez,-bu.dat", help="sufixos de arquivo a baixar, separados por virgula")
     ap.add_argument("--saida", type=Path, required=True)
     ap.add_argument("--manifesto", type=Path, required=True)
     ap.add_argument("--workers", type=int, default=8)
@@ -86,12 +92,9 @@ def main(argv=None) -> int:
     (args.saida / f"{uf}-p{int(pleito):06d}-cs.json").write_bytes(cfg_bytes)
     cfg = json.loads(cfg_bytes.decode("utf-8"))
     secoes = secoes_do_config(cfg)
-    extensoes = tuple("." + e.strip().lower() for e in args.extensoes.split(",") if e.strip())
-    exemplos = sorted({a.rsplit(".", 1)[-1] for s in secoes[:200] for a in s["arquivos"]})
+    extensoes = tuple(e.strip().lower() for e in args.extensoes.split(",") if e.strip())
     resumo = {"url_config": url_cfg, "sha256_config": hashlib.sha256(cfg_bytes).hexdigest(),
-              "secoes": len(secoes), "sem_hash": sum(1 for s in secoes if not s["hash"]),
-              "situacoes": sorted({str(s["situacao"]) for s in secoes}),
-              "extensoes_disponiveis": exemplos, "chaves_topo": sorted(cfg.keys())}
+              "secoes": len(secoes), "chaves_topo": sorted(cfg.keys()), "dg": cfg.get("dg"), "hg": cfg.get("hg")}
     print(json.dumps(resumo, ensure_ascii=False))
     if args.so_config:
         args.manifesto.write_text(json.dumps(resumo, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -105,30 +108,39 @@ def main(argv=None) -> int:
         if "dt*" not in texto or "poder" not in texto.lower():
             raise SystemExit("a emenda informada nao registra dt* e o diagnostico de poder")
 
-    tarefas = []
-    for s in secoes:
-        if not s["hash"]:
-            continue
-        for nome in s["arquivos"]:
-            if nome.lower().endswith(extensoes):
-                url = f"{raiz}/dados/{uf}/{s['municipio']}/{s['zona']}/{s['secao']}/{s['hash']}/{nome}"
-                tarefas.append((url, args.saida / "arquivos" / nome))
-    registros, falhas = [], 0
-    with ThreadPoolExecutor(max_workers=args.workers) as pool:
-        futuros = {pool.submit(baixar, url): (url, destino) for url, destino in tarefas}
-        for fut in as_completed(futuros):
-            url, destino = futuros[fut]
+    def processa(s: dict) -> list[dict]:
+        regs = []
+        try:
+            info = arquivos_da_secao(raiz, uf, pleito, s)
+        except Exception as exc:
+            return [{"secao": f"{s['municipio']}-{s['zona']}-{s['secao']}", "erro": f"aux: {str(exc)[:150]}"}]
+        if not info["hash"]:
+            return [{"secao": f"{s['municipio']}-{s['zona']}-{s['secao']}", "erro": f"sem hash ({info['situacao']})"}]
+        for nome in info["arquivos"]:
+            if not any(nome.lower().endswith(e) for e in extensoes):
+                continue
+            url = f"{raiz}/dados/{uf}/{s['municipio']}/{s['zona']}/{s['secao']}/{info['hash']}/{nome}"
             try:
-                dados = fut.result()
+                dados = baixar(url)
+                destino = args.saida / "arquivos" / nome
                 destino.parent.mkdir(parents=True, exist_ok=True)
                 destino.write_bytes(dados)
-                registros.append({"url": url, "arquivo": destino.name, "bytes": len(dados),
-                                  "sha256": hashlib.sha256(dados).hexdigest()})
+                regs.append({"secao": f"{s['municipio']}-{s['zona']}-{s['secao']}", "arquivo": nome, "url": url,
+                             "bytes": len(dados), "sha256": hashlib.sha256(dados).hexdigest(),
+                             "situacao": info["situacao"], "n_hashes": info["n_hashes"]})
             except Exception as exc:
-                falhas += 1
-                registros.append({"url": url, "arquivo": destino.name, "erro": str(exc)[:200]})
+                regs.append({"secao": f"{s['municipio']}-{s['zona']}-{s['secao']}", "arquivo": nome, "url": url,
+                             "erro": str(exc)[:150]})
+        return regs
+
+    registros = []
+    with ThreadPoolExecutor(max_workers=args.workers) as pool:
+        for fut in as_completed([pool.submit(processa, s) for s in secoes]):
+            registros.extend(fut.result())
+    falhas = sum(1 for r in registros if "erro" in r)
+    tarefas = [r for r in registros if "arquivo" in r]
     resumo.update({"arquivos_pedidos": len(tarefas), "falhas": falhas})
-    args.manifesto.write_text(json.dumps({"resumo": resumo, "arquivos": sorted(registros, key=lambda r: r["arquivo"])},
+    args.manifesto.write_text(json.dumps({"resumo": resumo, "arquivos": sorted(registros, key=lambda r: (r.get("secao", ""), r.get("arquivo", "")))},
                                          ensure_ascii=False, indent=1), encoding="utf-8")
     print(json.dumps(resumo, ensure_ascii=False))
     return 0 if falhas == 0 else 3
