@@ -82,6 +82,16 @@ class HorariosTests(unittest.TestCase):
         self.assertEqual(hor.main(["--zip", str(z), "--data-eleicao", "25/10/2026", "--out", str(out)]), 2)
         self.assertFalse(out.exists())
 
+    def test_2t2026_requires_explicit_release(self):
+        z = self.path / "bu_imgbu_logjez_rdv_vscmr_2026_2t_TO.zip"
+        urn_zip(z)
+        out = self.path / "h.csv"
+        code = hor.main(["--zip", str(z), "--data-eleicao", "27/10/2024", "--liberado-d4", "teste", "--out", str(out)])
+        self.assertEqual(code, 0)
+        row = hor.extract(z, "27/10/2024", liberado_d4=True)[0]
+        self.assertEqual(row["votos_apos_17h_log"], 1)
+        self.assertEqual(row["votos_apos_19h_log"], 0)
+
 
 class ContrasteTests(unittest.TestCase):
     def test_constant_within_local_shift_is_recovered(self):
@@ -117,6 +127,15 @@ class ContrasteTests(unittest.TestCase):
         units, lost, winners = con.build_units(rows, "ultimo_voto_log", "17:00:00", "vencedor", coerencia=False)
         self.assertEqual(winners, {"TO/1": "10", "TO/2": "20"})
         self.assertTrue(all(abs(u["y"] - 0.6) < 1e-9 for u in units))
+
+    def test_control_window_excludes_sections_between_cuts(self):
+        rows = [{"uf": "XX", "municipio": "1", "zona": "1", "local": "9", "votos_cargo": json.dumps({"13": 6, "22": 4}),
+                 "ultimo_voto_log": t} for t in ("16:50:00", "17:30:00", "19:05:00")]
+        units, lost, _ = con.build_units(rows, "ultimo_voto_log", "19:00:00", "13", coerencia=False, controle="17:00:00")
+        self.assertEqual(lost, {"entre_controle_e_limiar": 1})
+        self.assertEqual(sorted(u["T"] for u in units), [0, 1])
+        units, lost, _ = con.build_units(rows, "ultimo_voto_log", "19:00:00", "13", coerencia=False, excluir_uf=("XX",))
+        self.assertEqual(units, [])
 
     def test_locals_without_both_classes_do_not_contribute(self):
         units = [{"local": 1, "w": 1, "T": 1, "y": 0.9}, {"local": 1, "w": 1, "T": 1, "y": 0.8},

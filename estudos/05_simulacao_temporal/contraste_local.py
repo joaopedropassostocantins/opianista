@@ -56,10 +56,10 @@ def fe_contrast(units: list[dict]) -> dict:
             "secoes_tratadas": sum(1 for r in rows if r[3] > 0)}
 
 
-def load_rows(paths: list[Path]) -> list[dict]:
+def load_rows(paths: list[Path], liberado_d4: bool = False) -> list[dict]:
     rows = []
     for path in paths:
-        if "2026_2t" in path.name.lower() or "2t2026" in path.name.lower():
+        if not liberado_d4 and ("2026_2t" in path.name.lower() or "2t2026" in path.name.lower()):
             raise ValueError("Entrada do 2T2026 bloqueada (D4).")
         with path.open(encoding="utf-8") as fp:
             rows.extend(csv.DictReader(fp))
@@ -82,22 +82,31 @@ def coherence_failure(r: dict) -> str:
 
 
 def build_units(rows: list[dict], campo: str, limiar: str, candidato: str,
-                coerencia: bool = True) -> tuple[list, dict, dict]:
+                coerencia: bool = True, controle: str = "", coluna_votos: str = "votos_cargo",
+                excluir_uf: tuple = ()) -> tuple[list, dict, dict]:
+    """controle: se informado, so entram como nao tratadas as secoes com campo <= controle;
+    secoes entre controle e limiar ficam fora do contraste (emenda 01, secao 1.3)."""
     cut = minutes(limiar)
+    ctrl = minutes(controle) if controle else None
     lost: dict[str, int] = defaultdict(int)
     parsed = []
     for r in rows:
+        if r.get("uf") in excluir_uf:
+            lost["uf_excluida"] += 1; continue
         if coerencia:
             motivo = coherence_failure(r)
             if motivo:
                 lost[motivo] += 1; continue
-        if not r.get("votos_cargo"):
+        if not r.get(coluna_votos):
             lost["sem_votos_bu"] += 1; continue
         if not r.get("local"):
             lost["sem_local"] += 1; continue
         if not r.get(campo):
             lost["sem_horario"] += 1; continue
-        votes = json.loads(r["votos_cargo"])
+        t = minutes(r[campo])
+        if ctrl is not None and ctrl < t <= cut:
+            lost["entre_controle_e_limiar"] += 1; continue
+        votes = json.loads(r[coluna_votos])
         valid = sum(votes.values())
         if valid == 0:
             lost["sem_validos"] += 1; continue
@@ -126,14 +135,21 @@ def main(argv=None) -> int:
     p.add_argument("--candidato", default="vencedor", help="numero do candidato ou 'vencedor'")
     p.add_argument("--rotulo", default="placebo")
     p.add_argument("--sem-coerencia", action="store_true", help="desliga as verificacoes da emenda 01")
+    p.add_argument("--controle", default="", help="ultimo horario admitido no controle, ex.: 17:00:00")
+    p.add_argument("--coluna-votos", default="votos_cargo", help="votos_cargo ou votos_cargo2")
+    p.add_argument("--excluir-uf", default="", help="UFs separadas por virgula")
+    p.add_argument("--liberado-d4", default="", help="referencia da decisao que liberou o 2T2026")
+    p.add_argument("--status", default="EXPLORATORIO_PLACEBO")
     p.add_argument("--out", type=Path, required=True)
     a = p.parse_args(argv)
     try:
-        rows = load_rows(a.horarios)
+        rows = load_rows(a.horarios, bool(a.liberado_d4))
     except (OSError, ValueError) as e:
         print("BLOQUEADO:", e, file=sys.stderr)
         return 2
-    units, lost, winners = build_units(rows, a.campo, a.limiar, a.candidato, not a.sem_coerencia)
+    excl = tuple(x.strip().upper() for x in a.excluir_uf.split(",") if x.strip())
+    units, lost, winners = build_units(rows, a.campo, a.limiar, a.candidato, not a.sem_coerencia,
+                                       a.controle, a.coluna_votos, excl)
     res = fe_contrast(units)
     per_mun = defaultdict(lambda: [0, 0])
     for u in units:
@@ -144,7 +160,9 @@ def main(argv=None) -> int:
                 "tratadas_total": sum(u["T"] for u in units),
                 "municipios": len(per_mun),
                 "municipios_com_tratadas": sum(1 for v in per_mun.values() if v[1]),
-                "classe_relogio": "I (urna)", "status": "EXPLORATORIO_PLACEBO"})
+                "controle": a.controle or "complemento do limiar", "coluna_votos": a.coluna_votos,
+                "ufs_excluidas": list(excl), "cohorte_votos_validos_tratadas": sum(u["w"] for u in units if u["T"]),
+                "classe_relogio": "I (urna)", "status": a.status})
     a.out.write_text(json.dumps(res, ensure_ascii=False, indent=2), "utf-8")
     print(json.dumps(res, ensure_ascii=False))
     return 0

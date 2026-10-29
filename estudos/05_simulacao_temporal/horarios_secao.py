@@ -11,7 +11,7 @@ secao, extrai da imagem do BU e do log da urna (log.jez -> logd.dat):
 
 Todos esses horarios vem do RELOGIO DA PROPRIA URNA (classe I do pre-registro
 E05-0). Nao sao fonte externa. Linhas com titulo de eleitor ou CPF nunca sao
-copiadas para a saida. Bloqueia 2T2026 (decisao D4).
+copiadas para a saida. Bloqueia 2T2026, salvo com --liberado-d4 (decisao D4).
 Biblioteca padrao Python 3.11+.
 """
 from __future__ import annotations
@@ -28,9 +28,10 @@ from pathlib import Path
 NAME = re.compile(r"^o\d+([a-z]{2})(\d{5})(\d{4})(\d{4})-(log\.jez|imgbu\.dat)$")
 BLOCKED_ZIP = re.compile(r"_2026_2t_", re.I)
 OUT_FIELDS = ("uf", "municipio", "zona", "secao", "local", "comparecimento", "votos_cargo",
-              "brancos", "nulos", "total_apurado", "abertura_bu", "fechamento_bu",
+              "brancos", "nulos", "total_apurado", "votos_cargo2", "abertura_bu", "fechamento_bu",
               "primeiro_voto_log", "ultimo_voto_log", "encerramento_confirmado_log",
-              "bu_gerado_log", "votos_computados_log", "fonte_relogio")
+              "bu_gerado_log", "votos_computados_log", "votos_apos_17h_log", "votos_apos_19h_log",
+              "fonte_relogio")
 
 
 class Blocked(RuntimeError):
@@ -82,7 +83,9 @@ def log_times(lines: list[str], date: str) -> dict:
             closed = hhmmss
         elif msg.startswith("Gerando arquivo de resultado [bu.dat] + [In") and not generated:
             generated = hhmmss
-    return {"primeiro_voto_log": min(votes) if votes else "",
+    return {"votos_apos_17h_log": sum(1 for v in votes if v > "17:00:00"),
+            "votos_apos_19h_log": sum(1 for v in votes if v > "19:00:00"),
+            "primeiro_voto_log": min(votes) if votes else "",
             "ultimo_voto_log": max(votes) if votes else "",
             "encerramento_confirmado_log": closed, "bu_gerado_log": generated,
             "votos_computados_log": len(votes)}
@@ -101,8 +104,8 @@ def check_isolation(lines: list[str], max_date: str) -> None:
 
 
 def extract(path: Path, date: str, cargo: str = "PREFEITO", max_date: str = "",
-            turno_bu: str = "") -> list[dict]:
-    if BLOCKED_ZIP.search(path.name):
+            turno_bu: str = "", cargo2: str = "", liberado_d4: bool = False) -> list[dict]:
+    if BLOCKED_ZIP.search(path.name) and not liberado_d4:
         raise Blocked("Arquivo do 2T2026 bloqueado pela decisao D4.")
     rows: dict[tuple, dict] = {}
     with zipfile.ZipFile(path) as z:
@@ -121,6 +124,8 @@ def extract(path: Path, date: str, cargo: str = "PREFEITO", max_date: str = "",
                     raise Blocked("Imagem do BU sem a marca '" + turno_bu + "': recurso nao isolado.")
                 row["abertura_bu"], row["fechamento_bu"] = imgbu_times(text)
                 row.update(imgbu_votes(text, cargo))
+                if cargo2:
+                    row["votos_cargo2"] = imgbu_votes(text, cargo2)["votos_cargo"]
             else:
                 with zipfile.ZipFile(io.BytesIO(data)) as inner:
                     text = inner.read("logd.dat").decode("latin1")
@@ -138,13 +143,16 @@ def main(argv=None) -> int:
     p.add_argument("--cargo", default="PREFEITO", help="nome do cargo como impresso no BU")
     p.add_argument("--data-maxima", default="", help="dd/mm/aaaa; aborta se o log passar dela")
     p.add_argument("--turno-bu", default="", help="texto exigido na imagem do BU, ex.: '1º Turno'")
+    p.add_argument("--cargo2", default="", help="segundo cargo, ex.: GOVERNADOR")
+    p.add_argument("--liberado-d4", default="", help="referencia da decisao que liberou o 2T2026")
     p.add_argument("--out", type=Path, required=True)
     args = p.parse_args(argv)
     if not re.fullmatch(r"\d{2}/\d{2}/\d{4}", args.data_eleicao):
         print("BLOQUEADO: data no formato dd/mm/aaaa", file=sys.stderr)
         return 2
     try:
-        rows = extract(args.zip, args.data_eleicao, args.cargo.upper(), args.data_maxima, args.turno_bu)
+        rows = extract(args.zip, args.data_eleicao, args.cargo.upper(), args.data_maxima, args.turno_bu,
+                       args.cargo2.upper(), bool(args.liberado_d4))
     except (Blocked, OSError, zipfile.BadZipFile, KeyError) as e:
         print("BLOQUEADO:", e, file=sys.stderr)
         return 2

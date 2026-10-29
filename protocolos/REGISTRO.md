@@ -81,3 +81,15 @@ PLANEJAMENTO.md).
 | Ordem | Arquivo | Data (UTC) | SHA-256 | Situacao |
 |---|---|---|---|---|
 | 07 | `protocolos/07_emenda02_estudo05_exposicao_TO_20261029.md` | 2026-10-29 | `55aff69832263cae05c15e4d33880eeda3d8fe09f04ec50e619fff358ccdaddf` | Emenda 02 ao E05-0: declara a exposicao aos microdados do Tocantins e exclui TO das analises confirmatorias do Estudo 05 |
+
+## Liberacao D4 para o Estudo 05 e rebaixamento do Estudo 03 nacional (2026-10-29)
+
+Decisao do proponente (joaopedropassostocantins), em 29/10/2026, antes de qualquer
+abertura dos arquivos de urna do 2T 2026 fora de TO por este estudo:
+
+1. O 2T 2026 de todas as UFs fica liberado para o Estudo 05, nos termos do E05-0
+   (entrada 05) e das emendas 01 (entrada 06) e 02 (entrada 07; TO fora das
+   analises confirmatorias).
+2. Como a emenda nacional do Estudo 03 (dt* e poder para todas as UFs) nao foi
+   registrada antes dessa abertura, o Estudo 03 fora de TO passa a ser
+   **exploratorio**. O piloto de TO (emenda 02 do Estudo 03, entrada 04) nao e afetado.
