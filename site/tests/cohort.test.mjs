@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import {classify,clockDisagreements,declaredNationalCounts,fixtures,hhmmMinutes,summarize,thresholdDisagreements,totalVotes} from "../src/lib/cohort-model.ts";
+import {classify,clockDisagreements,declaredNationalCounts,fixtures,hhmmMinutes,materiality,nationalValidVotesPerSection,officialResult2T2026,summarize,thresholdDisagreements,totalVotes} from "../src/lib/cohort-model.ts";
 
 test("national reference is section counts, not a count of votes",()=>{
  assert.equal(declaredNationalCounts.after17,497333);
@@ -38,4 +38,19 @@ test("exact boundary is excluded from strict after group",()=>{
 });
 test("fictional outcome never encodes voter identity",()=>{
  assert.ok(fixtures.every(s=>!Object.keys(s).includes("cpf")&&!Object.keys(s).includes("electorID")));
+});
+test("materiality: >19h cohort cannot overturn the margin at national mean section size",()=>{
+ const m=materiality(declaredNationalCounts.after19,nationalValidVotesPerSection);
+ assert.equal(officialResult2T2026.validVotes,124082273);
+ assert.ok(m.minFlipFraction>1.3&&m.minFlipFraction<1.32);
+ assert.equal(m.canOverturn,false);
+});
+test("materiality: larger late sections or the >17h10 cohort require a gross, detectable shift",()=>{
+ const big19=materiality(declaredNationalCounts.after19,2*nationalValidVotesPerSection);
+ assert.equal(big19.canOverturn,true);
+ assert.ok(big19.minFlipFraction>0.65);
+ const c1710=materiality(declaredNationalCounts.after1710,nationalValidVotesPerSection);
+ assert.ok(c1710.minFlipFraction>0.36&&c1710.minFlipFraction<0.37);
+ assert.throws(()=>materiality(-1,250));
+ assert.equal(materiality(0,250).canOverturn,false);
 });

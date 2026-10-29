@@ -93,6 +93,28 @@ export function clockDisagreements(sections:readonly SectionFixture[]):string[]{
 export function thresholdDisagreements(sections:readonly SectionFixture[],group:ClosureClass):string[]{
  return sections.filter(x=>x.externalClose && classify(x,group,"externo")!==classify(x,group,"autodeclarado")).map(x=>x.id);
 }
+/**
+ * Materialidade: fração mínima dos votos válidos de uma coorte que precisaria
+ * ser transferida de um candidato ao outro para inverter a margem nacional.
+ * Cada voto transferido altera a margem em 2. Fração > 1 = impossível dentro da coorte.
+ * O tamanho médio da seção é ESTIMATIVA (votos válidos / seções informadas), não dado por seção.
+ */
+export const officialResult2T2026 = {
+  validVotes:64256232+59826041,
+  margin:4430191,
+  source:"protocolos/00_prompt_preregistro_original_20261026.md"
+} as const;
+export interface MaterialityBound { sections:number; validVotesPerSection:number; cohortValidVotes:number; maxMarginShift:number; minFlipFraction:number; canOverturn:boolean; }
+export function materiality(sections:number,validVotesPerSection:number,margin:number=officialResult2T2026.margin):MaterialityBound{
+ if(!Number.isInteger(sections)||sections<0||!(validVotesPerSection>0)||!(margin>0))throw new Error("Parâmetros inválidos");
+ const cohortValidVotes=Math.round(sections*validVotesPerSection);
+ const maxMarginShift=2*cohortValidVotes;
+ const minFlipFraction=cohortValidVotes?margin/maxMarginShift:Infinity;
+ return {sections,validVotesPerSection,cohortValidVotes,maxMarginShift,minFlipFraction,canOverturn:minFlipFraction<=1};
+}
+/** Média nacional aproximada; 497.333 é limite inferior do total de seções, logo a média é limite superior. */
+export const nationalValidVotesPerSection=officialResult2T2026.validVotes/declaredNationalCounts.after17;
+
 export function verifyFixture():void{
  const ids=new Set<string>();
  for(const s of fixtures){

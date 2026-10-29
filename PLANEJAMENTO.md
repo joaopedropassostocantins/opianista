@@ -92,6 +92,7 @@ linguagem e referencias.
 | D1 | Destino do modulo de cadencia (PR #2) | (a) PR como submodulo exploratorio em `estudos/03_pianista/contribuicoes/`; (b) estudo separado (05); (c) nao incorporar |
 | D2 | Site Arquiteto-Fiscal (PR #2; HTML autocontido, sem recursos externos) | (a) so link para o original; (b) HTML no repositorio sem publicacao; (c) publicar via GitHub Pages |
 | D3 | Fluxo de trabalho no main | Exigir pull request para alteracoes no main (recomendado: ja houve dois commits diretos) |
+| D4 | Abertura de dados do 2T 2026 para o Estudo 05 (classificacao por horario usa os mesmos dados-alvo do Estudo 03) | (a) bloquear ate o item 1.6 (recomendado); (b) abrir so BU e totalizacao, por emenda; (c) abrir tudo, rebaixando o Estudo 03 a exploratorio no 2T 2026. Ver `estudos/05_simulacao_temporal/REVISAO_METODOLOGICA_20261029.md` |
 
 ## 5 Pendencias de documentos
 

@@ -6,6 +6,8 @@
 
 O foco principal é a **TOTALIDADE DOS VOTOS das seções/urnas que encerraram tardiamente**, e NÃO os votos computados após as 17h. A pergunta metodológica passa a ser: *a composição de todos os votos dessas seções, selecionadas com cronologia verificável, difere de controles comparáveis?* Em paralelo, os registros temporais internos podem ser não independentes da própria hipótese de comprometimento. O horário isolado de emissão do BU ou recepção não é prova de votação em andamento. Consultar [o desenho de coortes e relógio não confiável](COORTES_HORARIO_NAO_CONFIAVEL.md).
 
+Revisão metodológica (identificabilidade, materialidade, desenho por local de votação e conflito com o bloqueio do Estudo 03): [REVISAO_METODOLOGICA_20261029.md](REVISAO_METODOLOGICA_20261029.md).
+
 O TSE publicou em 28/10/2026: **497.333 seções com encerramento depois das 17h, 24.268 depois das 17h10 e 6.766 depois das 19h.** São contagens de **seções, não de votos**. A extensão até 19h por si não prova alteração do relógio ou da contagem. O estudo conserva um laboratório de eventos após 17h somente como demonstração secundária das etapas de fechamento, não como métrica confirmatória.
 
 ## Pergunta
