@@ -2,7 +2,7 @@ name: Etapa 1 - eventos de habilitacao (TO, 1T 2026 e 2022)
 on:
   push:
     branches: [etapa1-pipeline]
-    paths: [".github/workflows/etapa1_eventos.yml", "estudos/03_pianista/etapas/02_parser/eventos.py"]
+    paths: [".github/workflows/etapa1_eventos.yml", "estudos/03_pianista/etapas/02_parser/eventos.py", "estudos/03_pianista/etapas/02_parser/logs_urna.py"]
   workflow_dispatch:
 permissions:
   contents: write
@@ -42,14 +42,15 @@ jobs:
       - name: Publica saidas
         if: always()
         run: |
-          git fetch -q origin saidas-actions || true
           mkdir -p pub && cd pub
           git init -q -b saidas-actions
           git config user.name "opianista-actions"
           git config user.email "actions@users.noreply.github.com"
           git remote add origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
-          git fetch -q origin saidas-actions && git checkout -q -B saidas-actions FETCH_HEAD || true
-          mkdir -p eventos_TO && cp -r ../out/* eventos_TO/
-          git add -A
-          git commit -qm "Eventos de habilitacao TO (run ${{ github.run_id }})"
-          git push -q origin saidas-actions
+          for i in 1 2 3 4 5; do
+            git fetch -q origin saidas-actions && git checkout -q -B saidas-actions FETCH_HEAD || git checkout -q -B saidas-actions
+            mkdir -p eventos_TO && cp -r ../out/* eventos_TO/
+            git add -A && git commit -qm "Eventos de habilitacao TO (run ${{ github.run_id }})" || true
+            git push -q origin saidas-actions && break
+            sleep 7
+          done

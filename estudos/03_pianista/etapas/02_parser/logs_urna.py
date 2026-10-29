@@ -64,8 +64,18 @@ def identificar_secao(nome_membro: str) -> dict[str, str]:
 
 
 def ler_logjez(conteudo: bytes) -> dict[str, bytes]:
-    """Descompacta um .logjez (7z) e devolve {nome_interno: bytes}."""
+    """Descompacta um log de urna e devolve {nome_interno: bytes}.
+
+    Ate 2022 o .logjez e 7z (LZMA); em 2026 o -log.jez e ZIP (deflate). O formato
+    e detectado pelos bytes iniciais, nao pela extensao.
+    """
     saida: dict[str, bytes] = {}
+    if conteudo[:4] == b"PK\x03\x04":
+        with zipfile.ZipFile(io.BytesIO(conteudo)) as interno:
+            for nome in sorted(interno.namelist()):
+                if not nome.endswith("/"):
+                    saida[nome] = interno.read(nome)
+        return saida
     with tempfile.TemporaryDirectory(prefix="logjez_") as pasta:
         with py7zr.SevenZipFile(io.BytesIO(conteudo), mode="r") as arquivo:
             arquivo.extractall(path=pasta)
