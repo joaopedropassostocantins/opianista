@@ -27,8 +27,8 @@ commit do trabalho.
 | Estudo 05 pre-registro | E05-0 aprovado com emendas 01 e 02 (TO fora do confirmatorio) | `protocolos/04_...`, `05_...`, `07_...` |
 | Estudo 05 placebo 2T2024 | Concluido, 51 municipios, resultado nulo | `estudos/05_simulacao_temporal/RESULTADO_PLACEBO_2T2024_TO_20261029.md` |
 | Estudo 05 placebo 1T2026 | Bloqueado pela trava da emenda 01 (eventos 05-12/10); exige emenda | mesmo arquivo, secao 9 |
-| Estudo 05 analise 2T2026 | EM ANDAMENTO: extracao por UF | ver secao 3 |
-| Relatorio preliminar | A fazer, apos a extracao | ver secao 4 |
+| Estudo 05 analise 2T2026 | Concluida (28 arquivos, 499.178 secoes); nenhum contraste significativo | `estudos/05_simulacao_temporal/resultados/analise_2T2026.json` |
+| Relatorio preliminar | Pronto (MD e DOCX ABNT), aguardando revisao do proponente e red team | `estudos/05_simulacao_temporal/RELATORIO_PRELIMINAR_2T2026.md` e `.docx` |
 | Pedido LAI ao TSE | Rascunho pronto, envio pelo proponente | `estudos/05_simulacao_temporal/PEDIDO_LAI_TSE_20261029.md` |
 | PR #3 | Rascunho, CI verde | branch `feat/migracao-site-independente-20261029` |
 | PR #5 | Site, empilhado sobre o PR #3 | outra sessao |
@@ -91,7 +91,27 @@ limitacoes e proximos passos.
 6. Os arquivos `votacao_secao_2026_*.zip` foram regravados apos o 2T e misturam
    turnos; use os arquivos transmitidos por turno (`arqurnatot`).
 
-## 6 Decisoes pendentes do proponente
+## 6 Como regenerar o relatorio em DOCX
+
+```bash
+python3 -I estudos/05_simulacao_temporal/scripts/gerar_relatorio_docx.py \
+  --md estudos/05_simulacao_temporal/RELATORIO_PRELIMINAR_2T2026.md \
+  --out estudos/05_simulacao_temporal/RELATORIO_PRELIMINAR_2T2026.docx
+```
+
+Requer python-docx, LibreOffice (`soffice`) e poppler (`pdfinfo`, `pdftotext`) para medir as
+paginas do sumario. Os contrastes exploratorios por fechamento foram gerados com
+`contraste_local.py --campo fechamento_bu` (comandos no historico do commit 54ab69e).
+
+## 7 Pendencias tecnicas
+
+1. Explicar a diferenca de 798 votos entre a soma dos BUs transmitidos e os totais oficiais
+   de presidente (provavel: secoes ausentes dos arquivos transmitidos).
+2. Identificar qual evento o TSE chama de "encerramento" nas contagens de 497.333, 24.268 e
+   6.766 secoes (nossas contagens: fechamento 6.336 e geracao do BU 6.858 apos 19h).
+3. Red team do codigo e do relatorio.
+
+## 8 Decisoes pendentes do proponente
 
 1. Emenda para o placebo 1T2026 (criterio "nenhum evento a partir de 25/10/2026").
 2. Envio do pedido LAI.
