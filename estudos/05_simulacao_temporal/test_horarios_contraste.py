@@ -91,6 +91,7 @@ class HorariosTests(unittest.TestCase):
         row = hor.extract(z, "27/10/2024", liberado_d4=True)[0]
         self.assertEqual(row["votos_apos_17h_log"], 1)
         self.assertEqual(row["votos_apos_19h_log"], 0)
+        self.assertEqual(json.loads(row["votos_por_hora_log"]), {"08": 1, "17": 1})
 
 
 class ContrasteTests(unittest.TestCase):
@@ -136,6 +137,14 @@ class ContrasteTests(unittest.TestCase):
         self.assertEqual(sorted(u["T"] for u in units), [0, 1])
         units, lost, _ = con.build_units(rows, "ultimo_voto_log", "19:00:00", "13", coerencia=False, excluir_uf=("XX",))
         self.assertEqual(units, [])
+
+    def test_local_clock_is_converted_to_brasilia_time(self):
+        rows = [{"uf": "AC", "municipio": "1", "zona": "1", "local": "9", "abertura_bu": "06:00:01",
+                 "votos_cargo": json.dumps({"13": 5, "22": 5}), "ultimo_voto_log": t}
+                for t in ("14:59:00", "15:01:00")]
+        self.assertEqual(con.brasilia_offsets(rows), {("AC", "1"): -2})
+        units, _, _ = con.build_units(rows, "ultimo_voto_log", "17:00:00", "13", coerencia=False)
+        self.assertEqual(sorted(u["T"] for u in units), [0, 1])
 
     def test_locals_without_both_classes_do_not_contribute(self):
         units = [{"local": 1, "w": 1, "T": 1, "y": 0.9}, {"local": 1, "w": 1, "T": 1, "y": 0.8},

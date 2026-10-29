@@ -31,6 +31,7 @@ OUT_FIELDS = ("uf", "municipio", "zona", "secao", "local", "comparecimento", "vo
               "brancos", "nulos", "total_apurado", "votos_cargo2", "abertura_bu", "fechamento_bu",
               "primeiro_voto_log", "ultimo_voto_log", "encerramento_confirmado_log",
               "bu_gerado_log", "votos_computados_log", "votos_apos_17h_log", "votos_apos_19h_log",
+              "votos_por_hora_log",
               "fonte_relogio")
 
 
@@ -83,7 +84,11 @@ def log_times(lines: list[str], date: str) -> dict:
             closed = hhmmss
         elif msg.startswith("Gerando arquivo de resultado [bu.dat] + [In") and not generated:
             generated = hhmmss
-    return {"votos_apos_17h_log": sum(1 for v in votes if v > "17:00:00"),
+    per_hour: dict[str, int] = {}
+    for v in votes:
+        per_hour[v[:2]] = per_hour.get(v[:2], 0) + 1
+    return {"votos_por_hora_log": json.dumps(per_hour, sort_keys=True),
+            "votos_apos_17h_log": sum(1 for v in votes if v > "17:00:00"),
             "votos_apos_19h_log": sum(1 for v in votes if v > "19:00:00"),
             "primeiro_voto_log": min(votes) if votes else "",
             "ultimo_voto_log": max(votes) if votes else "",

@@ -66,6 +66,18 @@ def load_rows(paths: list[Path], liberado_d4: bool = False) -> list[dict]:
     return rows
 
 
+def brasilia_offsets(rows: list[dict]) -> dict:
+    """Desvio do relogio local em relacao a Brasilia, por municipio, em horas.
+    A votacao abre as 8h de Brasilia em todo o pais; o relogio da urna registra
+    a hora local. Desvio = hora de abertura mais frequente no municipio - 8."""
+    hours: dict[tuple, dict] = defaultdict(lambda: defaultdict(int))
+    for r in rows:
+        a = r.get("abertura_bu", "")
+        if a:
+            hours[(r["uf"], r["municipio"])][int(a[:2])] += 1
+    return {m: max(c, key=c.get) - 8 for m, c in hours.items()}
+
+
 def coherence_failure(r: dict) -> str:
     """Verificacoes 1 a 3 da emenda 01 do E05-0; retorna o motivo ou ''."""
     needed = ("comparecimento", "votos_computados_log", "fechamento_bu",
@@ -88,6 +100,7 @@ def build_units(rows: list[dict], campo: str, limiar: str, candidato: str,
     secoes entre controle e limiar ficam fora do contraste (emenda 01, secao 1.3)."""
     cut = minutes(limiar)
     ctrl = minutes(controle) if controle else None
+    offsets = brasilia_offsets(rows)
     lost: dict[str, int] = defaultdict(int)
     parsed = []
     for r in rows:
@@ -103,7 +116,8 @@ def build_units(rows: list[dict], campo: str, limiar: str, candidato: str,
             lost["sem_local"] += 1; continue
         if not r.get(campo):
             lost["sem_horario"] += 1; continue
-        t = minutes(r[campo])
+        t = minutes(r[campo]) - 60 * offsets.get((r["uf"], r["municipio"]), 0)
+        r = {**r, "_t_brasilia": t}
         if ctrl is not None and ctrl < t <= cut:
             lost["entre_controle_e_limiar"] += 1; continue
         votes = json.loads(r[coluna_votos])
@@ -122,7 +136,7 @@ def build_units(rows: list[dict], campo: str, limiar: str, candidato: str,
     for r, votes, valid in parsed:
         target = winners[(r["uf"], r["municipio"])] if candidato == "vencedor" else candidato
         units.append({"local": (r["uf"], r["municipio"], r["zona"], r["local"]), "w": valid,
-                      "T": int(minutes(r[campo]) > cut), "y": votes.get(target, 0) / valid,
+                      "T": int(r["_t_brasilia"] > cut), "y": votes.get(target, 0) / valid,
                       "municipio": (r["uf"], r["municipio"])})
     return units, dict(lost), {"/".join(k): v for k, v in winners.items()}
 
