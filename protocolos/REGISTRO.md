@@ -93,3 +93,9 @@ abertura dos arquivos de urna do 2T 2026 fora de TO por este estudo:
 2. Como a emenda nacional do Estudo 03 (dt* e poder para todas as UFs) nao foi
    registrada antes dessa abertura, o Estudo 03 fora de TO passa a ser
    **exploratorio**. O piloto de TO (emenda 02 do Estudo 03, entrada 04) nao e afetado.
+
+## Diretriz metodologica 01 (2026-10-30)
+
+| Ordem | Arquivo | Data (UTC) | SHA-256 | Situacao |
+|---|---|---|---|---|
+| 08 | `protocolos/08_diretriz01_referencias_historicas_20261030.md` | 2026-10-30 | `6dfb9af88a107ea683194753a17cad2e3be8710f1f068fbc952a335b092ddb8e` | Determinacao do proponente: vedado usar 2T presidencial como referencia de normalidade temporal; hierarquia pre-eletronica, municipal, estadual. Componentes do piloto TO do Estudo 03 que usam o 2T 2022 passam a descritivos. |

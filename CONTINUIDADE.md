@@ -6,6 +6,8 @@ commit do trabalho.
 
 ## 1 Regras que nao podem ser quebradas
 
+0. Diretriz 01 (`protocolos/08_...`): nunca usar 2T presidencial como referencia de normalidade temporal. Referencias: pre-urna eletronica, depois 2T municipais, depois 2T estaduais. Parametro sem fonte = nao observado.
+
 1. Pre-registros e emendas em `protocolos/` nunca sao editados depois de
    commitados; mudancas entram como nova emenda, com SHA-256 em
    `protocolos/REGISTRO.md`.
@@ -103,10 +105,20 @@ Requer python-docx, LibreOffice (`soffice`) e poppler (`pdfinfo`, `pdftotext`) p
 paginas do sumario. Os contrastes exploratorios por fechamento foram gerados com
 `contraste_local.py --campo fechamento_bu` (comandos no historico do commit 54ab69e).
 
+## 6a Parecer critico de 30/10/2026
+
+Recebido e respondido: `estudos/05_simulacao_temporal/PARECER_CRITICO_20261030.md` e
+`RESPOSTA_PARECER_20261030.md`. Relatorio passou a versao 2. Dados de apoio baixados:
+`data/2026_mz/` (detalhe_votacao_munzona_2026 e votacao_candidato_munzona_2026, com os
+dois turnos; nomes de municipios em `nomes_municipios.json`).
+
 ## 7 Pendencias tecnicas
 
-1. Explicar a diferenca de 798 votos entre a soma dos BUs transmitidos e os totais oficiais
-   de presidente (provavel: secoes ausentes dos arquivos transmitidos).
+1. (Resolvido) Diferenca de 798 votos: 70 secoes do exterior ausentes dos arquivos transmitidos.
+1a. Reconciliar evento por evento 2 votos apos 19h (11 x 13 do TSE) e 62 entre 17h e 18h.
+1b. Extrator por minuto (habilitacoes e votos, jornada integral) e reextracao de 2024 com histograma.
+1c. Calibracao temporal pela diretriz 01 (pre-urna, municipais, estaduais).
+1d. Causa das 8 secoes com log < BU sem padrao de substituicao (inventario em resultados/).
 2. Identificar qual evento o TSE chama de "encerramento" nas contagens de 497.333, 24.268 e
    6.766 secoes (nossas contagens: fechamento 6.336 e geracao do BU 6.858 apos 19h).
 3. Red team do codigo e do relatorio.

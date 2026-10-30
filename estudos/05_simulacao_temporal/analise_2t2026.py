@@ -28,7 +28,8 @@ _spec.loader.exec_module(con)
 
 OFICIAL = {"lula_13": 64256232, "flavio_22": 59826041, "margem": 4430191,
            "secoes_apos_17h": 497333, "secoes_apos_17h10": 24268, "secoes_apos_19h": 6766,
-           "votos_apos_17h": 34393}
+           "votos_apos_17h": 34393, "votos_17h_18h": 32399, "votos_18h_19h": 1981, "votos_apos_19h": 13,
+           "votos_apos_17h_secoes_encerradas_apos_19h": 4773}
 
 
 def read(paths):
@@ -80,15 +81,25 @@ def describe(rows, offsets, label):
         out[f] = {"n": len(ts), **{f"apos_{h}": sum(1 for t in ts if t > con.minutes(h + ":00"))
                                    for h in ("17:00", "17:10", "18:00", "19:00")}}
         out[f]["frac_apos_17:00"] = out[f]["apos_17:00"] / len(ts) if ts else None
-    late = 0
+    faixas = {"17h_18h": 0, "18h_19h": 0, "apos_19h": 0}
+    com_hist = 0
     for r in rows:
         if r["uf"] == "ZZ" or not r.get("votos_por_hora_log"):
             continue
+        com_hist += 1
         off = offsets.get((r["uf"], r["municipio"]), 0)
         for h, c in json.loads(r["votos_por_hora_log"]).items():
-            if int(h) - off >= 17:
-                late += c
-    out["votos_apos_17h_brasilia"] = late
+            hb = int(h) - off
+            if hb == 17:
+                faixas["17h_18h"] += c
+            elif hb == 18:
+                faixas["18h_19h"] += c
+            elif hb >= 19:
+                faixas["apos_19h"] += c
+    # Sem histograma (extracao anterior ao campo) a contagem e NAO DISPONIVEL, nunca zero.
+    out["votos_apos_17h_brasilia"] = sum(faixas.values()) if com_hist else None
+    out["votos_por_faixa_brasilia"] = faixas if com_hist else None
+    out["secoes_com_histograma"] = com_hist
     comp = [int(r["comparecimento"]) for r in rows if r.get("comparecimento")]
     out["comparecimento_medio_secao"] = sum(comp) / len(comp) if comp else None
     out["coerencia"] = defaultdict(int)
