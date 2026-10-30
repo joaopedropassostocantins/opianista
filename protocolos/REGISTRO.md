@@ -44,6 +44,14 @@ valido.
 
 A entrega 02 é adicional e não reconstitui nem substitui o arquivo histórico `00_preregistro.md` mencionado acima.
 
+## Novo pré-registro do Estudo 05 — proposto para GATE E05-0
+
+| Ordem | Arquivo | Data (UTC) | SHA-256 | Situação |
+|---|---|---|---|---|
+| 05 | `protocolos/04_estudo05_preregistro_v1_20261029.md` | 2026-10-29 | `9c6aaad29074c854982561a054d8bec726fb0cbb5820b311111ea55afc34e142` | Pre-registro E05-0, aprovado (ver Aprovacoes de GATE). Renumerado de 04 para 05 neste indice em 29/10/2026, porque a ordem 04 ja estava ocupada pela Emenda 02 do Estudo 03; o arquivo nao foi alterado. |
+
+O SHA-256 foi computado por `sha256sum` no GitHub Actions (run 40820750825). Esta entrada não é declaração de aprovação do proponente e não supera o bloqueio D4. O texto já explicita o contato prévio com totais nacionais e contagens agregadas de horário, portanto a qualificação de "pré" limita-se aos microdados de seção ainda não abertos por este estudo. Após aprovação, qualquer modificação dependerá de emenda datada, sem sobrescrever a versão registrada.
+
 ## Aprovacoes de GATE
 
 | Estudo | Gate | Versao aprovada | Data | Aprovado por |
@@ -53,3 +61,41 @@ A entrega 02 é adicional e não reconstitui nem substitui o arquivo histórico 
 A partir desta aprovacao, os parametros da versao 1.1 estao congelados. Qualquer
 alteracao exige emenda nova, registrada antes da abertura dos dados do 2o turno
 de 2026.
+
+## Emenda 01 do Estudo 05 e aprovacao do GATE E05-0 (2026-10-29)
+
+| Ordem | Arquivo | Data (UTC) | SHA-256 | Situacao |
+|---|---|---|---|---|
+| 06 | `protocolos/05_emenda01_estudo05_20261029.md` | 2026-10-29 | `eb5144a95b8b7c47498eff69813bb2a856b831d71772d74645400d22d0ce0861` | Emenda 01 ao E05-0: encerramento pelo ultimo voto, analise P-I condicional ao relogio da urna, verificacoes de coerencia, placebos e pedido LAI |
+
+| Estudo | Gate | Versao aprovada | Data | Aprovado por |
+|--------|------|-----------------|------|--------------|
+| 05 Coortes de encerramento tardio | GATE E05-0 | Entrada 05 (SHA-256 9c6aaad2...afc34e142) com a emenda 01 (entrada 06) | 2026-10-29 | Proponente (joaopedropassostocantins), mensagem "Tudo aprovado" na sessao de trabalho |
+
+Atualizacao de 29/10/2026: o item 1.6 do Estudo 03 foi cumprido para o piloto do
+Tocantins (Emenda 02 do Estudo 03, entrada 04, incorporada com o PR #4). Para as demais
+UFs, o Estudo 03 ainda depende de uma emenda nacional (dt* com todas as UFs). A liberacao
+dos microdados do 2T 2026 para o Estudo 05 continua sendo decisao do proponente (D4 em
+PLANEJAMENTO.md).
+
+| Ordem | Arquivo | Data (UTC) | SHA-256 | Situacao |
+|---|---|---|---|---|
+| 07 | `protocolos/07_emenda02_estudo05_exposicao_TO_20261029.md` | 2026-10-29 | `55aff69832263cae05c15e4d33880eeda3d8fe09f04ec50e619fff358ccdaddf` | Emenda 02 ao E05-0: declara a exposicao aos microdados do Tocantins e exclui TO das analises confirmatorias do Estudo 05 |
+
+## Liberacao D4 para o Estudo 05 e rebaixamento do Estudo 03 nacional (2026-10-29)
+
+Decisao do proponente (joaopedropassostocantins), em 29/10/2026, antes de qualquer
+abertura dos arquivos de urna do 2T 2026 fora de TO por este estudo:
+
+1. O 2T 2026 de todas as UFs fica liberado para o Estudo 05, nos termos do E05-0
+   (entrada 05) e das emendas 01 (entrada 06) e 02 (entrada 07; TO fora das
+   analises confirmatorias).
+2. Como a emenda nacional do Estudo 03 (dt* e poder para todas as UFs) nao foi
+   registrada antes dessa abertura, o Estudo 03 fora de TO passa a ser
+   **exploratorio**. O piloto de TO (emenda 02 do Estudo 03, entrada 04) nao e afetado.
+
+## Diretriz metodologica 01 (2026-10-30)
+
+| Ordem | Arquivo | Data (UTC) | SHA-256 | Situacao |
+|---|---|---|---|---|
+| 08 | `protocolos/08_diretriz01_referencias_historicas_20261030.md` | 2026-10-30 | `6dfb9af88a107ea683194753a17cad2e3be8710f1f068fbc952a335b092ddb8e` | Determinacao do proponente: vedado usar 2T presidencial como referencia de normalidade temporal; hierarquia pre-eletronica, municipal, estadual. Componentes do piloto TO do Estudo 03 que usam o 2T 2022 passam a descritivos. |

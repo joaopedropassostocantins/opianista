@@ -20,17 +20,17 @@ para documentar isonomia e para calibrar o parser compartilhado.
 
 ## 2 Estudo 03 - sequencia de trabalho ate a abertura do 2T 2026
 
-Nada do 2o turno de 2026 e aberto antes do item 1.6.
+Nada do 2o turno de 2026 e aberto antes do item 1.6. Situacao em 29/10/2026: cumprido para o piloto do Tocantins; as demais UFs aguardam emenda nacional.
 
 | No | Tarefa | Responsavel | Depende de | Situacao |
 |----|--------|-------------|------------|----------|
-| 1.1 | Corrigir coleta.py (secao 3.1) | Claude ou colaborador | - | Pendente |
-| 1.2 | Rodar coleta em modo descoberta (sem download) e revisar fontes.md | Colaborador | 1.1 | Pendente |
-| 1.3 | Confirmar nos metadados e em amostra de logs do 1T 2026 que existem modalidade de habilitacao, timestamp e secao | Colaborador + revisao humana | 1.2 | Pendente |
-| 1.4 | Catalogo de mensagens do log (Etapa 2 antecipada, so 1T 2026 e 2T 2022) | Claude | 1.3 | Pendente |
-| 1.5 | Calcular dt* no 1T 2026 e rodar diagnostico de poder com insercoes simuladas | Claude | 1.4 | Pendente |
-| 1.6 | Emenda com dt*, poder e lista de municipios com denuncia de transporte; aprovacao | Proponente | 1.5 | Pendente |
-| 1.7 | Download e abertura do 2T 2026 | Colaborador | 1.6 | Bloqueado |
+| 1.1 | Corrigir coleta.py (secao 3.1) | Claude ou colaborador | - | Feito (PR #4) |
+| 1.2 | Rodar coleta em modo descoberta (sem download) e revisar fontes.md | Colaborador | 1.1 | Feito via GitHub Actions (piloto TO) |
+| 1.3 | Confirmar nos metadados e em amostra de logs do 1T 2026 que existem modalidade de habilitacao, timestamp e secao | Colaborador + revisao humana | 1.2 | Feito: confirmado e validado contra o BU |
+| 1.4 | Catalogo de mensagens do log (Etapa 2 antecipada, so 1T 2026 e 2T 2022) | Claude | 1.3 | Feito (TO) |
+| 1.5 | Calcular dt* no 1T 2026 e rodar diagnostico de poder com insercoes simuladas | Claude | 1.4 | Feito (TO): dt* = 60 s |
+| 1.6 | Emenda com dt*, poder e lista de municipios com denuncia de transporte; aprovacao | Proponente | 1.5 | Feito para TO: Emenda 02 (entrada 04), aprovada com o merge do PR #4; emenda nacional pendente |
+| 1.7 | Download e abertura do 2T 2026 | Colaborador | 1.6 | Feito para TO; demais UFs dependem da emenda nacional |
 
 O parser das tarefas 1.4 e 1.5 serve tambem ao Estudo 01 (calibracao de sigma_d
 e placebo S5 no 2T 2022).
@@ -92,6 +92,7 @@ linguagem e referencias.
 | D1 | Destino do modulo de cadencia (PR #2) | (a) PR como submodulo exploratorio em `estudos/03_pianista/contribuicoes/`; (b) estudo separado (05); (c) nao incorporar |
 | D2 | Site Arquiteto-Fiscal (PR #2; HTML autocontido, sem recursos externos) | (a) so link para o original; (b) HTML no repositorio sem publicacao; (c) publicar via GitHub Pages |
 | D3 | Fluxo de trabalho no main | Exigir pull request para alteracoes no main (recomendado: ja houve dois commits diretos) |
+| D4 | Abertura de dados do 2T 2026 para o Estudo 05 | **DECIDIDO em 29/10/2026 pelo proponente: opcao (a).** Parte empirica do Estudo 05 bloqueada ate a aprovacao do item 1.6 do Estudo 03; nenhum dado do 2T 2026 (BU, totalizacao, logs ou horarios) e aberto antes disso. Ver `estudos/05_simulacao_temporal/REVISAO_METODOLOGICA_20261029.md`. **Atualizacao 29/10:** item 1.6 cumprido para TO (PR #4); o Tocantins fica fora das analises confirmatorias do Estudo 05 por exposicao (entrada 07 do registro); liberacao das demais UFs depende da emenda nacional do Estudo 03 e de decisao do proponente.  **Atualizacao 29/10/2026, ~19h UTC: o proponente liberou o 2T 2026 de todas as UFs para o Estudo 05 e decidiu que o Estudo 03 fora de TO passa a exploratorio (exposicao dos dados-alvo antes da emenda nacional).** |
 
 ## 5 Pendencias de documentos
 
@@ -112,3 +113,38 @@ linguagem e referencias.
 | Logs sem campo de modalidade de habilitacao | Item 1.3 antes de qualquer outro trabalho; se ausente, H1a e H1b nao sao executaveis |
 | Licenca dos logs do 2T 2026 nao declarada | Nao redistribuir dados; publicar so agregados e codigo |
 | Leitura publica de resultados parciais como conclusao | Aviso no README; relatorios so apos red team |
+
+## 7 Prioridade maxima - Estudo 05 (urnas de encerramento tardio, BU integral, relogio e insider)
+
+**Reorientacao de 29/10/2026:** a unidade de analise e a **secao/urna que encerrou tarde**; analisar **TODOS os votos** de cada BU dessa coorte, sem limitar a votos registrados depois das 17h. O horario registrado na propria urna e uma observacao interna com confiabilidade a validar, nao uma fonte independente. A pergunta "e se o relogio puder ser alterado?" torna obrigatoria a triangulacao por observacoes externas e testes de sensibilidade; nenhuma alteracao intencional foi demonstrada. O simulador de votos apos 17h e apenas educativo, subordinado ao novo painel de coortes.
+
+Dados publicados TSE (28/10/2026): 497.333 secoes encerradas depois de 17h; 24.268 apos 17h10; **6.766 apos 19h**. Estes numeros contam secoes, nao votos, e podem abranger procedimentos de encerramento apos o ultimo voto. Consultar [plano revisado](estudos/05_simulacao_temporal/COORTES_HORARIO_NAO_CONFIAVEL.md). Metodo historico principal para cadencia: **segundos turnos municipais**, nunca turnos presidenciais como paradigma de fila.
+
+
+**Novo estudo exploratorio:** [simulacao temporal](estudos/05_simulacao_temporal/README.md) e [analise de origem e totalizacao](estudos/05_simulacao_temporal/ANALISE_INSIDER_BU_TOTALIZACAO.md).
+
+Perguntas tecnicas prioritarias, em ordem:
+
+1. Habilitacao do eleitor: condicoes de abertura de sessoes e controles de horario.
+2. Terminal do mesario: intervencoes do operador e estados de autorizacao.
+3. Contabilizacao: votos nominais, brancos, nulos, sessoes incompletas e RDV.
+4. Geracao do BU: origem dos totais e fixacao do resultado local.
+5. Logs e persistencia: quais eventos ficam observaveis e quais nao.
+
+**Duas hipoteses separadas:** (A) origem comprometida antes da emissao do BU, que nao e refutada por coerencia entre registros do mesmo subsistema; (B) diferenca de totalizacao central comparada aos BUs locais preservados independentemente, verificavel por recontagem por secao. Suspensao da recepcao e da totalizacao ate 19h nao prova vulnerabilidade e nao pode ser confundida com recebimento tardio normal.
+
+**Entrega existente no PR #3:** painel didatico com fixtures totalmente sinteticas, sem execucao de urna real; testes automatizados e links ao codigo reconstruido de desenvolvimento do simulador VOTA. Revisao humana obrigatoria antes de confundir hipoteses, anomalias e prova.
+
+**Proximos gates:** (i) validar fontes e horario de cada registro; (ii) obter BUs e logs oficiais com hashes; (iii) identificar copias preservadas fora do canal central; (iv) verificar compatibilidade da reconstrucao web com a versao de producao autorizada; (v) preregistrar testes confirmatorios antes dos dados-alvo. Sem alteracao de pre-registros anteriores.
+
+## 8 Missoes preparatorias do Estudo 05 — 29/10/2026
+
+| Missao | Estado comprovado | Bloqueio remanescente |
+|---|---|---|
+| 1. Pre-registrar E05 | protocolo v1.0 versionado; SHA-256 registrado na ordem 05 de protocolos/REGISTRO.md (renumerada de 04); exposicao previa aos totais nacionais declarada. | Aprovado (E05-0 com emenda 01). Item 1.6 cumprido so para TO, que fica excluido por exposicao (entrada 07); demais UFs aguardam emenda nacional do Estudo 03. |
+| 2. Pipeline com placebos | pipeline_placebo.py agrega votos integrais (2T2024 e 1T2026), exige manifesto e SHA-256; coleta.py legado blindado contra downloads ambiguos 2026; contrato_eventos.py implementa contrato, catalogo abstrato e percentil 1 de dt*. Testes sinteticos em CI. | **Nenhuma execucao de CSV/log REAL**; recurso oficial isolado, local de votacao, validacao de logs, catalogo empirico e dt* seguem pendentes. |
+| 3. Margem oficial | **Confirmada** 4.430.191 votos; 64.256.232 - 59.826.041; validos = 124.082.273; ver estudos/05_simulacao_temporal/VALIDACAO_MARGEM_20261029.md. | Nenhum numero agregado adicional requerido para esta verificacao. |
+
+O item 1.1 do Estudo 03 teve a trava de download corrigida no PR #3, mas os demais riscos de descoberta e filtro de UF do coletor original exigem auditoria antes de liberar downloads. O pipeline placebo nao baixa recursos automaticamente. O contrato de eventos ainda NAO decodifica .logjez oficial; portanto H1a/H1b e dt* nao foram calculadas.
+
+**Alerta ao coordenador:** o pre-registro E05 foi redigido apos conhecimento de agregados nacionais do 2T2026 e mencao a possivel exposicao previa de amostra de 2,1%. Sua validade confirmatoria exige declaracao completa de exposicoes, aprovacao e congelamento antes de microdados por secao. Nao marcar como liberado o bloqueio D4.

@@ -1,0 +1,95 @@
+# Estudo 05 — coortes de urnas, horários e integridade da contabilização
+
+**Status:** exploratório; criado em 29/10/2026. Este novo estudo não modifica pré-registros aprovados dos Estudos 01 ou 03.
+
+## Escopo prioritário corrigido — leitura obrigatória
+
+O foco principal é a **TOTALIDADE DOS VOTOS das seções/urnas que encerraram tardiamente**, e NÃO os votos computados após as 17h. A pergunta metodológica passa a ser: *a composição de todos os votos dessas seções, selecionadas com cronologia verificável, difere de controles comparáveis?* Em paralelo, os registros temporais internos podem ser não independentes da própria hipótese de comprometimento. O horário isolado de emissão do BU ou recepção não é prova de votação em andamento. Consultar [o desenho de coortes e relógio não confiável](COORTES_HORARIO_NAO_CONFIAVEL.md).
+
+Revisão metodológica (identificabilidade, materialidade, desenho por local de votação e conflito com o bloqueio do Estudo 03): [REVISAO_METODOLOGICA_20261029.md](REVISAO_METODOLOGICA_20261029.md).
+
+Primeiro placebo executado (2T2024, Palmas), validação de esquema e inventário de fontes de horário: [RESULTADO_PLACEBO_2T2024_TO_20261029.md](RESULTADO_PLACEBO_2T2024_TO_20261029.md).
+
+## Limitação central: o horário vem do relógio da própria urna
+
+A análise principal adotada (emenda 01, análise P-I) classifica cada seção pelo horário do último voto registrado no log da urna. Não existe, em dados públicos, outra fonte desse horário para todas as seções.
+
+O que a análise **pode** mostrar:
+
+1. Se as seções que, segundo a urna, votaram até mais tarde têm composição de votos diferente das seções do mesmo local que encerraram no horário.
+2. Se os registros da urna são coerentes entre si (votos no log iguais ao comparecimento do BU; fechamento igual ao encerramento confirmado; ordem dos eventos).
+
+O que a análise **não pode** mostrar:
+
+1. Que o horário registrado corresponde ao horário real. Um relógio errado, ou um software que registrasse horários incorretos, produziria registros coerentes entre si e passaria em todas as verificações internas.
+2. Que um comprometimento do software não ocorreu. Se ele atingisse todas as urnas igualmente, as seções tardias e as de controle seriam afetadas da mesma forma e a comparação daria resultado nulo.
+3. Causalidade. Seções com fila são diferentes por natureza (maiores, mais urbanas); o efeito fixo de local reduz, mas não elimina, essa diferença.
+
+Por isso, todo resultado da análise P-I é apresentado com a frase: "válido sob a hipótese de que o relógio e o log da urna registram corretamente o horário dos eventos". A única forma de remover essa condição é uma fonte externa (horário de recebimento do BU pelo TSE e atas das mesas), objeto do pedido de acesso à informação em [PEDIDO_LAI_TSE_20261029.md](PEDIDO_LAI_TSE_20261029.md).
+
+**Bloqueio (decisão D4, 29/10/2026):** a análise empírica com dados do 2º turno de 2026 só começa após a aprovação do item 1.6 do Estudo 03. Até lá: desenho, pré-registro, código com dados sintéticos e placebo em eleições já abertas.
+
+O TSE publicou em 28/10/2026: **497.333 seções com encerramento depois das 17h, 24.268 depois das 17h10 e 6.766 depois das 19h.** São contagens de **seções, não de votos**. A extensão até 19h por si não prova alteração do relógio ou da contagem. O estudo conserva um laboratório de eventos após 17h somente como demonstração secundária das etapas de fechamento, não como métrica confirmatória.
+
+## Pergunta
+
+Em uma eleição cujo encerramento regular é previsto às 17h no horário de Brasília, mas na qual podem ocorrer filas ou uma extensão excepcional até 19h, como verificar a coerência entre estado, horário, eventos de voto, geração do BU, logs e relatórios? Uma discrepância observável perto de uma fronteira horária justificaria inspeção dos componentes de relógio?
+
+**O segundo turno de 25/10/2026 teve decisão excepcional de extensão até 19h**, segundo comunicação oficial do TRE-DF. Isso não demonstra, por si só, que subsistemas perderam proteção ou que votos foram inseridos indevidamente.
+
+### Referências normativas
+
+- [Resolução TSE nº 23.759/2026, art. 29](https://www.tse.jus.br/legislacao/compilada/res/2026/resolucao-no-23-759-de-26-de-fevereiro-de-2026): encerramento às 17h, salvo fila já presente; controle por senhas.
+- [TRE-DF, 27/10/2026](https://www.tre-df.jus.br/comunicacao/noticias/2026/Outubro/tredf-informa-quantidade-de-votos-computados-apos-as-17-horas-no-segundo-turno-das-eleicoes): reconhece extensão até 19h, diferenciando essa prorrogação da fila regular.
+- [TSE: após o encerramento](https://www.tse.jus.br/comunicacao/noticias/2026/Setembro/faltam-7-dias-veja-qual-e-o-caminho-do-voto-depois-de-encerrada-a-votacao): elaboração do BU, mídia de resultado, transmissão, verificação e totalização.
+
+## Base técnica e limites
+
+A referência pública [urna-vota-decompiled](https://github.com/igoroalonge/urna-vota-decompiled), de Igor Alonge, é uma **reconstrução** do WebAssembly do simulador de votação, identificada pelo autor como versão 10.23.0.1 de DESENVOLVIMENTO. Não é o código-fonte original, não compila como o sistema de produção e **não é o executável das urnas lacradas de 2026**.
+
+Foram examinados no repositório público:
+1. Componentes de checagem de horário da thread do operador: src/uenux2/src/app/vota/operador/comum/cinformacaothreadoperador.cpp;
+2. Estado associado a indicação de término de horário: src/uenux2/src/app/vota/operador/outrasopcoes/chorariovotacaoterminou.u34.cpp;
+3. Geração do boletim: src/uenux2/src/app/vota/eleitor/fimvotacao/cgerabu.h;
+4. Log de início e término de relatórios: src/uenux2/src/app/comum/log/ieventoslog.u35.cpp;
+5. Segundo a própria documentação do projeto, a thread do operador **não executa na experiência web normal**.
+
+**Não há demonstração aqui de uma vulnerabilidade do VOTA, nem comprovação de funcionamento distinto após 17h ou 19h no sistema lacrado.** A implementação do site é uma máquina de estados sintética, independente do WASM. Não usa hardware da urna nem gera arquivos oficiais/assinaturas.
+
+## Hipóteses exploratórias (sem estatuto de pré-registro)
+
+- **H0:** horários, transições e registros permanecem coerentes com fila e extensão legalmente autorizadas.
+- **H1:** incoerência verificada perto de 17h/19h pode justificar revisão específica do componente de horário.
+- **H2:** diferenças verificáveis entre dados públicos do BU, RDV, log e assinatura devem ser investigadas após controlar diferenças esperadas de gravação e contingência.
+- **H3:** fusos e relógios, se interpretados incorretamente, produzem alertas falsos e podem afetar comparação com cronologia do encerramento.
+- **H4:** geração, impressão ou transmissão após 19h **não implica** voto após 19h.
+- **H5:** o contraste com fontes fora do domínio de software pode aumentar a capacidade de verificação de afirmações sobre o evento real.
+
+## Produto implementado
+
+O site apresenta um laboratório interativo que percorre 16:55–19:15 e mostra:
+- Cenário regular sem fila; continuação dos eleitores que já estavam na fila; extensão excepcional assumida válida; e extensão com lacuna de log **artificialmente criada no modelo**; e injeção fictícia de evento posterior ao encerramento.
+- Estado temporal, eventos da seção, linhas de log fictícias e totais de BU fictício.
+- Alarmes de consistência do próprio modelo, detecção de eventos posteriores ao BU sem alterar retroativamente seu conteúdo e marcadores ainda não avaliados quando seria necessária evidência real.
+- Testes unitários que demonstram a detecção da lacuna artificial, sem atribuí-la ao software eleitoral.
+
+Arquivos: site/src/lib/temporal-simulator.ts; site/src/components/TemporalSimulator.ts; site/tests/temporal.test.mjs.
+
+**A correspondência 1 evento de voto para 1 linha de log foi inventada como contrato do modelo. Não pode ser presumida nos logs reais sem validação técnica.** Os totais fictícios de A/B/BRANCO/NULO não são dados do TSE.
+
+## Prioridade máxima: hipótese de alteração antes do BU e na totalização
+
+Acrescentamos [análise de ameaça e matriz de hipóteses](ANALISE_INSIDER_BU_TOTALIZACAO.md) abordando a origem, os BUs preservados e o sistema central; o laboratório no site distingue coerência interna de verificação externa. As cinco prioridades de inspeção são **habilitação, terminal do mesário, contabilização, geração do BU e logs/persistência**, nessa ordem. A extensão até 19h não equivale a perda automática de salvaguardas e o novo experimento é totalmente sintético.
+
+## Plano de verificação futura (somente fontes públicas e ambiente autorizado)
+
+1. Registrar versão/hash e limitações da reconstrução; distinguir símbolos observados de nomes inferidos.
+2. Fixar hipóteses, critérios de exclusão e regras de detecção antes da abertura dos dados-alvo do estudo.
+3. Obter documentos oficiais públicos com trilhas de origem, hashes e documentação da versão/modelo.
+4. Mapear quais eventos efetivamente constam em log, RDV e BU e quais dependem de ata ou observação externa.
+5. Normalizar o horário real da seção para Brasília, separando hora do voto, encerramento, impressão, geração e recepção no totalizador.
+6. Testar falsos positivos com filas, falhas de gravação, contingência e controle negativo.
+7. Para análise de cadência, manter o 2º turno **municipal** como paradigma principal, sem usar turnos presidenciais históricos como paradigma de cadência; eventuais controles técnicos por formato são outra questão.
+8. Realizar qualquer ensaio do binário lacrado apenas mediante autorização em ambiente institucional apropriado.
+
+**Regra editorial:** não tratar um alerta sintético como resultado empírico; resultados nulos e explicações alternativas devem ser publicados com o mesmo destaque que sinais positivos.

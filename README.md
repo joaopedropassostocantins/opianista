@@ -18,6 +18,7 @@ relatados com o mesmo destaque que resultados positivos.
 | [02 Transferencia de votos](estudos/02_transferencia_votos/) | A captacao entre turnos foi atipica frente a 2022? | Exploratorio; codigo a publicar |
 | [03 Mesario pianista](estudos/03_pianista/) | Ha assinaturas de insercao de votos pela mesa nos logs? | Piloto TO concluido: hipoteses nao sustentadas; execucao nacional pendente |
 | [04 Auditabilidade](estudos/04_auditabilidade/) | Que tamanho de adulteracao o sistema consegue detectar? | Proposta de artigo |
+| [05 Urnas de encerramento tardio](estudos/05_simulacao_temporal/) | Qual o perfil de TODOS os votos nas urnas que encerraram tardiamente? O relogio e verificavel? | Exploratorio; coortes e testes sinteticos |
 
 Painel de coordenacao: [PLANEJAMENTO.md](PLANEJAMENTO.md).
 
