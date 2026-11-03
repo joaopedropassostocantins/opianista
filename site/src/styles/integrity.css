@@ -1,0 +1,23 @@
+.risk-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:2rem}
+.risk-grid article{background:#f8f8f0;border:1px solid var(--color-border);padding:1.5rem}
+.risk-grid h3{margin:1rem 0}.risk-grid p{font-size:.92rem;color:var(--color-muted)}
+.integrity-lab{background:#f8f7ec;border:1px solid var(--color-border);padding:1.5rem}
+.integrity-lab label{display:block;font:.78rem var(--font-mono);font-weight:700;margin-bottom:.5rem}
+.integrity-lab select{padding:.75rem;width:min(100%,500px);font:inherit;background:white;border:1px solid var(--color-border)}
+.mono-small{font:.79rem var(--font-mono);margin:1rem 0}
+.table-scroller{overflow-x:auto}.integrity-table{border-collapse:collapse;width:100%;min-width:620px;font-size:.86rem}
+.integrity-table caption{caption-side:top;text-align:left;font:700 .84rem var(--font-body);margin:1rem 0}
+.integrity-table th,.integrity-table td{border-bottom:1px solid var(--color-border);padding:.7rem .4rem;text-align:right}
+.integrity-table th:first-child{text-align:left}.integrity-table thead{background:#e8ebdc}
+.integrity-lab h3{margin-top:2rem}
+.integrity-checks{list-style:none;padding:0}.integrity-check{display:grid;grid-template-columns:1fr auto;gap:.3rem .8rem;padding:.85rem 0;border-bottom:1px solid var(--color-border)}
+.integrity-check strong{font-size:.87rem}.integrity-check span{font:700 .72rem var(--font-mono)}
+.integrity-check small{grid-column:1/-1;color:var(--color-muted)}
+.integrity-check.divergente span{color:#914323}.integrity-check.coerente span{color:#30562c}
+.priority-title{margin-top:3.5rem}.priorities{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;list-style:none;margin:0 0 2rem}
+.priority-card{background:#faf9f1;border:1px solid var(--color-border);padding:1.5rem;display:flex;align-items:flex-start;gap:1rem}
+.priority-card h4{font-size:1.14rem;margin:0 0 .5rem}.priority-card p{font-size:.9rem;margin:0 0 .6rem}
+.priority-card small{display:block;font-size:.79rem;color:#2e5730}
+.priority-card .priority-limitation{font-size:.78rem;color:#81503f;margin-top:.8rem}
+.priority-card a{font-size:.8rem;font-weight:700;text-underline-offset:3px}
+@media(max-width:780px){.risk-grid,.priorities{grid-template-columns:1fr}}

@@ -1,0 +1,20 @@
+.section-cohort{background:#f0f3e5}
+.cohort-national{font-size:.89rem;color:#354f35;line-height:1.65;border-bottom:1px solid var(--color-border);padding-bottom:1rem;margin-bottom:2rem}
+.cohort-national a{font-weight:700}
+.cohort-controls{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;padding:1.25rem;background:#fcfbf5;border:1px solid var(--color-border)}
+.cohort-controls label{font:700 .75rem var(--font-mono)}
+.cohort-controls select{font:inherit;background:white;padding:.7rem;border:1px solid var(--color-border);max-width:100%}
+.cohort-cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.8rem;margin:1rem 0}
+.cohort-cards>div{padding:1.2rem;min-width:0;background:#fff;border:1px solid var(--color-border)}
+.cohort-cards small{font:.72rem/1.5 var(--font-mono);display:block;color:var(--color-muted);min-height:2.8em}
+.cohort-cards strong{display:block;font:500 clamp(1.3rem,2.5vw,2.1rem) var(--font-display);margin-top:.7rem;overflow-wrap:anywhere}
+.cohort-discrepancy{margin:1.1rem 0;font-size:.88rem}
+.cohort-table{border-collapse:collapse;width:100%;min-width:640px;font:.85rem var(--font-body)}
+.cohort-table caption{text-align:left;caption-side:top;font-weight:700;font-size:.94rem;padding:.8rem 0}
+.cohort-table th,.cohort-table td{padding:.7rem .55rem;border-bottom:1px solid var(--color-border);text-align:left}
+.cohort-table thead{background:#e0e5d5}.cohort-table tbody tr:nth-child(even){background:#f9faf5}
+.cohort-status{display:inline-block;border-radius:3px;padding:.2rem .45rem;font-size:.76rem;font-weight:700}
+.cohort-status.incluir{background:#d7ef58}.cohort-status.excluir{background:#e5e7de}.cohort-status.indeterminado{background:#f8d9a0}
+.cohort-foot{margin-top:1.4rem;font-size:.87rem;font-weight:700}
+@media(max-width:900px){.cohort-cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:510px){.cohort-cards{grid-template-columns:1fr}.cohort-controls{display:grid;grid-template-columns:1fr}.cohort-controls select{width:100%}}
