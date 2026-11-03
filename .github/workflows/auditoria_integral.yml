@@ -1,0 +1,42 @@
+name: Auditoria do dia integral e build do site restaurado
+on:
+  pull_request:
+    paths:
+      - 'estudos/03_pianista/etapas/05_inferencia/dia_integral.py'
+      - 'estudos/03_pianista/etapas/05_inferencia/test_dia_integral.py'
+      - 'site/**'
+      - '.github/workflows/auditoria_integral.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  teste-integral-sintetico:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Executar somente testes sinteticos, sem baixar dados eleitorais
+        run: python -m unittest discover -s estudos/03_pianista/etapas/05_inferencia -p 'test_dia_integral.py' -v
+  site-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+      - name: Instalacao reproduzivel
+        working-directory: site
+        run: npm ci
+      - name: Typecheck
+        working-directory: site
+        run: npm run typecheck
+      - name: Testes de interface
+        working-directory: site
+        run: npm test
+      - name: Build sem deploy
+        working-directory: site
+        run: npm run build

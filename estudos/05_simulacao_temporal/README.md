@@ -93,3 +93,7 @@ Acrescentamos [análise de ameaça e matriz de hipóteses](ANALISE_INSIDER_BU_TO
 8. Realizar qualquer ensaio do binário lacrado apenas mediante autorização em ambiente institucional apropriado.
 
 **Regra editorial:** não tratar um alerta sintético como resultado empírico; resultados nulos e explicações alternativas devem ser publicados com o mesmo destaque que sinais positivos.
+
+## Nota de correcoes transversais — 29/10/2026
+
+Nao confundir o Estudo 05 (coortes selecionadas por ultimo voto, avaliando **BU integral**) com o Estudo 03 (sequencias de habilitacoes do **dia inteiro**). A analise das janelas J0–J3 do Estudo 03 nao cobre a jornada integral. O marco D4 possui registro de piloto TO no Estudo 03, mas isso nao autoriza executar as novas hipoteses integrais ou generalizar a liberacao a outras UFs. Consulte [auditoria transversal](../../auditoria/AUDITORIA_TRANSVERSAL_20261029.md) e [conclusoes revistas](../../relatorios/CONCLUSOES_REVISADAS_20261029.md). Os parágrafos anteriores sao historicos e devem ser lidos com este adendo.

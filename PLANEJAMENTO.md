@@ -1,5 +1,8 @@
 # Planejamento do projeto
 
+> **Revisao transversal de 29/10/2026:** a hipotese "mesario pianista" deve abranger a jornada INTEGRAL de votacao, nao apenas 17h–19h. O protocolo v1.1 e historico e permanece imutavel; a alteracao confirmatoria depende de emenda prospectiva. Ver [auditoria](auditoria/AUDITORIA_TRANSVERSAL_20261029.md), [proposta de emenda](estudos/03_pianista/PROPOSTA_EMENDA_ESCOPO_INTEGRAL_20261029.md) e [conclusoes revisadas](relatorios/CONCLUSOES_REVISADAS_20261029.md). Nao houve reanalise de 2T2026 nesta revisao.
+
+
 Atualizado em 29/10/2026. Este arquivo e o painel de coordenacao: o que esta
 feito, o que vem a seguir, quem decide e o que bloqueia. Nao e protocolo e pode
 ser editado livremente.
@@ -10,7 +13,7 @@ ser editado livremente.
 |--------|----------|---------------|
 | 01 Prorrogacao (DiD) | Pre-registrado (00); coleta bloqueada em 26/10 por falta de dados do 2T | Validar pipeline no 2T 2022 |
 | 02 Transferencia de votos | Exploratorio, sem codigo no repositorio | Publicar script Monte Carlo |
-| 03 Mesario pianista | Piloto TO concluido (emenda 02): nenhuma hipotese sustentada | Execucao nacional, priorizando UFs com votacao apos 17h49 |
+| 03 Mesario pianista | Piloto TO documentado (emenda 02): nenhum sinal nas janelas originais; NAO valida dia integral | Emenda integral proposta, validacao e gates por UF |
 | 04 Auditabilidade | Proposta de artigo | Receber fichamento de Aranha et al. |
 
 Fato novo relevante para o Estudo 01: o TSE informou 34.393 votos registrados
@@ -142,9 +145,9 @@ Perguntas tecnicas prioritarias, em ordem:
 | Missao | Estado comprovado | Bloqueio remanescente |
 |---|---|---|
 | 1. Pre-registrar E05 | protocolo v1.0 versionado; SHA-256 registrado na ordem 05 de protocolos/REGISTRO.md (renumerada de 04); exposicao previa aos totais nacionais declarada. | Aprovado (E05-0 com emenda 01). Item 1.6 cumprido so para TO, que fica excluido por exposicao (entrada 07); demais UFs aguardam emenda nacional do Estudo 03. |
-| 2. Pipeline com placebos | pipeline_placebo.py agrega votos integrais (2T2024 e 1T2026), exige manifesto e SHA-256; coleta.py legado blindado contra downloads ambiguos 2026; contrato_eventos.py implementa contrato, catalogo abstrato e percentil 1 de dt*. Testes sinteticos em CI. | **Nenhuma execucao de CSV/log REAL**; recurso oficial isolado, local de votacao, validacao de logs, catalogo empirico e dt* seguem pendentes. |
+| 2. Pipeline com placebos | pipeline_placebo.py agrega votos integrais (2T2024 e 1T2026), exige manifesto e SHA-256; coleta.py legado blindado contra downloads ambiguos 2026; contrato_eventos.py implementa contrato, catalogo abstrato e percentil 1 de dt*. Testes sinteticos em CI. | **Superado parcialmente:** existe relatorio de placebo real de Palmas 2T2024 e piloto TO no Estudo 03. Ainda pendem reproducao independente, expansao de 2024, validacao por UF e escopo integral. |
 | 3. Margem oficial | **Confirmada** 4.430.191 votos; 64.256.232 - 59.826.041; validos = 124.082.273; ver estudos/05_simulacao_temporal/VALIDACAO_MARGEM_20261029.md. | Nenhum numero agregado adicional requerido para esta verificacao. |
 
-O item 1.1 do Estudo 03 teve a trava de download corrigida no PR #3, mas os demais riscos de descoberta e filtro de UF do coletor original exigem auditoria antes de liberar downloads. O pipeline placebo nao baixa recursos automaticamente. O contrato de eventos ainda NAO decodifica .logjez oficial; portanto H1a/H1b e dt* nao foram calculadas.
+O item 1.1 do Estudo 03 teve a trava de download corrigida no PR #3, mas os demais riscos de descoberta e filtro de UF do coletor original exigem auditoria antes de liberar downloads. O pipeline placebo nao baixa recursos automaticamente. **Nota atualizada:** ha parser de logs e calculo dt* = 60 s reportado para TO na Emenda 02. Nao extrapolar validade para outras UFs ou a jornada integral; novas calibracoes e testes estao pendentes.
 
 **Alerta ao coordenador:** o pre-registro E05 foi redigido apos conhecimento de agregados nacionais do 2T2026 e mencao a possivel exposicao previa de amostra de 2,1%. Sua validade confirmatoria exige declaracao completa de exposicoes, aprovacao e congelamento antes de microdados por secao. Nao marcar como liberado o bloqueio D4.
