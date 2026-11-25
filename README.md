@@ -18,6 +18,7 @@ relatados com o mesmo destaque que resultados positivos.
 | [02 Transferencia de votos](estudos/02_transferencia_votos/) | A captacao entre turnos foi atipica frente a 2022? | Exploratorio; codigo a publicar |
 | [03 Mesario pianista](estudos/03_pianista/) | Ha assinaturas de insercao de votos pela mesa nos logs? | Piloto TO concluido: hipoteses nao sustentadas; execucao nacional pendente |
 | [04 Auditabilidade](estudos/04_auditabilidade/) | Que tamanho de adulteracao o sistema consegue detectar? | Proposta de artigo |
+| [05 Integridade dos artefatos](estudos/05_integridade_artefatos/) | Ha divergencia de hash ou assinatura que nao fecha nos artefatos publicos do TSE? | Plano e conciliacao; aguarda pre-registro |
 
 Painel de coordenacao: [PLANEJAMENTO.md](PLANEJAMENTO.md).
 

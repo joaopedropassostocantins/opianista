@@ -12,6 +12,7 @@ ser editado livremente.
 | 02 Transferencia de votos | Exploratorio, sem codigo no repositorio | Publicar script Monte Carlo |
 | 03 Mesario pianista | Piloto TO concluido (emenda 02): nenhuma hipotese sustentada | Execucao nacional, priorizando UFs com votacao apos 17h49 |
 | 04 Auditabilidade | Proposta de artigo | Receber fichamento de Aranha et al. |
+| 05 Integridade dos artefatos | Plano v0 e conciliacao (25/11) | Decisoes D1-D4 em `estudos/05_integridade_artefatos/CONCILIACAO.md`; F1 fora deste ambiente |
 
 Fato novo relevante para o Estudo 01: o TSE informou 34.393 votos registrados
 apos 17h no pais, contra margem de 4.430.191 votos. O teste de alteracao de

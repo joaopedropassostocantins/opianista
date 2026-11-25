@@ -38,3 +38,10 @@ de logs `.logjez` do 2o turno de 2026.)
 - Rekor v2 dependente de TSA externa: https://www.stephane-robert.info/en/docs/devsecops/supply-chain/sigstore/
 - Build deterministico: https://nhimg.org/reproducible-builds-guide
 - diffoscope: https://diffoscope.org/
+
+## Rota L1 em preparacao
+
+O Estudo 05 (`estudos/05_integridade_artefatos/`) e a maquina de producao de
+itens L1 a partir de artefatos publicos do TSE (lista de hashes por UF, `.vsc`,
+BU, RDV, aux.json). Achados promovidos entram aqui em
+`artefatos/<classe>/<slug>/`. Teto estrutural: B (ver `CONCILIACAO.md`, C12).

@@ -1,0 +1,11 @@
+# Arquivos de urna e copias brutas: fora do Git (regra 3 do README raiz).
+raw/
+quarantine/
+artefatos/
+*.jez
+*.logjez
+*.vsc
+*.dat
+*.sqlite
+*.sqlite3
+keys/*.key
