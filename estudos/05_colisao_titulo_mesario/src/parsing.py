@@ -257,5 +257,6 @@ def contexto_bloqueios(texto, ano, turno):
                 votos_desde_reinicio=sum(1 for v in votos if r_ts and r_ts <= v <= ts) if r_ts else "",
                 registro_ts=g_ts.strftime("%d/%m/%Y %H:%M:%S") if g_ts else "",
                 seg_desde_registro=(ts - g_ts).total_seconds() if g_ts else "",
-                votos_desde_registro=sum(1 for v in votos if g_ts and g_ts <= v <= ts) if g_ts else ""))
+                votos_desde_registro=sum(1 for v in votos if g_ts and g_ts <= v <= ts) if g_ts else "",
+                votos_no_dia_ate_bloqueio=sum(1 for v in votos if v <= ts)))
     return out

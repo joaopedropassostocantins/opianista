@@ -76,7 +76,8 @@ def main(ano, turno, criterio, workers=16):
     if os.path.exists(p_man):
         feitos = {r["arquivo_local"] for r in csv.DictReader(open(p_man, encoding="utf-8"))}
     campos_ctx = SEC + ["arquivo", "titulo", "ts", "id_urna", "hash_linha", "reinicio_ts", "seg_desde_reinicio",
-                        "votos_desde_reinicio", "registro_ts", "seg_desde_registro", "votos_desde_registro"]
+                        "votos_desde_reinicio", "registro_ts", "seg_desde_registro", "votos_desde_registro",
+                        "votos_no_dia_ate_bloqueio"]
     fctx = open(p_ctx, "a", newline="", encoding="utf-8")
     wctx = csv.DictWriter(fctx, campos_ctx)
     if os.path.getsize(p_ctx) == 0:

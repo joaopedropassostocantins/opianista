@@ -195,9 +195,11 @@ def colisoes_observadas(R_ok, geo, qd, nomes_mun):
 
 JANELA_REINICIO_S = 30 * 60   # congelado (emenda 05): reinicio ate 30 min antes, sem voto computado entre
 JANELA_REDIGITACAO_S = 10 * 60  # congelado (emenda 05): mesmo titulo, mesma urna, sem voto entre, ate 10 min
+JANELAS_REINICIO_SENS = (15 * 60, 60 * 60)  # sensibilidade (ressalva 1): a classe 2 nao pode se mover
+TETO_CLASSE4 = 0.20  # ressalva 2: acima disso, validacao cruzada declarada inconclusiva
 
 
-def classificar_bloqueios(B, R_ok, ctx=None):
+def classificar_bloqueios(B, R_ok, ctx=None, janela_reinicio=None):
     """Classes, em ordem de precedencia:
       1 bloqueio_pos_reinicio        reinicio (partida do logd posterior a primeira do dia) ate 30 min antes,
                                      sem voto computado entre o reinicio e o bloqueio
@@ -227,7 +229,10 @@ def classificar_bloqueios(B, R_ok, ctx=None):
         if c is not None:
             sr, vr = num(c.get("seg_desde_reinicio")), num(c.get("votos_desde_reinicio"))
             sg, vg = num(c.get("seg_desde_registro")), num(c.get("votos_desde_registro"))
-            pos_rein = sr is not None and sr <= JANELA_REINICIO_S and (vr or 0) == 0
+            jr = JANELA_REINICIO_S if janela_reinicio is None else janela_reinicio
+            pos_rein = sr is not None and sr <= jr and (vr or 0) == 0
+            vd = num(c.get("votos_no_dia_ate_bloqueio"))
+            r["padrao_pre_primeiro_voto_15_60min"] = bool(vd == 0 and sg is not None and 900 <= sg <= 3600)
             redig = sg is not None and sg <= JANELA_REDIGITACAO_S and (vg or 0) == 0
             r.update(contexto_disponivel=True, seg_desde_reinicio=sr, votos_desde_reinicio=vr,
                      seg_desde_registro=sg, votos_desde_registro=vg)
@@ -437,6 +442,16 @@ def main():
         ctx = zfill(ctx)
         ctx["sec"] = ctx[SEC].agg("-".join, axis=1)
     blq = classificar_bloqueios(B, R_ok, ctx)
+    sens_janela = {}
+    if len(blq):
+        for jr in JANELAS_REINICIO_SENS:
+            bj = classificar_bloqueios(B, R_ok, ctx, janela_reinicio=jr)
+            blq[f"classificacao_janela_{jr // 60}min"] = bj.classificacao.values
+        c2 = "erro_digitacao_para_outro_mesario_da_secao"
+        sens_janela = {f"{jr // 60}min": int((blq[f"classificacao_janela_{jr // 60}min"] == c2).sum())
+                       for jr in JANELAS_REINICIO_SENS}
+        sens_janela["30min"] = int((blq.classificacao == c2).sum())
+        sens_janela["classe2_estavel"] = len(set(v for k, v in sens_janela.items() if k.endswith("min"))) == 1
     blq.to_csv(os.path.join(saida, "bloqueios.csv"), index=False)
     obs = col[col.exclusao == ""] if len(col) else pd.DataFrame(columns=["faixa_distancia", "faixa_intervalo"])
     n_blq_erro = int((blq.classificacao == "erro_digitacao_para_outro_mesario_da_secao").sum()) if len(blq) else 0
@@ -517,9 +532,13 @@ def main():
     q_b = {k: np.quantile(v["bloq"], [0.025, 0.975]).tolist() for k, v in sims.items()}
     lo_b = min(q_b[k][0] for k in ("p1_x0.5_ou_D_x0.5", "central", "D_x1.5", "p1_x2"))
     hi_b = max(q_b[k][1] for k in ("p1_x0.5_ou_D_x0.5", "central", "D_x1.5", "p1_x2"))
-    valid = dict(bloqueios_por_erro_observados=n_blq_erro, bloqueios_esperados=float(S["bloq"].mean()),
+    frac_c4 = (float(blq.classificacao.isin(["redigitacao_ciclo_posterior"]).mean()) if len(blq) else 0.0)
+    valid = dict(fracao_classe4=frac_c4, teto_classe4=TETO_CLASSE4, sensibilidade_janela_reinicio=sens_janela,
+                 bloqueios_por_erro_observados=n_blq_erro, bloqueios_esperados=float(S["bloq"].mean()),
                  bloqueios_IC95_por_cenario=q_b, faixa_aceitacao=[lo_b, hi_b],
-                 modelo_validado=bool(lo_b <= n_blq_erro <= hi_b),
+                 modelo_validado=bool(lo_b <= n_blq_erro <= hi_b) and frac_c4 <= TETO_CLASSE4,
+                 situacao=("inconclusiva:classe4_acima_do_teto" if frac_c4 > TETO_CLASSE4 else
+                           "aprovada" if lo_b <= n_blq_erro <= hi_b else "reprovada"),
                  razao_bloqueio_colisao_prevista=float(S["bloq"].mean() / max(1e-12, tot_sim.mean())),
                  razao_bloqueio_colisao_observada=(n_blq_erro / len(obs)) if len(obs) else None)
 
@@ -539,7 +558,7 @@ def main():
         for k in ("p1_x0.5_ou_D_x0.5", "D_x1.5", "p1_x2"):
             v2 = "excesso_de_volume" if r["observado"] > r[f"nulo_IC95_sup_{k}"] else "sem_excesso_de_volume"
             frag.append(v2 != ("excesso_de_volume" if v == "excesso_de_volume" else "sem_excesso_de_volume"))
-        vered[fd] = dict(veredito=v if valid["modelo_validado"] else "sem_veredito:modelo_reprovado_na_validacao",
+        vered[fd] = dict(veredito=v if valid["modelo_validado"] else f"sem_veredito:validacao_{valid['situacao']}",
                          veredito_bruto=v, fragil=any(frag), observado=r["observado"], esperado=r["esperado"],
                          nulo_IC95=[r["nulo_IC95_inf"], r["nulo_IC95_sup"]])
     for r in tab_uf[tab_uf.testado_individualmente].to_dict("records"):
