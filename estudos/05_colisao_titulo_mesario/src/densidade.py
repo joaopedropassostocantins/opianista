@@ -11,7 +11,12 @@ Caminhos de erro (um evento por digitacao errada):
   omissao    omissao de um digito, completada por um digito extra no fim, ou por zero a esquerda
   outros     transposicao com salto (abc -> cba) e erro gemeo (aa -> bb)
 
-Uso como modulo (simulacao.py) ou:  python densidade.py ANO TURNO  -> outputs/<ano>_t<turno>/densidade_*.csv
+Leave-one-out (LOO, ligado por padrao): D e p1 sao medidos SEM os titulos envolvidos em colisoes (titulo
+registrado em 2 ou mais secoes do turno). Sem isso, cada colisao real entraria no conjunto-alvo e no rastro
+de erro, inflando D e p1 justamente onde ocorre e abafando um eventual excesso.
+
+Uso como modulo (simulacao.py) ou:
+  python densidade.py ANO [--turno 2] [--loo | --sem-loo]   -> data/outputs/<ano>_t<turno>/densidade_parametros.json
 """
 import itertools
 import os
@@ -139,6 +144,25 @@ def pares_um_erro(titulos):
 
 
 # ------------------------------------------------------------------ medicoes no 2o turno
+def titulos_em_colisao(R_ok):
+    """Titulos registrados em duas ou mais secoes do turno (conjunto excluido pelo LOO)."""
+    n = R_ok.groupby("titulo").sec.nunique()
+    return set(n[n >= 2].index)
+
+
+def aplicar_loo(R_ok, qd, loo=True):
+    """Devolve (R_para_D, qd_para_p1, resumo). R_para_D exclui todos os registros de titulos em colisao;
+    qd_para_p1 exclui pares de quase-duplicados em que algum dos dois titulos esteja em colisao."""
+    if not loo:
+        return R_ok, qd, dict(loo=False, titulos_excluidos=0, registros_excluidos=0, pares_quase_dup_excluidos=0)
+    ex = titulos_em_colisao(R_ok)
+    R_d = R_ok[~R_ok.titulo.isin(ex)]
+    m = qd.titulo_a.isin(ex) | qd.titulo_b.isin(ex) if len(qd) else pd.Series([], dtype=bool)
+    return R_d, qd[~m] if len(qd) else qd, dict(loo=True, titulos_excluidos=len(ex),
+                                                 registros_excluidos=int(len(R_ok) - len(R_d)),
+                                                 pares_quase_dup_excluidos=int(m.sum()) if len(qd) else 0)
+
+
 def quase_duplicados(R_ok):
     """Pares de titulos distintos registrados na MESMA secao a um unico erro (rastro do erro aceito)."""
     occ = R_ok.groupby(["sec", "titulo"]).size().rename("n").reset_index()
@@ -164,6 +188,9 @@ def medir_p1(R_ok, qd, d, p2k, N):
     E_k = {k: (obs.get(k, 0) / d / p2k[k]) if p2k[k] > 0 else float("nan") for k in TIPOS}
     E = sum(v for v in E_k.values() if v == v)
     w = {k: (E_k[k] / E if E_k[k] == E_k[k] and E > 0 else 0.0) for k in TIPOS}
+    if E == 0:  # sem rastro: pesos a priori (Verhoeff, 1969) apenas para nao zerar a simulacao
+        w = {"sub_uf": 0.13, "sub_corpo": 0.53, "sub_dv": 0.13, "trans": 0.10, "omissao": 0.09, "salto": 0.01,
+             "gemeo": 0.01}
     return dict(obs_por_tipo=obs, E_por_tipo=E_k, pesos=w, E_total=E, p1=E / N,
                 p1_por_tipo={k: (E_k[k] / N if E_k[k] == E_k[k] else None) for k in TIPOS},
                 p2_ponderado=sum(w[k] * p2k[k] for k in TIPOS))
@@ -212,5 +239,36 @@ def vizinhos_registrados(R_ok):
     return viz
 
 
+def main():
+    import argparse
+    import json
+    ap = argparse.ArgumentParser()
+    ap.add_argument("ano", type=int)
+    ap.add_argument("--turno", type=int, default=2)
+    ap.add_argument("--loo", dest="loo", action="store_true", default=True)
+    ap.add_argument("--sem-loo", dest="loo", action="store_false")
+    ap.add_argument("--entrada", default=None)
+    ap.add_argument("--saida", default=None)
+    a = ap.parse_args()
+    import simulacao as sim
+    root = sim.ROOT
+    R, L, B = sim.carregar(a.ano, a.turno, a.entrada or os.path.join(root, "data", "censo"))
+    R_ok, B, den = sim.preparar(R, L, B, a.ano, a.turno)
+    qd, d = quase_duplicados(R_ok)
+    R_d, qd_p1, loo = aplicar_loo(R_ok, qd, a.loo)
+    p2k = p2_por_tipo(R_d.titulo.unique())
+    m = medir_p1(R_ok, qd_p1, d, p2k, den["registros_N"])
+    Ddf = medir_D(R_d, m["pesos"], vizinhos_registrados(R_d))
+    n = R_d.groupby(["titulo", "sec"]).size().rename("n").reset_index()
+    Ddf = Ddf.merge(n, on=["titulo", "sec"])
+    D = float((Ddf.D_outra_secao * Ddf.n).sum() / Ddf.n.sum()) if len(Ddf) else 0.0
+    out = dict(**den, **loo, p1=m["p1"], p1_por_tipo=m["p1_por_tipo"], pesos=m["pesos"], p2=p2k, D=D,
+               esperado_N_p1_D=den["registros_N"] * m["p1"] * D)
+    saida = a.saida or os.path.join(root, "data", "outputs", f"{a.ano}_t{a.turno}")
+    os.makedirs(saida, exist_ok=True)
+    json.dump(out, open(os.path.join(saida, "densidade_parametros.json"), "w"), indent=2, default=float)
+    print(json.dumps(out, indent=2, default=float))
+
+
 if __name__ == "__main__":
-    print("use via simulacao.py")
+    main()

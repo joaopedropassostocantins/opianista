@@ -123,6 +123,12 @@ def main():
         ok &= r == c
     print("colisoes detectadas:", len(col), "(esperadas 4)")
     ok &= len(col) == 4
+    import json as _json
+    par = _json.load(open(os.path.join(out, "parametros.json")))
+    loo_ok = par.get("loo") is True and par.get("titulos_excluidos") == 4 and par.get("pares_quase_dup_excluidos") == 1
+    print(("OK  " if loo_ok else "FALHA"), "LOO: titulos excluidos", par.get("titulos_excluidos"),
+          "(esperado 4); pares quase-dup excluidos", par.get("pares_quase_dup_excluidos"), "(esperado 1)")
+    ok &= loo_ok
     b = {r["hash_linha"]: r["classificacao"] for r in csv.DictReader(open(os.path.join(out, "bloqueios.csv")))}
     for h, c in (("BLQ1", "erro_digitacao_para_outro_mesario_da_secao"), ("BLQ2", "redigitacao_do_mesmo_titulo")):
         print(("OK  " if b.get(h) == c else "FALHA"), "bloqueio", h, "esperado:", c, "obtido:", b.get(h))

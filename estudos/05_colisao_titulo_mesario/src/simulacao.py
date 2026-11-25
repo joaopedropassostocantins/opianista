@@ -32,7 +32,7 @@ from scipy.stats import chi2
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from parsing import DATAS, titulo_valido  # noqa: E402
 from densidade import (TIPOS, CAMINHO, tipo_erro, tipo_erro_dir, vizinhos, p2_por_tipo,  # noqa: E402
-                       quase_duplicados, medir_p1, medir_D, vizinhos_registrados)
+                       quase_duplicados, medir_p1, medir_D, vizinhos_registrados, aplicar_loo)
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 FAIXA_DIST = [("A_<1km", 0, 1), ("B_1-50km", 1, 50), ("C_>50km", 50, 1e9)]
@@ -310,6 +310,9 @@ def main():
     ap.add_argument("--geo", default=None)
     ap.add_argument("--catalogo", default=os.path.join(ROOT, "data", "raw", "catalogo"))
     ap.add_argument("--saida", default=None)
+    ap.add_argument("--loo", dest="loo", action="store_true", default=True,
+                    help="leave-one-out: D e p1 sem os titulos em colisao (padrao)")
+    ap.add_argument("--sem-loo", dest="loo", action="store_false")
     ap.add_argument("--somente-parametros", action="store_true",
                     help="calcula p1, D e o nulo e para, sem abrir colisoes observadas (congelamento)")
     a = ap.parse_args()
@@ -332,8 +335,9 @@ def main():
     # ---- p1 por caminho (rastro: quase-duplicados) e p2
     qd, d = quase_duplicados(R_ok)
     qd.to_csv(os.path.join(saida, "quase_duplicados.csv"), index=False)
-    p2k = p2_por_tipo(R_ok.titulo.unique())
-    m = medir_p1(R_ok, qd, d, p2k, N)
+    R_d, qd_p1, loo = aplicar_loo(R_ok, qd, a.loo)
+    p2k = p2_por_tipo(R_d.titulo.unique())
+    m = medir_p1(R_ok, qd_p1, d, p2k, N)
     pesos, p1 = m["pesos"], m["p1"]
     pd.DataFrame([dict(tipo=k, caminho=CAMINHO[k], quase_duplicados=m["obs_por_tipo"].get(k, 0), p2=p2k[k],
                        erros_estimados=m["E_por_tipo"][k], p1=m["p1_por_tipo"][k], peso=pesos[k]) for k in TIPOS]
@@ -343,12 +347,12 @@ def main():
     taxa_uf = (qd.groupby("uf").size() / R_ok.groupby("uf").size()).fillna(0)
     por_sec = qd.groupby("sec").size().reindex(R_ok.sec.unique(), fill_value=0)
     # ---- densidade local D (vizinhos registrados como mesarios do turno)
-    viz = vizinhos_registrados(R_ok)
-    Ddf = medir_D(R_ok, pesos, viz)
-    w_ev = R_ok.groupby(["titulo", "sec"]).size().rename("n").reset_index()
+    viz = vizinhos_registrados(R_d)
+    Ddf = medir_D(R_d, pesos, viz)
+    w_ev = R_d.groupby(["titulo", "sec"]).size().rename("n").reset_index()
     Ddf = Ddf.merge(w_ev, on=["titulo", "sec"])
-    D = float((Ddf.D_outra_secao * Ddf.n).sum() / Ddf.n.sum())
-    Dm = float((Ddf.D_mesma_secao * Ddf.n).sum() / Ddf.n.sum())
+    D = float((Ddf.D_outra_secao * Ddf.n).sum() / Ddf.n.sum()) if len(Ddf) else 0.0
+    Dm = float((Ddf.D_mesma_secao * Ddf.n).sum() / Ddf.n.sum()) if len(Ddf) else 0.0
     agg = lambda g: pd.Series(dict(registros=g.n.sum(), D=(g.D_outra_secao * g.n).sum() / g.n.sum(),
                                    D_mesma_secao=(g.D_mesma_secao * g.n).sum() / g.n.sum()))
     D_uf = Ddf.groupby("uf").apply(agg, include_groups=False).reset_index()
@@ -360,7 +364,7 @@ def main():
     via1 = N * p1 * D
 
     # ---- nulo: simulacao e sensibilidade
-    prep = preparar_simulacao(R_ok, geo, pesos, viz)
+    prep = preparar_simulacao(R_d, geo, pesos, viz)
     E = N * p1
     cen = {"central": E, "p1_x0.5_ou_D_x0.5": 0.5 * E, "D_x1.5": 1.5 * E, "p1_x2": 2 * E,
            "p1_pelas_tentativas_invalidas": den["tentativas_invalidas"] / (1 - m["p2_ponderado"])}
@@ -368,7 +372,7 @@ def main():
             for k, v in cen.items()}
     v3, v3r = via3(R_ok, round(E), pesos, a.semente, set(R_ok.titulo))
     S = sims["central"]
-    nulo = dict(**den, p1=p1, p1_por_tipo=m["p1_por_tipo"], pesos_caminho=pesos, p2_por_tipo=p2k,
+    nulo = dict(**den, **loo, p1=p1, p1_por_tipo=m["p1_por_tipo"], pesos_caminho=pesos, p2_por_tipo=p2k,
                 p2_ponderado=m["p2_ponderado"], quase_duplicados=len(qd), visibilidade_d=d, D=D, D_mesma_secao=Dm,
                 via1_esperado_N_p1_D=via1, via3_segunda_ordem=v3,
                 via2={k: dict(media_colisoes=float(v["cont"].sum(axis=(1, 2)).mean()),
@@ -496,10 +500,12 @@ def main():
         vered[f"unidade:{r['unidade']}"] = dict(veredito=veredito(r), observado=r["observado"], esperado=r["esperado"],
                                                  nulo_IC95=[r["nulo_IC95_inf"], r["nulo_IC95_sup"]])
 
-    par = dict(**den, p1=p1, p1_IC95_quase_dup=[garwood(len(qd))[0] / d / m["p2_ponderado"] / N,
-                                                garwood(len(qd))[1] / d / m["p2_ponderado"] / N],
+    par = dict(**den, **loo, p1=p1, p1_IC95_quase_dup=([garwood(len(qd_p1))[0] / d / m["p2_ponderado"] / N,
+                                                 garwood(len(qd_p1))[1] / d / m["p2_ponderado"] / N]
+                                                if m["p2_ponderado"] > 0 and len(qd_p1) else None),
                p1_por_tipo=m["p1_por_tipo"], pesos_caminho=pesos, p2_por_tipo=p2k, p2_ponderado=m["p2_ponderado"],
-               quase_duplicados=len(qd), quase_dup_por_tipo=m["obs_por_tipo"], visibilidade_d=d,
+               quase_duplicados=len(qd), quase_duplicados_usados_em_p1=len(qd_p1),
+               quase_dup_por_tipo=m["obs_por_tipo"], visibilidade_d=d,
                quase_dup_por_mil_registros_por_uf=(taxa_uf * 1000).round(3).to_dict(),
                quase_dup_indice_dispersao_por_secao=float(por_sec.var() / por_sec.mean()) if por_sec.mean() > 0 else None,
                D=D, D_mesma_secao=Dm, via1_esperado_N_p1_D=via1,
