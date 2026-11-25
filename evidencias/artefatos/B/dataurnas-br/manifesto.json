@@ -1,0 +1,52 @@
+{
+  "slug": "dataurnas-br",
+  "camada": "L2",
+  "classe": "B",
+  "verificado": false,
+  "autor": {
+    "handle": "alissonlinneker",
+    "historico": "139 commits, repo criado 2026-02 (a verificar)",
+    "identidade_verificada": false
+  },
+  "artefato": {
+    "tipo": "repositorio",
+    "url": "https://github.com/alissonlinneker/DataUrnas-BR",
+    "commit": "fd05d026fbce94905270e8dbc8cd41a800ea991b",
+    "commit_utc": "2026-10-15",
+    "anterior_ao_pleito": true,
+    "acesso": "publico"
+  },
+  "hashes": {
+    "algoritmo": "sha256",
+    "valor": "<preencher>",
+    "escopo": "tarball do commit"
+  },
+  "carimbo": {
+    "tsa": "freetsa.org",
+    "genTime": "<preencher>",
+    "accuracy_ausente": null,
+    "rekor_index": "<preencher>"
+  },
+  "arquivado": {
+    "warc_sha256": "<preencher>",
+    "ipfs": "<preencher>"
+  },
+  "build_reproduzivel": {
+    "reproduzido": false
+  },
+  "gate": {
+    "G1": true,
+    "G2": true,
+    "G3": true,
+    "G4": false,
+    "G4_motivo": "le BU/RDV publicados; nao toca o software da urna"
+  },
+  "sobrevivencia_pos_pleito": "commit de 15/10/2026, anterior ao 2o turno; roda sobre pacote publicado em 25-27/10 (a verificar)",
+  "rechecagens": [],
+  "faltas": [
+    "sem build reproduzivel",
+    "sem assinatura de release",
+    "hash e carimbo pendentes",
+    "dados do autor e do commit nao conferidos em fonte primaria"
+  ]
+}

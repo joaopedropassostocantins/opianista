@@ -1,0 +1,11 @@
+# Arquivos brutos coletados nao entram no Git (regra 3 do README).
+# Ficam em release/IPFS; aqui entram so metadados, hashes e carimbos.
+artefatos/**/bruto/
+*.warc
+*.warc.gz
+*.tar
+*.tar.gz
+*.bin
+*.exe
+*.mp4
+*.webm

@@ -53,3 +53,9 @@ A entrega 02 é adicional e não reconstitui nem substitui o arquivo histórico 
 A partir desta aprovacao, os parametros da versao 1.1 estao congelados. Qualquer
 alteracao exige emenda nova, registrada antes da abertura dos dados do 2o turno
 de 2026.
+
+## Contrato de evidencia registrado em 2026-11-25
+
+| Ordem | Arquivo | Data (UTC) | SHA-256 | Situacao |
+|-------|---------|------------|---------|----------|
+| 05 | `evidencias/AGENTS.md` | 2026-11-25 | `4f2e5002b1acea394280240ebd0f22db06733ecd78a8087fc7e9922035ec2f62` | Contrato de evidencia v1.0 (gate G1-G4, carimbo RFC 3161 + Rekor). Alteracoes exigem nova versao registrada |

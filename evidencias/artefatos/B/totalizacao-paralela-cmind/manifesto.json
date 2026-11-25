@@ -1,0 +1,51 @@
+{
+  "slug": "totalizacao-paralela-cmind",
+  "camada": "L2",
+  "classe": "B",
+  "verificado": false,
+  "autor": {
+    "handle": "<preencher>",
+    "historico": "CMInd + Arvor",
+    "identidade_verificada": false
+  },
+  "artefato": {
+    "tipo": "repositorio",
+    "url": "<preencher>",
+    "commit": "<preencher>",
+    "commit_utc": "<preencher>",
+    "anterior_ao_pleito": null,
+    "acesso": "publico"
+  },
+  "hashes": {
+    "algoritmo": "sha256",
+    "valor": "<preencher>",
+    "escopo": "tarball do commit"
+  },
+  "carimbo": {
+    "tsa": "freetsa.org",
+    "genTime": "<preencher>",
+    "accuracy_ausente": null,
+    "rekor_index": "<preencher>"
+  },
+  "arquivado": {
+    "warc_sha256": "<preencher>",
+    "ipfs": "<preencher>"
+  },
+  "build_reproduzivel": {
+    "reproduzido": false
+  },
+  "gate": {
+    "G1": true,
+    "G2": true,
+    "G3": true,
+    "G4": false,
+    "G4_motivo": "cobertura de dezenas de secoes, nao nacional; confere BU, nao o software"
+  },
+  "sobrevivencia_pos_pleito": "fonte externa ao TSE (QR do BU impresso); data de coleta a documentar",
+  "rechecagens": [],
+  "faltas": [
+    "URL, autor e commit a preencher",
+    "cobertura amostral",
+    "hash e carimbo pendentes"
+  ]
+}

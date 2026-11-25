@@ -25,6 +25,7 @@ Painel de coordenacao: [PLANEJAMENTO.md](PLANEJAMENTO.md).
 
 ```
 protocolos/     pre-registros e emendas (imutaveis), com hashes
+evidencias/     contrato de evidencia, manifestos, hashes e carimbos (AGENTS.md)
 estudos/        um diretorio por estudo
 didatico/       material de aula, separado da pesquisa
 .github/        modelos de issue e de pull request
