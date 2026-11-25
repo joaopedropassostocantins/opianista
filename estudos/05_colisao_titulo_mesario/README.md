@@ -39,6 +39,7 @@ src/download.py, amostragem.py, extrair.py, erros.py, poder.py, zip_remoto.py   
 tests/teste_sintetico.py     colisoes plantadas; deve imprimir 4 OK
 registro/                    Fase 0, piloto, poder, hashes do codigo congelado, manifesto
 docs/correcoes_da_logica.md  o que mudou em relacao ao protocolo encomendado e por que
+docs/probabilidade_por_uf.md probabilidade por UF de o erro virar colisao (exploratorio, parametros medidos)
 resultados/                  saidas pseudonimizadas e relatorio (apos o censo)
 ```
 

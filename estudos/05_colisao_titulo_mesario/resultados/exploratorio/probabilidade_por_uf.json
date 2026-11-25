@@ -1,0 +1,67 @@
+{
+  "registros_medidos": 273969,
+  "quase_duplicados": 51,
+  "tipos_quase_dup": {
+    "sub_corpo": 41,
+    "trans": 5,
+    "gemeo": 1,
+    "sub_uf": 4
+  },
+  "visibilidade_d": 0.8092016595755926,
+  "p2_por_tipo_nacional": {
+    "sub_corpo": 0.018852005213205274,
+    "sub_uf": 0.007604057367591942,
+    "sub_dv": 0.0,
+    "trans": 0.01246599493156872,
+    "salto": 0.013055011259823807,
+    "gemeo": 0.10328621767738222
+  },
+  "pesos_tipo": {
+    "sub_corpo": 0.69893462777373,
+    "sub_uf": 0.16905376938776184,
+    "sub_dv": 0.0,
+    "trans": 0.1289001166462083,
+    "salto": 0.0,
+    "gemeo": 0.003111486192299835
+  },
+  "p2_ponderado": 0.016390055648060547,
+  "p1_medido": 0.014035618611913811,
+  "p1_IC95": [
+    0.01045043995956318,
+    0.01845424639219924
+  ],
+  "p1_por_invalidos": 0.23530622569497353,
+  "registros_por_secao": 7.4777388694347176,
+  "titulos_mesario_por_secao": 3.9824912456228114,
+  "validacao_modelo": {
+    "ac": {
+      "h_empirico": 0.0001448458008831805,
+      "h_modelo": 4.001728947094436e-06,
+      "fontes": 8695
+    },
+    "al": {
+      "h_empirico": 0.00013907880783667182,
+      "h_modelo": 6.76202252892195e-06,
+      "fontes": 26426
+    },
+    "am": {
+      "h_empirico": 0.00011309742196314127,
+      "h_modelo": 1.1434517336427863e-05,
+      "fontes": 30429
+    },
+    "ap": {
+      "h_empirico": 0.00014960995700429578,
+      "h_modelo": 1.5189368094528757e-06,
+      "fontes": 6533
+    }
+  },
+  "h_empirico_agregado": 0.00012976116583100918,
+  "total_brasil": {
+    "registros_N": 3716505.0,
+    "E_modelo_densidade": 4.717900102669523,
+    "E_p1_x0_5": 3.384393611568732,
+    "E_central": 6.768787223137464,
+    "E_p1_x2": 13.537574446274927,
+    "E_p1_invalidos": 113.47827395772059
+  }
+}
