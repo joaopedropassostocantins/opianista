@@ -31,12 +31,14 @@ from concurrent.futures import ThreadPoolExecutor
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from parsing import ler_logd, parse_log  # noqa: E402
 
-ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+ROOT = os.path.abspath(os.environ.get("ESTUDO05_ROOT") or os.path.join(os.path.dirname(__file__), ".."))
 OUT = os.path.join(ROOT, "data", "censo")
 BASE26 = "https://resultados.tse.jus.br/oficial/ele2026/arquivo-urna"
 PLEITO26 = {1: "3220", 2: "3221"}
 CAMPOS_REG = ["uf", "mun", "zona", "secao", "arquivo", "titulo", "ts", "id_urna", "hash_linha", "momento",
               "eleitor_secao", "biometria", "bio_ref"]
+CAMPOS_BLQ = ["uf", "mun", "zona", "secao", "arquivo", "titulo", "ts", "id_urna", "hash_linha", "momento",
+              "antecedente"]
 CAMPOS_LOG = ["uf", "mun", "zona", "secao", "arquivo", "url", "sha256", "bytes", "erro", "n_registrado",
               "n_ja_registrado", "n_invalido", "n_pedido", "n_conf_ok", "n_conf_nao", "relogio_inconsistente",
               "motivo_relogio", "modelo", "ids_urna", "n_linhas_dia", "fase_nao_oficial"]
@@ -108,6 +110,7 @@ def main(ano, turno, shard, nshards, threads):
     tag = f"{ano}_t{turno}_s{shard}"
     p_reg, p_log = os.path.join(OUT, f"registros_{tag}.csv"), os.path.join(OUT, f"logs_{tag}.csv")
     p_fal = os.path.join(OUT, f"falhas_{tag}.csv")
+    p_blq = os.path.join(OUT, f"bloqueios_{tag}.csv")
     feitos = set()
     if os.path.exists(p_log):
         for r in csv.DictReader(open(p_log, encoding="utf-8")):
@@ -122,7 +125,11 @@ def main(ano, turno, shard, nshards, threads):
     print(tag, "total", len(todas), "pendentes neste shard", len(minhas), flush=True)
     freg = open(p_reg, "a", newline="", encoding="utf-8")
     flog = open(p_log, "a", newline="", encoding="utf-8")
+    fblq = open(p_blq, "a", newline="", encoding="utf-8")
     wreg, wlog = csv.DictWriter(freg, CAMPOS_REG), csv.DictWriter(flog, CAMPOS_LOG)
+    wblq = csv.DictWriter(fblq, CAMPOS_BLQ)
+    if os.path.getsize(p_blq) == 0:
+        wblq.writeheader()
     if os.path.getsize(p_reg) == 0:
         wreg.writeheader()
     if os.path.getsize(p_log) == 0:
@@ -145,7 +152,7 @@ def main(ano, turno, shard, nshards, threads):
                 fh.write(json.dumps(dict(chave, erro=f"{type(e).__name__}:{e}")) + "\n")
                 cont["falha"] += 1
             return
-        linhas_reg, linhas_log = [], []
+        linhas_reg, linhas_log, linhas_blq = [], [], []
         for nome, url, dados in arqs:
             h = hashlib.sha256(dados).hexdigest()
             try:
@@ -155,12 +162,14 @@ def main(ano, turno, shard, nshards, threads):
             except Exception as e:
                 regs, res, err = [], {}, f"{type(e).__name__}:{e}"
             base = dict(chave, arquivo=nome)
+            linhas_blq += [dict(base, **b) for b in res.pop("bloqueios", [])]
             linhas_log.append(dict(base, url=url, sha256=h, bytes=len(dados), erro=err, **res))
             linhas_reg += [dict(base, **r) for r in regs]
         if not arqs:
             linhas_log.append(dict(chave, erro="aux_sem_log"))
         with lock:
             wreg.writerows(linhas_reg)
+            wblq.writerows(linhas_blq)
             wlog.writerows(linhas_log)
             cont["ok"] += 1
 
@@ -170,10 +179,12 @@ def main(ano, turno, shard, nshards, threads):
             if i % 2000 == 0:
                 with lock:
                     freg.flush()
+                    fblq.flush()
                     flog.flush()
                 el = time.time() - t0
                 print(f"{tag} {i}/{len(minhas)} {cont} {i / el:.1f}/s", flush=True)
     freg.close()
+    fblq.close()
     flog.close()
     print(tag, "fim", cont, flush=True)
 

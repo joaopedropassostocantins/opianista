@@ -1,0 +1,8 @@
+n,sequencia
+150,Pedido de leitura da biometria do mesário <T> > Mesário <T> não é eleitor da seção > Mesário <T> registrado
+54,Pedido de leitura da biometria do mesário <T> > Realizada a conferência da biometria do mesário > Mesário <T> é eleitor da seção > Mesário <T> registrado
+36,Digitado título inválido para o registro de mesário
+21,Pedido de leitura da biometria do mesário <T>
+16,Pedido de leitura da biometria do mesário <T> > <NAO_CORRESPONDE> > Mesário <T> é eleitor da seção > Mesário <T> registrado
+2,Pedido de leitura da biometria do mesário <T> > Mesário <T> é eleitor da seção > Mesário <T> registrado
+1,Pedido de leitura da biometria do mesário <T> > Mesário <T> já registrado > Mesário <T> já registrado

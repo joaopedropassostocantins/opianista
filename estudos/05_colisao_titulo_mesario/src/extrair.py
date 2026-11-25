@@ -26,6 +26,7 @@ def proc(args):
     try:
         txt, h = ler_logd(f)
         regs, res = parse_log(txt, ano, turno)
+        res.pop("bloqueios", None)
         err = ""
     except Exception as e:  # arquivo corrompido
         regs, res, h, err = [], {}, "", f"{type(e).__name__}:{e}"

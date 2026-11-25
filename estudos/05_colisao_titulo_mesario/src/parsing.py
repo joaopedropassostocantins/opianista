@@ -13,7 +13,8 @@ Dicionario de campos (Fase 0; strings identicas em 2022, 2024 e 2026):
                                "Registrando mesários (antes|durante|após) a votação"
   digitacao/pedido ........... "Pedido de leitura da biometria do mesário <T>"
   registro (UNIDADE) ......... "Mesário <T> registrado"
-  duplicata na secao ......... "Mesário <T> já registrado"
+  bloqueio na secao .......... "Mesário <T> já registrado"   (v2: gravado com titulo, hora, urna,
+                               momento e evento antecedente; a urna recusa o titulo ja registrado nela)
   erro de digitacao (DV) ..... "Digitado título inválido para o registro de mesário"
   vinculo com a secao ........ "Mesário <T> é eleitor da seção" / "Mesário <T> não é eleitor da seção"
   habilitacao de eleitor ..... "Eleitor foi habilitado" (titulo do eleitor NAO e gravado no log)
@@ -86,6 +87,8 @@ def parse_log(texto, ano, turno):
                relogio_inconsistente=0, motivo_relogio="", modelo="", ids_urna=set(),
                n_linhas_dia=0, fase_nao_oficial=0, n_conf_ok=0, n_conf_nao=0)
     conf = ""
+    bloqueios = []
+    ultimo_evento = ""
     fase = None
     fase_reg = None
     ult_ts = None
@@ -122,10 +125,12 @@ def parse_log(texto, ano, turno):
             continue
         if msg == M_INV:
             res["n_invalido"] += 1
+            ultimo_evento = "titulo_invalido"
             continue
         m = R_PED.match(msg)
         if m:
             res["n_pedido"] += 1
+            ultimo_evento = "pedido_biometria"
             conf = "sem_conferencia"
             continue
         if msg == M_CONF_OK:
@@ -147,6 +152,9 @@ def parse_log(texto, ano, turno):
         m = R_JA.match(msg)
         if m:
             res["n_ja_registrado"] += 1
+            bloqueios.append(dict(titulo=m.group(1), ts=p[0], id_urna=p[2],
+                                  hash_linha=p[5] if len(p) > 5 else "", momento=fase_reg or "",
+                                  antecedente=ultimo_evento))
             continue
         m = R_REG.match(msg)
         if m:
@@ -158,9 +166,11 @@ def parse_log(texto, ano, turno):
                              momento=fase_reg or "", eleitor_secao=eleitor.get(t, -1), biometria=conf))
             conf = ""
             res["n_registrado"] += 1
+            ultimo_evento = "registrado"
     for r in regs:
         r["bio_ref"] = bio.get(r["titulo"], "")
     res["ids_urna"] = "|".join(sorted(res["ids_urna"]))
+    res["bloqueios"] = bloqueios  # lista; consumidores devem remove-la antes de gravar o resumo
     return regs, res
 
 

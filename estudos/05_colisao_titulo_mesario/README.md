@@ -1,5 +1,11 @@
 # Estudo 05 - Colisao de titulo no registro de presenca de mesario
 
+## Escopo vigente
+
+Emenda 04 (`protocolos/04_emenda_estudo05_2t_20261125.md`): somente o 2o turno de 2026 (25/10/2026), censo
+de todas as secoes, com comparacao no 2o turno de 2022. 2018 indisponivel no TSE. Alvo nominal:
+Porto Seguro (BA) - Casa Nova (BA).
+
 ## Pergunta
 
 O mesmo numero de titulo aparece no registro de presenca de mesario em duas
@@ -31,7 +37,9 @@ registrados na mesma secao a um unico erro de distancia.
 ```
 src/parsing.py               leitura do log (.jez 2026 / .logjez 2022) e extracao dos registros de mesario
 src/censo.py                 coleta censitaria retomavel, com SHA-256 de cada arquivo original
-src/simulacao.py             colisoes, teste de caso, nulo (vias 1, 2 e 3), faixas, concentracao, sensibilidade
+src/densidade.py             caminhos de erro, p1 por caminho (quase-duplicados), densidade local D
+src/simulacao.py             colisoes, bloqueios, teste de caso, nulo (vias 1, 2 e 3), validacao, veredito
+src/fase0.py                 Fase 0 do 2o turno (vocabulario com exemplo de linha e posicao)
 src/pseudonimizar.py         saidas publicaveis (titulo -> HMAC; chave fora do Git)
 src/geo.py                   coordenadas e eleitorado por secao
 src/download_historico.py    quadro de secoes de 2022/2024 a partir dos pacotes por UF
@@ -52,10 +60,11 @@ python src/download.py catalogo
 # auxiliares em data/raw/aux/: eleitorado_local_votacao_2026.zip e _2022.zip (dadosabertos.tse.jus.br)
 python src/geo.py 2026 && python src/geo.py 2022
 python src/download_historico.py quadro 2022
-for s in 0 1 2 3 4 5; do python src/censo.py 2026 1 $s 6 & done; wait   # repetir para turno 2 e ano 2022
+for s in 0 1 2 3 4 5; do python src/censo.py 2026 2 $s 6 & done; wait   # idem: python src/censo.py 2022 2 ...
 python tests/teste_sintetico.py
-python src/simulacao.py 2026 1    # idem 2026 2, 2022 1, 2022 2
-python src/pseudonimizar.py outputs/2026_t1 resultados/2026_t1
+python src/simulacao.py 2026 --somente-parametros   # congela p1, D e o nulo (etapa 2 da emenda 04)
+python src/simulacao.py 2026 && python src/simulacao.py 2022
+python src/pseudonimizar.py data/outputs/2026_t2 resultados/2026_t2
 ```
 
 Tudo o que e baixado ou gerado com titulo em claro fica em `data/` e

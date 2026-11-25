@@ -60,7 +60,7 @@ def main():
     for i, sec in enumerate(secs):
         arq = f"log{i}.jez"
         urna = f"0{i:07d}"
-        ts = ["04/10/2026 07:10:00", "04/10/2026 17:10:00"]
+        ts = ["25/10/2026 07:10:00", "25/10/2026 17:10:00"]
         for k, t in enumerate(mesarios[i]):
             for j, hora in enumerate(ts):
                 regs.append(dict(sec, arquivo=arq, titulo=t, ts=hora[:-2] + f"{k:02d}", id_urna=urna,
@@ -71,7 +71,7 @@ def main():
                          relogio_inconsistente=0, motivo_relogio="", modelo="UE2020", ids_urna=urna,
                          n_linhas_dia=100, fase_nao_oficial=0))
 
-    def extra(i, t, urna, hl, hora="04/10/2026 08:00:00"):
+    def extra(i, t, urna, hl, hora="25/10/2026 08:00:00"):
         regs.append(dict(secs[i], arquivo=f"log{i}.jez", titulo=t, ts=hora, id_urna=urna, hash_linha=hl,
                          momento="antes", eleitor_secao="0", biometria="sem_conferencia", bio_ref=""))
 
@@ -79,8 +79,26 @@ def main():
     extra(3, mesarios[2][1], "00000003", "MESMO_PREDIO")  # (2)
     extra(6, mesarios[7][1], "00000007", "H710")        # (3) mesma urna e mesma linha
     extra(35, mesarios[12][2], "00000035", "RESIDUO")   # (4)
+    # bloqueios: (5) erro de digitacao que cai em outro mesario da mesma secao; (6) redigitacao do mesmo titulo
+    alvo_b, viz_b = None, None
+    while viz_b is None:
+        alvo_b = titulo_aleatorio(rng)
+        viz_b = vizinho_valido(alvo_b)
+    mesarios[30][0], mesarios[30][1] = alvo_b, viz_b
+    for i in (30,):
+        for k, t in enumerate(mesarios[i][:2]):
+            for j, hora in enumerate(["25/10/2026 07:10:00", "25/10/2026 17:10:00"]):
+                regs[:] = [r for r in regs if not (r["secao"] == secs[i]["secao"] and r["ts"] == hora[:-2] + f"{k:02d}")]
+                regs.append(dict(secs[i], arquivo=f"log{i}.jez", titulo=t, ts=hora[:-2] + f"{k:02d}",
+                                 id_urna=f"0{i:07d}", hash_linha=f"B{i}{k}{j}", momento="antes",
+                                 eleitor_secao="0", biometria="sem_conferencia", bio_ref=""))
+    blq = [dict(secs[30], arquivo="log30.jez", titulo=alvo_b, ts="25/10/2026 07:12:00", id_urna="00000030",
+                hash_linha="BLQ1", momento="antes", antecedente="pedido_biometria"),
+           dict(secs[31], arquivo="log31.jez", titulo=mesarios[31][0], ts="25/10/2026 07:12:00", id_urna="00000031",
+                hash_linha="BLQ2", momento="antes", antecedente="pedido_biometria")]
     os.makedirs(os.path.join(td, "censo"))
-    for nome, rows in (("registros_2026_t1_s0.csv", regs), ("logs_2026_t1_s0.csv", logs)):
+    for nome, rows in (("registros_2026_t2_s0.csv", regs), ("logs_2026_t2_s0.csv", logs),
+                       ("bloqueios_2026_t2_s0.csv", blq)):
         with open(os.path.join(td, "censo", nome), "w", newline="") as fh:
             w = csv.DictWriter(fh, list(rows[0]))
             w.writeheader()
@@ -90,12 +108,12 @@ def main():
         w.writeheader()
         w.writerows(geo)
     out = os.path.join(td, "out")
-    subprocess.run([sys.executable, "-I", os.path.join(AQUI, "..", "src", "simulacao.py"), "2026", "1",
-                    "--reps", "200", "--entrada", os.path.join(td, "censo"), "--geo", os.path.join(td, "geo.csv"),
+    subprocess.run([sys.executable, "-I", os.path.join(AQUI, "..", "src", "simulacao.py"), "2026",
+                    "--reps", "200", "--catalogo", td, "--entrada", os.path.join(td, "censo"), "--geo", os.path.join(td, "geo.csv"),
                     "--saida", out], check=True, stdout=subprocess.DEVNULL)
     col = list(csv.DictReader(open(os.path.join(out, "colisoes.csv"))))
     cls = {r["titulo"]: r["classificacao"] for r in col}
-    esperado = {alvo: "erro_digitacao_evidenciado", mesarios[2][1]: "mesmo_predio_<1km",
+    esperado = {alvo: "erro_digitacao_evidenciado_por_quase_duplicado", mesarios[2][1]: "mesmo_predio_<1km",
                 mesarios[7][1]: "excluida_mesma_urna(contingencia/replicacao)",
                 mesarios[12][2]: "residuo_sem_explicacao_no_log"}
     ok = True
@@ -105,6 +123,10 @@ def main():
         ok &= r == c
     print("colisoes detectadas:", len(col), "(esperadas 4)")
     ok &= len(col) == 4
+    b = {r["hash_linha"]: r["classificacao"] for r in csv.DictReader(open(os.path.join(out, "bloqueios.csv")))}
+    for h, c in (("BLQ1", "erro_digitacao_para_outro_mesario_da_secao"), ("BLQ2", "redigitacao_do_mesmo_titulo")):
+        print(("OK  " if b.get(h) == c else "FALHA"), "bloqueio", h, "esperado:", c, "obtido:", b.get(h))
+        ok &= b.get(h) == c
     sys.exit(0 if ok else 1)
 
 
