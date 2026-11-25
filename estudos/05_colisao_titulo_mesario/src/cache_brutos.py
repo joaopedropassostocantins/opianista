@@ -9,10 +9,12 @@ contado) e grava em data/raw/cache_<ano>_t<turno>/<uf>/<mun>/<zona>/<secao>/<arq
 Criterios (emenda 05):
   bloqueios  secoes com ao menos um "Mesário <T> já registrado" no turno  -> tambem gera
              data/censo/bloqueios_contexto_<ano>_t<turno>.csv (reinicio, votos e registro anterior)
+  quase_dup  secoes com quase-duplicados usados em p1 (data/outputs/<ano>_t<turno>/quase_duplicados.csv,
+             escrito na etapa de parametros)
   erro_alto  secoes com taxa de rejeicao (tentativas invalidas / tentativas) acima de 4x a mediana da UF
   colisoes   secoes envolvidas em colisoes; SO depois do commit dos parametros congelados (etapa 5c)
 
-Uso: python cache_brutos.py ANO TURNO {bloqueios|erro_alto|colisoes} [--workers 16]
+Uso: python cache_brutos.py ANO TURNO {bloqueios|quase_dup|erro_alto|colisoes} [--workers 16]
 """
 import csv
 import hashlib
@@ -45,6 +47,9 @@ def secoes_alvo(ano, turno, criterio):
     if criterio == "bloqueios":
         B = ler(f"bloqueios_{ano}_t{turno}_s*.csv")
         alvo = set(map(tuple, B[SEC].values))
+    elif criterio == "quase_dup":
+        q = pd.read_csv(os.path.join(ROOT, "data", "outputs", f"{ano}_t{turno}", "quase_duplicados.csv"), dtype=str)
+        alvo = {tuple(x.split("-")) for x in q.sec}
     elif criterio == "erro_alto":
         for c in ("n_invalido", "n_registrado", "n_ja_registrado"):
             L[c] = pd.to_numeric(L[c], errors="coerce").fillna(0)
@@ -54,7 +59,7 @@ def secoes_alvo(ano, turno, criterio):
         g = g[g.taxa > 4 * g.uf.map(med).clip(lower=1e-9)]
         alvo = set(map(tuple, g[SEC].values))
     elif criterio == "colisoes":
-        marca = os.path.join(ROOT, "registro", "parametros_2t2026.sha256")
+        marca = os.path.join(ROOT, "registro", f"parametros_{turno}t{ano}.sha256")
         if not os.path.exists(marca):
             raise SystemExit("parametros ainda nao congelados (etapa 5c): cache de colisoes bloqueado")
         R = ler(f"registros_{ano}_t{turno}_s*.csv")

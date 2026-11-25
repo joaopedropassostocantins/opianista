@@ -39,8 +39,17 @@ FAIXA_DIST = [("A_<1km", 0, 1), ("B_1-50km", 1, 50), ("C_>50km", 50, 1e9)]
 FAIXA_INT = [("<60s", 0, 60), ("1-30min", 60, 1800), ("30min-4h", 1800, 14400), (">4h", 14400, 1e12)]
 SEC = ["uf", "mun", "zona", "secao"]
 CASO_NOMINAL = ("ba", "PORTO SEGURO", "ba", "CASA NOVA")
-ESTRATOS = [("G_>=30mil_secoes", 30000, 10**9), ("M_10-30mil_secoes", 10000, 30000), ("P_<10mil_secoes", 0, 10000)]
+ESTRATOS = [("G_eleitorado>=10mi", 10_000_000, 10**12), ("M_eleitorado_4-10mi", 4_000_000, 10_000_000),
+            ("P_eleitorado<4mi", 0, 4_000_000)]  # emenda 05: estratos por eleitorado
+PERIODOS = [("manha_<12h", 0, 12), ("tarde_12-17h", 12, 17), ("pos_17h", 17, 24)]
+LIMIAR_POS9H = 0.05   # emenda 05: acima de 5% dos registros apos 9h, faixas de intervalo estratificadas por periodo
+VEL_MAX_KMH = 120.0   # familia 2 eliminada se a distancia exigir velocidade acima disso no intervalo
 LIMIAR_TESTE_UF = 3.0
+
+
+def periodo(t_s):
+    h = int((t_s // 3600) % 24)
+    return next(n for n, a, b in PERIODOS if a <= h < b)
 
 
 def faixa(v, faixas):
@@ -135,7 +144,7 @@ def tabela_secoes(R_ok):
         n_reg=("ts", "size")).reset_index()
 
 
-def colisoes_observadas(R_ok, geo, qd, nomes_mun):
+def colisoes_observadas(R_ok, geo, qd, nomes_mun, modelo_sec=None):
     m0 = R_ok.groupby("titulo").sec.nunique()
     g = tabela_secoes(R_ok[R_ok.titulo.isin(m0[m0 >= 2].index)])
     n_mes = R_ok.groupby("sec").titulo.nunique().to_dict()
@@ -144,6 +153,8 @@ def colisoes_observadas(R_ok, geo, qd, nomes_mun):
         qd_idx[(r.sec, r.titulo_a)].add(r.titulo_b)
         qd_idx[(r.sec, r.titulo_b)].add(r.titulo_a)
     gi = geo.set_index("sec")
+    tit_sec = R_ok.groupby("sec").titulo.apply(set).to_dict()
+    modelo_sec = modelo_sec or {}
     linhas = []
     for t, grp in g.groupby("titulo"):
         for a, b in itertools.combinations(grp.to_dict("records"), 2):
@@ -154,7 +165,9 @@ def colisoes_observadas(R_ok, geo, qd, nomes_mun):
                            and gi.local.get(a["sec"]) == gi.local.get(b["sec"]))
             if np.isnan(dist) and mesmo_local:
                 dist = 0.0
-            delta = min(abs(x - y) for x in a["ts_lista"] for y in b["ts_lista"])
+            delta, ta, tb = min((abs(x - y), x, y) for x in a["ts_lista"] for y in b["ts_lista"])
+            compart = len((tit_sec.get(a["sec"], set()) & tit_sec.get(b["sec"], set())) - {t})
+            v_kmh = (dist / (delta / 3600.0)) if (not np.isnan(dist) and delta > 0) else (np.inf if delta == 0 and dist > 0 else 0.0)
             excl = ("mesma_urna(contingencia/replicacao)" if a["urnas"] & b["urnas"] else
                     "linha_identica(replicacao)" if a["hashes"] & b["hashes"] else "")
             qa, qb = qd_idx.get((a["sec"], t), set()), qd_idx.get((b["sec"], t), set())
@@ -187,6 +200,9 @@ def colisoes_observadas(R_ok, geo, qd, nomes_mun):
                 tipo_erro_a="|".join(sorted({tipo_erro(t, x) for x in qa})),
                 tipo_erro_b="|".join(sorted({tipo_erro(t, x) for x in qb})),
                 n_registros_a=a["n_reg"], n_registros_b=b["n_reg"],
+                periodo=periodo(max(ta, tb)), local_a=gi.local.get(a["sec"]), local_b=gi.local.get(b["sec"]),
+                modelo_urna_a=modelo_sec.get(a["sec"], ""), modelo_urna_b=modelo_sec.get(b["sec"], ""),
+                outros_titulos_compartilhados=compart, velocidade_exigida_kmh=v_kmh,
                 mesarios_secao_a=n_mes.get(a["sec"]), mesarios_secao_b=n_mes.get(b["sec"]),
                 convocacao_individual="nao_verificavel(base_publica_agregada_por_zona)",
                 caso_nominal_porto_seguro_casa_nova=nominal, exclusao=excl, classificacao=classe))
@@ -196,7 +212,7 @@ def colisoes_observadas(R_ok, geo, qd, nomes_mun):
 JANELA_REINICIO_S = 30 * 60   # congelado (emenda 05): reinicio ate 30 min antes, sem voto computado entre
 JANELA_REDIGITACAO_S = 10 * 60  # congelado (emenda 05): mesmo titulo, mesma urna, sem voto entre, ate 10 min
 JANELAS_REINICIO_SENS = (15 * 60, 60 * 60)  # sensibilidade (ressalva 1): a classe 2 nao pode se mover
-TETO_CLASSE4 = 0.20  # ressalva 2: acima disso, validacao cruzada declarada inconclusiva
+# emenda 05: sem teto para a classe 4; ela nao entra na razao e e descrita como residuo
 
 
 def classificar_bloqueios(B, R_ok, ctx=None, janela_reinicio=None):
@@ -262,6 +278,7 @@ def preparar_simulacao(R_ok, geo, pesos, viz):
     secs_de = R_ok.groupby("titulo").apply(lambda d: sorted(set(zip(d.sec, d.t_s))), include_groups=False).to_dict()
     gi = geo.set_index("sec")
     lat, lon, uf_de = gi.lat.to_dict(), gi.lon.to_dict(), gi.uf.to_dict()
+    loc_de = {k: f"{k.rsplit('-', 1)[0]}-{v}" for k, v in gi.local.to_dict().items()}
     nviz_cache = {}
     prob, alvos_l = [], []
     for t, s, ts in ev:
@@ -285,7 +302,8 @@ def preparar_simulacao(R_ok, geo, pesos, viz):
                 cols = []
                 for s2, ts2 in outros:
                     d = float(haversine(lat.get(s, np.nan), lon.get(s, np.nan), lat.get(s2, np.nan), lon.get(s2, np.nan)))
-                    cols.append((s, s2, faixa(d, FAIXA_DIST), faixa(abs(ts - ts2), FAIXA_INT), uf_de.get(s, s[:2])))
+                    cols.append((s, s2, faixa(d, FAIXA_DIST), faixa(abs(ts - ts2), FAIXA_INT), uf_de.get(s, s[:2]),
+                                 periodo(max(ts, ts2)), loc_de.get(s, s), loc_de.get(s2, s2)))
                 res.append((cols, mesma))
             prob.append(pesos[tp] * len(alvos) / nv)
             alvos_l.append(res)
@@ -298,8 +316,11 @@ def simular(prep, E, reps, semente):
     nd = [f[0] for f in FAIXA_DIST] + ["ND"]
     ni = [f[0] for f in FAIXA_INT] + ["ND"]
     cont = np.zeros((reps, len(nd), len(ni)), dtype=np.int32)
+    npr = [p[0] for p in PERIODOS]
+    cont_per = np.zeros((reps, len(nd), len(npr)), dtype=np.int32)
     bloq = np.zeros(reps, dtype=np.int32)
     maxsec = np.zeros(reps, dtype=np.int32)
+    maxloc = np.zeros(reps, dtype=np.int32)
     uf_cont = defaultdict(lambda: np.zeros(reps, dtype=np.int32))
     p = prob / N
     p_tot = float(p.sum())
@@ -309,20 +330,25 @@ def simular(prep, E, reps, semente):
             k = rng.binomial(int(E), min(1.0, p_tot))
             if k == 0:
                 continue
-            secs = Counter()
+            secs, locs = Counter(), Counter()
             for j in rng.choice(len(pc), size=k, p=pc):
                 cols, mesma = alvos_l[j][rng.integers(len(alvos_l[j]))]
                 if mesma:
                     bloq[r] += 1
                     continue
-                for s, s2, fd, fi, uf in cols:
+                for s, s2, fd, fi, uf, pr, l1, l2 in cols:
                     cont[r, nd.index(fd), ni.index(fi)] += 1
+                    cont_per[r, nd.index(fd), npr.index(pr)] += 1
                     secs[s] += 1
                     secs[s2] += 1
+                    locs[l1] += 1
+                    if l2 != l1:
+                        locs[l2] += 1
                     uf_cont[uf][r] += 1
             maxsec[r] = max(secs.values()) if secs else 0
-    return dict(lambda_total=float(E * p_tot), cont=cont, bloq=bloq, maxsec=maxsec, nd=nd, ni=ni,
-                uf_cont=dict(uf_cont))
+            maxloc[r] = max(locs.values()) if locs else 0
+    return dict(lambda_total=float(E * p_tot), cont=cont, cont_per=cont_per, bloq=bloq, maxsec=maxsec,
+                maxloc=maxloc, nd=nd, ni=ni, npr=npr, uf_cont=dict(uf_cont))
 
 
 def via3(R_ok, E, pesos, semente, T_set):
@@ -359,6 +385,8 @@ def main():
     ap.add_argument("--loo", dest="loo", action="store_true", default=True,
                     help="leave-one-out: D e p1 sem os titulos em colisao (padrao)")
     ap.add_argument("--sem-loo", dest="loo", action="store_false")
+    ap.add_argument("--ignorar-trava", action="store_true",
+                    help="apenas para testes sinteticos: permite escrever colisoes sem o commit de parametros")
     ap.add_argument("--somente-parametros", action="store_true",
                     help="calcula p1, D e o nulo e para, sem abrir colisoes observadas (congelamento)")
     a = ap.parse_args()
@@ -366,6 +394,8 @@ def main():
     os.makedirs(saida, exist_ok=True)
     R, L, B = carregar(a.ano, a.turno, a.entrada)
     R_ok, B, den = preparar(R, L, B, a.ano, a.turno)
+    den["nota_N"] = ("N = registros de presenca em secoes principais com log lido (agregadas sem arquivo proprio "
+                     "nao tem urna; ver reconciliacao em registro/reconciliacao_N_2t2026.md)")
     geo = pd.read_csv(a.geo or os.path.join(ROOT, "data", "processed", f"geo_{a.ano}.csv"),
                       dtype={"uf": str, "mun": str, "zona": str, "secao": str, "local": str})
     geo["sec"] = geo[SEC].agg("-".join, axis=1)
@@ -409,6 +439,17 @@ def main():
     qd = qd.drop(columns=["uf"])
     via1 = N * p1 * D
 
+    # ---- horarios do registro de presenca (histograma de 15 min; primeiro registro da mesa x posteriores)
+    R_h = R_ok.sort_values("t_s").copy()
+    R_h["ordem_na_mesa"] = R_h.groupby("sec").cumcount() + 1
+    R_h["bin15"] = pd.to_datetime(R_h.t_s, unit="s").dt.floor("15min").dt.strftime("%H:%M")
+    hst = R_h.assign(tipo=np.where(R_h.ordem_na_mesa == 1, "primeiro_registro_da_mesa", "registros_posteriores")
+                     ).groupby(["bin15", "tipo"]).size().unstack(fill_value=0).reset_index()
+    hst.to_csv(os.path.join(saida, "horarios_registro.csv"), index=False)
+    hora = (R_h.t_s // 3600) % 24
+    hist = dict(fracao_apos_9h=float((hora >= 9).mean()), fracao_apos_17h=float((hora >= 17).mean()),
+                limiar=LIMIAR_POS9H, estratificar_por_periodo=bool((hora >= 9).mean() > LIMIAR_POS9H))
+
     # ---- nulo: simulacao e sensibilidade
     prep = preparar_simulacao(R_d, geo, pesos, viz)
     E = N * p1
@@ -427,14 +468,23 @@ def main():
                 via2_por_faixa_distancia={nd: dict(media=float(S["cont"][:, i, :].sum(axis=1).mean()),
                                                    IC95=np.quantile(S["cont"][:, i, :].sum(axis=1), [0.025, 0.975]).tolist())
                                           for i, nd in enumerate(S["nd"])},
-                via2_por_uf={u: float(v.mean()) for u, v in S["uf_cont"].items()})
+                via2_por_uf={u: float(v.mean()) for u, v in S["uf_cont"].items()},
+                via2_por_faixa_e_periodo={f"{nd}|{pn}": float(S["cont_per"][:, i, j].mean())
+                                          for i, nd in enumerate(S["nd"]) for j, pn in enumerate(S["npr"])},
+                horarios=hist,
+                exclusoes_loo="titulos em colisao e titulos de quase-duplicados de p1 fora de D; pares com titulo em colisao fora de p1")
     json.dump(nulo, open(os.path.join(saida, "parametros_nulo.json"), "w"), indent=2, default=float, ensure_ascii=False)
     if a.somente_parametros:
         print(json.dumps(nulo, indent=2, default=float, ensure_ascii=False))
         return
 
-    # ---- observado
-    col = colisoes_observadas(R_ok, geo, qd, nomes_mun)
+    # ---- observado (so depois do commit dos parametros; ver emenda 05, secao de congelamento)
+    marca = os.path.join(ROOT, "registro", f"parametros_{a.turno}t{a.ano}.sha256")
+    if not a.ignorar_trava and not os.path.exists(marca):
+        raise SystemExit(f"trava: {marca} ausente; commite os parametros antes de escrever colisoes")
+    modelo_sec = L.assign(sec=L[SEC].agg("-".join, axis=1)).dropna(subset=["modelo"]).groupby("sec").modelo.agg(
+        lambda x: "|".join(sorted(set(x)))).to_dict() if "modelo" in L.columns else {}
+    col = colisoes_observadas(R_ok, geo, qd, nomes_mun, modelo_sec)
     col.to_csv(os.path.join(saida, "colisoes.csv"), index=False)
     p_ctx = os.path.join(a.entrada, f"bloqueios_contexto_{a.ano}_t{a.turno}.csv")
     ctx = pd.read_csv(p_ctx, dtype=str) if os.path.exists(p_ctx) else None
@@ -442,28 +492,37 @@ def main():
         ctx = zfill(ctx)
         ctx["sec"] = ctx[SEC].agg("-".join, axis=1)
     blq = classificar_bloqueios(B, R_ok, ctx)
+    c2 = "erro_digitacao_para_outro_mesario_da_secao"
     sens_janela = {}
     if len(blq):
         for jr in JANELAS_REINICIO_SENS:
             bj = classificar_bloqueios(B, R_ok, ctx, janela_reinicio=jr)
             blq[f"classificacao_janela_{jr // 60}min"] = bj.classificacao.values
-        c2 = "erro_digitacao_para_outro_mesario_da_secao"
         sens_janela = {f"{jr // 60}min": int((blq[f"classificacao_janela_{jr // 60}min"] == c2).sum())
                        for jr in JANELAS_REINICIO_SENS}
         sens_janela["30min"] = int((blq.classificacao == c2).sum())
         sens_janela["classe2_estavel"] = len(set(v for k, v in sens_janela.items() if k.endswith("min"))) == 1
     blq.to_csv(os.path.join(saida, "bloqueios.csv"), index=False)
-    obs = col[col.exclusao == ""] if len(col) else pd.DataFrame(columns=["faixa_distancia", "faixa_intervalo"])
-    n_blq_erro = int((blq.classificacao == "erro_digitacao_para_outro_mesario_da_secao").sum()) if len(blq) else 0
+    obs = col[col.exclusao == ""] if len(col) else pd.DataFrame(columns=[
+        "faixa_distancia", "faixa_intervalo", "periodo", "uf_a", "mun_a", "zona_a", "secao_a", "uf_b", "mun_b",
+        "zona_b", "secao_b", "local_a", "local_b"])
+    n_blq_erro = int((blq.classificacao == c2).sum()) if len(blq) else 0
+    desc_blq = {}
+    if len(blq):
+        desc_blq = dict(por_classe=blq.classificacao.value_counts().to_dict(),
+                        por_regra_temporal=blq.classe_regra_temporal.value_counts().to_dict(),
+                        classe4_por_momento=blq[blq.classificacao == "redigitacao_ciclo_posterior"].momento.value_counts().to_dict(),
+                        padrao_pre_primeiro_voto_15_60min=int(blq.get("padrao_pre_primeiro_voto_15_60min",
+                                                                      pd.Series(dtype=bool)).fillna(False).astype(bool).sum()))
 
     def linha(nome, s_arr, o):
         e = float(s_arr.mean())
         lo, hi = garwood(o)
         q = np.quantile(s_arr, [0.025, 0.975])
-        r = dict(unidade=nome, observado=o, esperado=e, nulo_IC95_inf=float(q[0]), nulo_IC95_sup=float(q[1]),
-                 p_sim_maior_igual=float((s_arr >= o).mean()), razao=o / e if e > 0 else None,
-                 razao_IC95_inf=lo / e if e > 0 else None, razao_IC95_sup=hi / e if e > 0 else None)
-        return r
+        return dict(unidade=nome, observado=o, esperado=e, nulo_IC95_inf=float(q[0]), nulo_IC95_sup=float(q[1]),
+                    p_sim_maior_igual=float((s_arr >= o).mean()), razao=o / e if e > 0 else None,
+                    razao_IC95_inf=lo / e if e > 0 else None, razao_IC95_sup=hi / e if e > 0 else None,
+                    razao_sobre_limite_superior=(o / float(q[1])) if q[1] > 0 else (float("inf") if o > 0 else 0.0))
 
     linhas = []
     for di, dn in enumerate(S["nd"]):
@@ -484,86 +543,124 @@ def main():
     tab = pd.DataFrame(linhas)
     tab.to_csv(os.path.join(saida, "tabela_faixas.csv"), index=False)
     tot_sim = S["cont"].sum(axis=(1, 2))
-    linha_total = linha("TOTAL_descritivo(todas_as_faixas)", tot_sim, int(len(obs)))
+    linha_total = linha("TOTAL(todas_as_faixas,descritivo)", tot_sim, int(len(obs)))
+    tab_per = None
+    if hist["estratificar_por_periodo"]:
+        lp = []
+        for di, dn in enumerate(S["nd"]):
+            for pi, pn in enumerate(S["npr"]):
+                o = int(((obs.faixa_distancia == dn) & (obs.periodo == pn)).sum()) if len(obs) else 0
+                r = linha(f"{dn}|{pn}", S["cont_per"][:, di, pi], o)
+                r.update(faixa_distancia=dn, periodo=pn)
+                lp.append(r)
+        tab_per = pd.DataFrame(lp)
+        tab_per.to_csv(os.path.join(saida, "tabela_faixas_por_periodo.csv"), index=False)
 
-    # ---- UF e estratos (teste so onde a expectativa central passa de 3)
-    secs_uf = geo.groupby("uf").size().to_dict()
+    # ---- UF e estratos por eleitorado (teste individual so onde a expectativa central passa de 3)
+    eleit_uf = geo.groupby("uf").qt_eleitor.sum().to_dict()
     uf_obs = Counter(obs.uf_a) if len(obs) else Counter()
     uf_rows = []
-    for uf in sorted(set(secs_uf) | set(S["uf_cont"])):
+    for uf in sorted(set(eleit_uf) | set(S["uf_cont"])):
         arr = S["uf_cont"].get(uf, np.zeros(a.reps, dtype=np.int32))
         r = linha(uf, arr, int(uf_obs.get(uf, 0)))
         r["testado_individualmente"] = r["esperado"] > LIMIAR_TESTE_UF
-        r["estrato"] = next(n for n, lo, hi in ESTRATOS if lo <= secs_uf.get(uf, 0) < hi)
+        r["eleitorado"] = eleit_uf.get(uf, 0)
+        r["estrato"] = next(n for n, lo, hi in ESTRATOS if lo <= eleit_uf.get(uf, 0) < hi)
+        r["D_uf"] = float(D_uf.set_index("uf").D.get(uf, np.nan)) if len(D_uf) else None
         uf_rows.append(r)
     for n, lo, hi in ESTRATOS:
-        ufs = [u for u in secs_uf if lo <= secs_uf[u] < hi]
+        ufs = [u for u in eleit_uf if lo <= eleit_uf[u] < hi and not any(
+            x["unidade"] == u and x["testado_individualmente"] for x in uf_rows)]
         arr = sum((S["uf_cont"].get(u, np.zeros(a.reps, dtype=np.int32)) for u in ufs), np.zeros(a.reps, dtype=np.int32))
         r = linha(n, arr, int(sum(uf_obs.get(u, 0) for u in ufs)))
         r["testado_individualmente"] = r["esperado"] > LIMIAR_TESTE_UF
         r["estrato"] = n
+        r["ufs"] = "|".join(sorted(ufs))
         uf_rows.append(r)
     tab_uf = pd.DataFrame(uf_rows)
     tab_uf.to_csv(os.path.join(saida, "tabela_uf.csv"), index=False)
+    ufs_ind = tab_uf[~tab_uf.unidade.str.contains("_")]
+    from scipy.stats import spearmanr
+    taxa_obs_uf = ufs_ind.observado / ufs_ind.unidade.map(R_ok.groupby("uf").size()).clip(lower=1)
+    rho = spearmanr(ufs_ind.D_uf, taxa_obs_uf, nan_policy="omit") if len(obs) else None
+    previsao_densidade = dict(spearman_D_uf_vs_colisoes_por_registro=(float(rho.statistic) if rho is not None else None),
+                              p=(float(rho.pvalue) if rho is not None else None))
 
-    # ---- dispersao e concentracao
+    # ---- dispersao e concentracao (secao, local de votacao, UF)
     conc = {}
     if len(obs):
-        cs = Counter(list(obs.uf_a + "-" + obs.mun_a + "-" + obs.zona_a + "-" + obs.secao_a) +
-                     list(obs.uf_b + "-" + obs.mun_b + "-" + obs.zona_b + "-" + obs.secao_b))
+        sa = obs.uf_a + "-" + obs.mun_a + "-" + obs.zona_a + "-" + obs.secao_a
+        sb = obs.uf_b + "-" + obs.mun_b + "-" + obs.zona_b + "-" + obs.secao_b
+        cs = Counter(list(sa) + list(sb))
+        la = obs.uf_a + "-" + obs.mun_a + "-" + obs.zona_a + "-" + obs.local_a.astype(str)
+        lb = obs.uf_b + "-" + obs.mun_b + "-" + obs.zona_b + "-" + obs.local_b.astype(str)
+        cl = Counter(list(la) + [y for x, y in zip(la, lb) if x != y])
+        n_locais = geo.assign(k=geo.uf + "-" + geo.mun + "-" + geo.zona + "-" + geo.local.astype(str)).k.nunique()
         x = np.array(list(cs.values()) + [0] * (den["secoes_com_log"] - len(cs)))
         conc = dict(secoes_envolvidas=len(cs), fracao_secoes_envolvidas=len(cs) / den["secoes_com_log"],
                     max_por_secao=int(max(cs.values())),
                     p_sim_max_por_secao=float((S["maxsec"] >= max(cs.values())).mean()),
-                    indice_dispersao_por_secao=float(x.var(ddof=1) / x.mean()))
-        esp = np.array([S["uf_cont"].get(u, np.zeros(1)).mean() for u in sorted(uf_obs)])
-        if esp.sum() > 0:
-            ufs_all = sorted(set(uf_obs) | set(S["uf_cont"]))
-            e_all = np.array([S["uf_cont"].get(u, np.zeros(1)).mean() for u in ufs_all])
-            o_all = np.array([uf_obs.get(u, 0) for u in ufs_all])
+                    indice_dispersao_por_secao=float(x.var(ddof=1) / x.mean()),
+                    locais_envolvidos=len(cl), fracao_locais_envolvidos=len(cl) / n_locais,
+                    max_por_local=int(max(cl.values())),
+                    p_sim_max_por_local=float((S["maxloc"] >= max(cl.values())).mean()))
+        ufs_all = sorted(set(uf_obs) | set(S["uf_cont"]))
+        e_all = np.array([S["uf_cont"].get(u, np.zeros(1)).mean() for u in ufs_all])
+        o_all = np.array([uf_obs.get(u, 0) for u in ufs_all])
+        if e_all.sum() > 0:
             e_n = e_all / e_all.sum() * o_all.sum()
             mm = e_n > 0
             conc["chi2_uf"] = float((((o_all[mm] - e_n[mm]) ** 2) / e_n[mm]).sum())
             conc["gl_uf"] = int(mm.sum() - 1)
             conc["p_chi2_uf"] = float(chi2.sf(conc["chi2_uf"], max(1, conc["gl_uf"])))
             conc["casos_em_uf_sem_suporte_no_nulo"] = int(o_all[~mm].sum())
+    achado_conc = bool(conc) and (
+        (conc["fracao_secoes_envolvidas"] < 0.05 and conc["p_sim_max_por_secao"] < 0.05) or
+        (conc["fracao_locais_envolvidos"] < 0.05 and conc["p_sim_max_por_local"] < 0.05) or
+        conc.get("p_chi2_uf", 1) < 0.05)
 
-    # ---- validacao cruzada pelo bloqueio
+    # ---- validacao cruzada: so a classe 2 (emenda 05; sem teto para a classe 4)
     q_b = {k: np.quantile(v["bloq"], [0.025, 0.975]).tolist() for k, v in sims.items()}
     lo_b = min(q_b[k][0] for k in ("p1_x0.5_ou_D_x0.5", "central", "D_x1.5", "p1_x2"))
     hi_b = max(q_b[k][1] for k in ("p1_x0.5_ou_D_x0.5", "central", "D_x1.5", "p1_x2"))
-    frac_c4 = (float(blq.classificacao.isin(["redigitacao_ciclo_posterior"]).mean()) if len(blq) else 0.0)
-    valid = dict(fracao_classe4=frac_c4, teto_classe4=TETO_CLASSE4, sensibilidade_janela_reinicio=sens_janela,
-                 bloqueios_por_erro_observados=n_blq_erro, bloqueios_esperados=float(S["bloq"].mean()),
-                 bloqueios_IC95_por_cenario=q_b, faixa_aceitacao=[lo_b, hi_b],
-                 modelo_validado=bool(lo_b <= n_blq_erro <= hi_b) and frac_c4 <= TETO_CLASSE4,
-                 situacao=("inconclusiva:classe4_acima_do_teto" if frac_c4 > TETO_CLASSE4 else
-                           "aprovada" if lo_b <= n_blq_erro <= hi_b else "reprovada"),
-                 razao_bloqueio_colisao_prevista=float(S["bloq"].mean() / max(1e-12, tot_sim.mean())),
-                 razao_bloqueio_colisao_observada=(n_blq_erro / len(obs)) if len(obs) else None)
+    dentro = bool(lo_b <= n_blq_erro <= hi_b)
+    valid = dict(numerador="somente classe 2 (erro_digitacao_para_outro_mesario_da_secao)",
+                 classe2_observada=n_blq_erro, classe2_esperada=float(S["bloq"].mean()),
+                 classe2_IC95_por_cenario=q_b, faixa_aceitacao=[lo_b, hi_b], classe2_dentro_do_previsto=dentro,
+                 sensibilidade_janela_reinicio=sens_janela, descricao_bloqueios=desc_blq,
+                 razao_classe2_por_colisao_prevista=float(S["bloq"].mean() / max(1e-12, tot_sim.mean())),
+                 razao_classe2_por_colisao_observada=(n_blq_erro / len(obs)) if len(obs) else None)
 
-    # ---- veredito pela regra pre-registrada
-    def veredito(r):
-        if r["observado"] > r["nulo_IC95_sup"]:
-            return "excesso_de_volume"
-        if conc and conc.get("fracao_secoes_envolvidas", 1) < 0.05 and (
-                conc.get("p_sim_max_por_secao", 1) < 0.05 or conc.get("p_chi2_uf", 1) < 0.05):
-            return "mecanismo_insuficiente_por_concentracao"
-        return "compativel_com_o_acaso"
+    # ---- vereditos (emenda 05): mecanismo (condicionado a validacao) e magnitude (sempre)
     vered = {}
-    for fd in ("B_1-50km", "C_>50km"):
+    for fd in ("A_<1km", "B_1-50km", "C_>50km", "ND"):
         r = tab[(tab.faixa_distancia == fd) & (tab.faixa_intervalo == "TOTAL")].iloc[0].to_dict()
-        v = veredito(r)
-        frag = []
-        for k in ("p1_x0.5_ou_D_x0.5", "D_x1.5", "p1_x2"):
-            v2 = "excesso_de_volume" if r["observado"] > r[f"nulo_IC95_sup_{k}"] else "sem_excesso_de_volume"
-            frag.append(v2 != ("excesso_de_volume" if v == "excesso_de_volume" else "sem_excesso_de_volume"))
-        vered[fd] = dict(veredito=v if valid["modelo_validado"] else f"sem_veredito:validacao_{valid['situacao']}",
-                         veredito_bruto=v, fragil=any(frag), observado=r["observado"], esperado=r["esperado"],
-                         nulo_IC95=[r["nulo_IC95_inf"], r["nulo_IC95_sup"]])
+        excesso = r["observado"] > r["nulo_IC95_sup"]
+        if not dentro:
+            mec = "modelo_de_digitacao_rejeitado(classe2_fora_do_previsto)"
+        elif excesso:
+            mec = "mecanismo_existe_mas_nao_chega:excesso_de_volume"
+        else:
+            mec = "acidente_explica_o_volume"
+        frag = any((r["observado"] > r[f"nulo_IC95_sup_{k}"]) != excesso for k in ("p1_x0.5_ou_D_x0.5", "D_x1.5", "p1_x2"))
+        mag = r["razao_sobre_limite_superior"]
+        vered[fd] = dict(
+            veredito_mecanismo=mec, fragil_na_sensibilidade=frag, observado=r["observado"], esperado=r["esperado"],
+            nulo_IC95=[r["nulo_IC95_inf"], r["nulo_IC95_sup"]], razao_O_E=r["razao"],
+            razao_IC95=[r["razao_IC95_inf"], r["razao_IC95_sup"]],
+            veredito_magnitude=(f"o observado excede o maximo explicavel por este mecanismo em {mag:.2f} vezes"
+                                if excesso else f"o observado corresponde a {mag:.2f} do maximo explicavel por este mecanismo"),
+            magnitude_e_piso=not dentro,
+            observacao=("faixa A: veredito proprio; casos nao explicados caso a caso em teste_caso.py" if fd == "A_<1km"
+                        else "faixa sem coordenada, descritiva" if fd == "ND" else ""))
     for r in tab_uf[tab_uf.testado_individualmente].to_dict("records"):
-        vered[f"unidade:{r['unidade']}"] = dict(veredito=veredito(r), observado=r["observado"], esperado=r["esperado"],
-                                                 nulo_IC95=[r["nulo_IC95_inf"], r["nulo_IC95_sup"]])
+        vered[f"unidade:{r['unidade']}"] = dict(observado=r["observado"], esperado=r["esperado"],
+                                                 nulo_IC95=[r["nulo_IC95_inf"], r["nulo_IC95_sup"]],
+                                                 excesso=r["observado"] > r["nulo_IC95_sup"])
+    vered["concentracao"] = dict(achado_de_concentracao=achado_conc,
+                                 nota="nao e absorvido pelo veredito de volume")
+    excesso_agregado = any(vered[f]["veredito_mecanismo"].startswith("mecanismo_existe") for f in ("B_1-50km", "C_>50km"))
+    vered["familia_1_nulo_mal_especificado"] = ("eliminada" if dentro and excesso_agregado else "compativel")
 
     par = dict(**den, **loo, p1=p1, p1_IC95_quase_dup=([garwood(len(qd_p1))[0] / d / m["p2_ponderado"] / N,
                                                  garwood(len(qd_p1))[1] / d / m["p2_ponderado"] / N]
@@ -578,7 +675,7 @@ def main():
                              media_bloqueios=float(v["bloq"].mean())) for k, v in sims.items()},
                via1_via2_divergencia=abs(via1 - tot_sim.mean()) / max(1e-12, tot_sim.mean()),
                via3_segunda_ordem=v3, via3_reps=v3r, total_descritivo=linha_total,
-               validacao_bloqueio=valid, concentracao=conc,
+               validacao_bloqueio=valid, concentracao=conc, horarios=hist, previsao_densidade=previsao_densidade,
                classificacao_colisoes=col.classificacao.value_counts().to_dict() if len(col) else {},
                classificacao_bloqueios=blq.classificacao.value_counts().to_dict() if len(blq) else {},
                caso_nominal=(col[col.caso_nominal_porto_seguro_casa_nova].drop(columns=["titulo"]).to_dict("records")
@@ -587,6 +684,7 @@ def main():
     json.dump(par, open(os.path.join(saida, "parametros.json"), "w"), indent=2, default=float, ensure_ascii=False)
     print(json.dumps({k: par[k] for k in ("escopo", "registros_N", "p1", "D", "via1_esperado_N_p1_D", "veredito",
                                           "validacao_bloqueio")}, indent=2, default=float, ensure_ascii=False))
+    print("proximo passo: python src/cache_brutos.py", a.ano, a.turno, "colisoes ; python src/teste_caso.py", a.ano)
 
 
 if __name__ == "__main__":

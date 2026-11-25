@@ -121,7 +121,7 @@ def main():
         w.writerows(geo)
     out = os.path.join(td, "out")
     subprocess.run([sys.executable, "-I", os.path.join(AQUI, "..", "src", "simulacao.py"), "2026",
-                    "--reps", "200", "--catalogo", td, "--entrada", os.path.join(td, "censo"), "--geo", os.path.join(td, "geo.csv"),
+                    "--reps", "200", "--ignorar-trava", "--catalogo", td, "--entrada", os.path.join(td, "censo"), "--geo", os.path.join(td, "geo.csv"),
                     "--saida", out], check=True, stdout=subprocess.DEVNULL)
     col = list(csv.DictReader(open(os.path.join(out, "colisoes.csv"))))
     cls = {r["titulo"]: r["classificacao"] for r in col}

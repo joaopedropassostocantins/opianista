@@ -2,6 +2,12 @@
 
 ## Escopo vigente
 
+Emenda 05 (`protocolos/05_emenda_estudo05_v3_mecanismo_magnitude_20261125.md`): dois vereditos (mecanismo e
+magnitude), familias de fator externo F0-F6 por caso, faixa A com prova caso a caso, cruzamento com o
+movimento de votos e trava que impede escrever colisoes antes do commit dos parametros.
+
+### Emenda 04
+
 Emenda 04 (`protocolos/04_emenda_estudo05_2t_20261125.md`): somente o 2o turno de 2026 (25/10/2026), censo
 de todas as secoes, com comparacao no 2o turno de 2022. 2018 indisponivel no TSE. Alvo nominal:
 Porto Seguro (BA) - Casa Nova (BA).
@@ -40,6 +46,9 @@ src/censo.py                 coleta censitaria retomavel, com SHA-256 de cada ar
 src/densidade.py             caminhos de erro, p1 por caminho (quase-duplicados), densidade local D
 src/simulacao.py             colisoes, bloqueios, teste de caso, nulo (vias 1, 2 e 3), validacao, veredito
 src/fase0.py                 Fase 0 do 2o turno (vocabulario com exemplo de linha e posicao)
+src/cache_brutos.py          cache seletivo dos logs originais (bloqueios, quase-dup, colisoes), com SHA-256
+src/teste_caso.py            teste de caso de cada colisao, prova da faixa A e familias F0-F6
+src/votos.py                 cruzamento com o movimento de votos (outlier dentro do local de votacao)
 src/pseudonimizar.py         saidas publicaveis (titulo -> HMAC; chave fora do Git)
 src/geo.py                   coordenadas e eleitorado por secao
 src/download_historico.py    quadro de secoes de 2022/2024 a partir dos pacotes por UF
@@ -62,8 +71,12 @@ python src/geo.py 2026 && python src/geo.py 2022
 python src/download_historico.py quadro 2022
 for s in 0 1 2 3 4 5; do python src/censo.py 2026 2 $s 6 & done; wait   # idem: python src/censo.py 2022 2 ...
 python tests/teste_sintetico.py
-python src/simulacao.py 2026 --somente-parametros   # congela p1, D e o nulo (etapa 2 da emenda 04)
-python src/simulacao.py 2026 && python src/simulacao.py 2022
+python src/cache_brutos.py 2026 2 bloqueios ; python src/simulacao.py 2026 --somente-parametros
+python src/cache_brutos.py 2026 2 quase_dup
+sha256sum data/outputs/2026_t2/parametros_nulo.json > registro/parametros_2t2026.sha256   # commit proprio
+python src/simulacao.py 2026 ; python src/cache_brutos.py 2026 2 colisoes
+python src/votos.py 2026 ; python src/teste_caso.py 2026
+python tests/teste_familias.py        # deve imprimir 12 OK
 python src/pseudonimizar.py data/outputs/2026_t2 resultados/2026_t2
 ```
 

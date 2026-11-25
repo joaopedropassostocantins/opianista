@@ -12,7 +12,8 @@ Caminhos de erro (um evento por digitacao errada):
   outros     transposicao com salto (abc -> cba) e erro gemeo (aa -> bb)
 
 Leave-one-out (LOO, ligado por padrao): D e p1 sao medidos SEM os titulos envolvidos em colisoes (titulo
-registrado em 2 ou mais secoes do turno). Sem isso, cada colisao real entraria no conjunto-alvo e no rastro
+registrado em 2 ou mais secoes do turno); alem disso, os titulos usados como quase-duplicados em p1 nao entram
+em D (emenda 05: p1 e D medidos sobre conjuntos disjuntos). Sem isso, cada colisao real entraria no conjunto-alvo e no rastro
 de erro, inflando D e p1 justamente onde ocorre e abafando um eventual excesso.
 
 Uso como modulo (simulacao.py) ou:
@@ -151,16 +152,21 @@ def titulos_em_colisao(R_ok):
 
 
 def aplicar_loo(R_ok, qd, loo=True):
-    """Devolve (R_para_D, qd_para_p1, resumo). R_para_D exclui todos os registros de titulos em colisao;
-    qd_para_p1 exclui pares de quase-duplicados em que algum dos dois titulos esteja em colisao."""
+    """Leave-one-out nos dois sentidos (emenda 05):
+      - D: exclui todos os registros de titulos em colisao E de titulos usados como quase-duplicados em p1;
+      - p1: exclui pares de quase-duplicados em que algum dos titulos esteja em colisao.
+    Devolve (R_para_D, qd_para_p1, resumo)."""
     if not loo:
-        return R_ok, qd, dict(loo=False, titulos_excluidos=0, registros_excluidos=0, pares_quase_dup_excluidos=0)
+        return R_ok, qd, dict(loo=False, titulos_excluidos=0, titulos_quase_dup_excluidos_de_D=0,
+                              registros_excluidos=0, pares_quase_dup_excluidos=0)
     ex = titulos_em_colisao(R_ok)
-    R_d = R_ok[~R_ok.titulo.isin(ex)]
-    m = qd.titulo_a.isin(ex) | qd.titulo_b.isin(ex) if len(qd) else pd.Series([], dtype=bool)
-    return R_d, qd[~m] if len(qd) else qd, dict(loo=True, titulos_excluidos=len(ex),
-                                                 registros_excluidos=int(len(R_ok) - len(R_d)),
-                                                 pares_quase_dup_excluidos=int(m.sum()) if len(qd) else 0)
+    m = (qd.titulo_a.isin(ex) | qd.titulo_b.isin(ex)) if len(qd) else pd.Series([], dtype=bool)
+    qd_p1 = qd[~m] if len(qd) else qd
+    ex_qd = (set(qd_p1.titulo_a) | set(qd_p1.titulo_b)) - ex if len(qd_p1) else set()
+    R_d = R_ok[~R_ok.titulo.isin(ex | ex_qd)]
+    return R_d, qd_p1, dict(loo=True, titulos_excluidos=len(ex), titulos_quase_dup_excluidos_de_D=len(ex_qd),
+                            registros_excluidos=int(len(R_ok) - len(R_d)),
+                            pares_quase_dup_excluidos=int(m.sum()) if len(qd) else 0)
 
 
 def quase_duplicados(R_ok):

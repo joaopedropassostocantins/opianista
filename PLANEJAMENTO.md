@@ -12,7 +12,7 @@ ser editado livremente.
 | 02 Transferencia de votos | Exploratorio, sem codigo no repositorio | Publicar script Monte Carlo |
 | 03 Mesario pianista | Piloto TO concluido (emenda 02): nenhuma hipotese sustentada | Execucao nacional, priorizando UFs com votacao apos 17h49 |
 | 04 Auditabilidade | Proposta de artigo | Receber fichamento de Aranha et al. |
-| 05 Colisao de titulo de mesario | Emenda 04 (25/11/2026): escopo restrito ao 2T 2026, censo em execucao; 2T 2022 como referencia | Congelar parametros_nulo.json; teste e relatorio |
+| 05 Colisao de titulo de mesario | Emenda 05 (25/11/2026): vereditos de mecanismo e magnitude, familias F0-F6; censo do 2T 2026 em execucao | Congelar parametros_nulo.json; teste, teste de caso, votos e relatorio |
 
 Fato novo relevante para o Estudo 01: o TSE informou 34.393 votos registrados
 apos 17h no pais, contra margem de 4.430.191 votos. O teste de alteracao de

@@ -45,7 +45,10 @@ PADROES = [
     ("titulo_invalido_eleitor", r"^Identificador do eleitor digitado inválido$"),
     ("mesario_habilitou_eleitor", r"^Mesário \d{12} habilitou o eleitor$"),
     ("biometria_eleitor_nao_e_do_mesario", r"^Biometria coletada não é do mesário"),
-    ("reinicio_logd", r"^Início das operações do logd$|^Urna ligada em"),
+    ("partida_do_sistema", r"^Início das operações do logd$|^Urna ligada em"),
+    ("zeresima", r"^Imprimindo relatório \[ZERÉSIMA\]"),
+    ("voto_computado", r"^O voto do eleitor foi computado$"),
+    ("urna_pronta", r"^Urna pronta para receber votos$"),
     ("contingencia_ou_troca", r"(?i)conting|substitu|Identificação do Modelo de Urna"),
     ("fase_ue", r"^Fase da UE:"),
     ("encerramento_titulo", r"^Título digitado para encerramento"),
@@ -69,7 +72,7 @@ def main():
         w = csv.DictWriter(fh, ["uf", "mun", "zona", "secao", "semente"])
         w.writeheader()
         w.writerows(dict(s, semente=SEMENTE) for s in secoes)
-    voc, ex, seqs, datas = Counter(), {}, Counter(), Counter()
+    voc, ex, seqs, datas, partidas = Counter(), {}, Counter(), Counter(), Counter()
     man = []
     for s in secoes:
         d = f"{BASE26}/3221/dados/{s['uf']}/{s['mun']}/{s['zona']}/{s['secao']}"
@@ -90,6 +93,7 @@ def main():
                     open(dest, "xb").write(dados)
                 man.append(dict(s, arquivo=a["nm"], sha256=hashlib.sha256(dados).hexdigest(), url=url))
                 txt, _ = ler_logd(dados)
+                partidas[sum(1 for x in txt.splitlines() if x.startswith(DATA2T) and "\tLOGD\tInício das operações do logd" in x)] += 1
                 seq = None
                 for n, ln in enumerate(txt.splitlines(), 1):
                     p = ln.split("\t")
@@ -137,6 +141,10 @@ def main():
         linhas.append(f"| {nome} | {app} | {'sim' if dia else 'nao'} | {v} | {arq}:{n} | `{ln.replace('|', '/')[:160]}` |")
     linhas += ["", "Datas presentes nos logs do 2T (linhas por data):", ""]
     linhas += [f"- {k}: {v}" for k, v in sorted(datas.items(), key=lambda x: x[0][6:] + x[0][3:5] + x[0][:2])]
+    open(os.path.join(ROOT, "registro", "fase0_2t_vocabulario.md"), "w", encoding="utf-8").write("\n".join(linhas) + "\n")
+    # partidas do sistema no dia do turno por urna: a primeira e a partida normal; as demais sao reinicio
+    linhas += ["", "Partidas do sistema no dia do 2T, por arquivo (1 = so a partida normal da manha):", ""]
+    linhas += [f"- {k} partida(s): {v} arquivo(s)" for k, v in sorted(partidas.items())]
     open(os.path.join(ROOT, "registro", "fase0_2t_vocabulario.md"), "w", encoding="utf-8").write("\n".join(linhas) + "\n")
     print("\n".join(linhas[:60]))
     print(seqs.most_common(15))

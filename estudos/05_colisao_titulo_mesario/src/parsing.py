@@ -36,6 +36,7 @@ import io
 import re
 import sys
 import zipfile
+from collections import Counter
 from datetime import datetime
 
 DATAS = {
@@ -259,4 +260,72 @@ def contexto_bloqueios(texto, ano, turno):
                 seg_desde_registro=(ts - g_ts).total_seconds() if g_ts else "",
                 votos_desde_registro=sum(1 for v in votos if g_ts and g_ts <= v <= ts) if g_ts else "",
                 votos_no_dia_ate_bloqueio=sum(1 for v in votos if v <= ts)))
+    return out
+
+
+# ---------- contexto de cada ponta de uma colisao (teste de caso; emenda 05)
+R_VERSAO = re.compile(r"Versão da aplicação: (.+)$")
+R_ASSIN = re.compile(r"^Verificação de assinatura .*\[(\w+)\]$")
+LACUNA_S = 300  # lacuna no log imediatamente antes do registro: mais de 300 s sem nenhuma linha
+
+
+def caso_contexto(texto, ano, turno, titulo):
+    data = DATAS[(ano, turno)]
+    versao = modelo = ""
+    assin = Counter()
+    ult_ts = None
+    ciclo = ""
+    pedido = False
+    bio = ""
+    regs_antes = set()
+    out = None
+    for ln in texto.splitlines():
+        p = ln.split("\t")
+        if len(p) < 5:
+            continue
+        msg = p[4]
+        m = R_VERSAO.search(msg)
+        if m:
+            versao = m.group(1)
+        m = R_MODELO.search(msg)
+        if m:
+            modelo = m.group(1)
+        if not p[0].startswith(data):
+            continue
+        try:
+            ts = datetime.strptime(p[0], "%d/%m/%Y %H:%M:%S")
+        except ValueError:
+            continue
+        m = R_ASSIN.match(msg)
+        if m:
+            assin[m.group(1)] += 1
+        if p[3] == "VOTA":
+            if msg in M_FASES:
+                ciclo = M_FASES[msg]
+            mp = R_PED.match(msg)
+            if mp:
+                pedido = mp.group(1) == titulo
+                bio = ""
+            elif msg == M_CONF_OK and pedido:
+                bio = "coincide"
+            elif msg.startswith(P_CONF_NAO) and pedido:
+                bio = "nao_coincide"
+            mr = R_REG.match(msg)
+            if mr:
+                if mr.group(1) == titulo and out is None:
+                    out = dict(ts_primeiro_registro=p[0], ciclo=ciclo, mensagem_digitacao=pedido,
+                               biometria=bio or ("sem_conferencia" if pedido else ""),
+                               lacuna_antes_s=(ts - ult_ts).total_seconds() if ult_ts else None,
+                               lacuna_acima_limite=bool(ult_ts and (ts - ult_ts).total_seconds() > LACUNA_S),
+                               mesarios_registrados_antes=len(regs_antes - {titulo}),
+                               mesa_incompleta=len(regs_antes - {titulo}) < 3)
+                regs_antes.add(mr.group(1))
+                pedido = False
+        ult_ts = ts
+    out = out or dict(ts_primeiro_registro="", ciclo="", mensagem_digitacao=None, biometria="",
+                      lacuna_antes_s=None, lacuna_acima_limite=None, mesarios_registrados_antes=None,
+                      mesa_incompleta=None)
+    out.update(versao_aplicacao=versao, modelo_urna=modelo,
+               assinatura=("divergente" if any(k != "SUCESSO" for k in assin) else
+                           "conferida" if assin else "sem_verificacao_no_dia"))
     return out
