@@ -53,3 +53,9 @@ A entrega 02 é adicional e não reconstitui nem substitui o arquivo histórico 
 A partir desta aprovacao, os parametros da versao 1.1 estao congelados. Qualquer
 alteracao exige emenda nova, registrada antes da abertura dos dados do 2o turno
 de 2026.
+
+## Nova entrega registrada em 2026-11-25 (Estudo 05)
+
+| Ordem | Arquivo | Data (UTC) | SHA-256 | Situação |
+|-------|---------|------------|---------|----------|
+| 05 | `protocolos/03_preregistro_estudo05_colisao_titulo_20261125.md` | 2026-11-25T00:45:07Z | `db551fda3d649fe0be41bf2c2dd8ed1f5defa518d21095a404ca5ca605f6fe5d` | Pré-registro do Estudo 05 (colisão de título de mesário); código congelado com hashes em `estudos/05_colisao_titulo_mesario/registro/HASHES_CODIGO.txt`; registrado antes de qualquer cálculo de colisão. Aguarda aprovação do proponente (inclusive quanto à seção 14, contato com o 2T 2026). |

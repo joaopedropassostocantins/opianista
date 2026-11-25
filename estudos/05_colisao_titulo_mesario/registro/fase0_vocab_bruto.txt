@@ -1,0 +1,214 @@
+8760 VOTA Aguardando digitação do identificador do eleitor | logd.dat
+8468 VOTA Identificador do eleitor digitado pelo mesário | logd.dat
+7749 VOTA Eleitor foi habilitado | logd.dat
+6818 VOTA Tipo de habilitação do eleitor [biométrica] | logd.dat
+6100 VOTA Identificador digitado pelo mesário foi: (Título de eleitor) | logd.dat
+1969 VOTA Identificador digitado pelo mesário foi: (CPF) | logd.dat
+635 VOTA Biometria coletada não é do mesário <N> (<N>) | logd.dat
+537 VOTA Solicitação de dado pessoal do eleitor para habilitação manual | logd.dat
+528 VOTA Solicita digital do mesário | logd.dat
+521 VOTA Dado digitado confere | logd.dat
+411 VOTA Ano de nascimento digitado é igual ao do cadastro | logd.dat
+382 VOTA Identificador do eleitor digitado inválido | logd.dat
+353 VOTA Mesário <N> habilitou o eleitor | logd.dat
+282 VOTA Biometria do mesário <N> encontrada nos arquivos coletados (<N>) | logd.dat
+244 VOTA Operador confirmou o registro de mesários | logd.dat
+218 VOTA Pedido de leitura da biometria do mesário <N> | logd.dat
+208 VOTA Mesário <N> registrado | logd.dat
+208 VOTA Operador indagado se continua registrando mesários | logd.dat
+129 VOTA Mesário <N> não é eleitor da seção | logd.dat
+128 GAP Modo de carga da UE - Votação | logd.dat
+112 GAP Bateria interna com carga plena | logd.dat
+110 VOTA Digital coletada bate com uma digital gravada após o registro inicial de mesário. Não é possível associar a ha | logd.dat
+100 GAP Verificação de assinatura - Etapa [28] - [/dsk/fi/estatico/dadoscarga.vsu] - [SUCESSO] | logd.dat
+95 VOTA Mesário indagado se eleitor está votando | logd.dat
+79 VOTA Mesário <N> é eleitor da seção | logd.dat
+76 VOTA Aguardando data e hora para emissão da zerésima | logd.dat
+76 VOTA Biometria coletada não é do mesário <N> | logd.dat
+69 VOTA Carga da [ALIMENTAÇÃO BATERIA INTERNA]: [PLENA] | logd.dat
+67 VOTA Eleitor não encontrado para o identificador informado | logd.dat
+66 VOTA Operador indagado se finaliza registro mesários | logd.dat
+61 VOTA Operador indagado se ocorrerá registro de mesários | logd.dat
+61 VOTA Operador encerrou ciclo de registro de mesários | logd.dat
+57 VOTA Digitado título inválido para o registro de mesário | logd.dat
+57 VOTA Capturada a digital do mesário | logd.dat
+48 VOTA Realizada a conferência da biometria do mesário | logd.dat
+47 VOTA Biometria do mesário <N> encontrada em eleitores | logd.dat
+35 VOTA Habilitação cancelada durante confirmação de dado do eleitor | logd.dat
+30 VOTA Operador cancelou o registro de mesários | logd.dat
+28 SCUE Data e hora solicitadas | logd.dat
+28 SCUE Data e hora atualizada | logd.dat
+28 SCUE Mídia de carga gerada pelo usuário: <N> | logd.dat
+28 SCUE Imprimindo extrato de carga | logd.dat
+28 SCUE Confirmação do extrato de carga | logd.dat
+28 SCUE Código de carga <N>.<N>.<N>.<N>.<N>.<N>.<N>.<N> gravado na tabela de correspondência | logd.dat
+28 GAP Verificação de assinatura - Etapa [27] - [/dsk/fi/estatico/dadoscarga.vsu] - [SUCESSO] | logd.dat
+28 ATUE Imprimindo comprovante de carga | logd.dat
+28 VOTA Título digitado para encerramento: <N> | logd.dat
+28 VOTA Gerando relatório [ELEITORES HABILITADOS BIOGRAFICAMENTE] [INÍCIO] | logd.dat
+28 VOTA Gerando relatório [ELEITORES HABILITADOS BIOGRAFICAMENTE] [TÉRMINO] | logd.dat
+28 VOTA Mesário indagado sobre qualidade do Boletim de Urna | logd.dat
+28 VOTA Mesário indicou qualidade OK para Boletim de Urna | logd.dat
+28 VOTA Carga da [ALIMENTAÇÃO BATERIA INTERNA]: [PARCIAL] | logd.dat
+27 VOTA Registrando mesários após a votação | logd.dat
+26 SCUE Bateria interna com carga plena | logd.dat
+26 VOTA Registrando mesários antes da votação | logd.dat
+24 VOTA Biometria do mesário <N> encontrada em eleitores (<N>) | logd.dat
+16 GAP Bateria interna com carga parcial | logd.dat
+15 VOTA Habilitação cancelada durante reconhecimento biométrico | logd.dat
+13 VOTA Dado digitado não confere | logd.dat
+13 VOTA Solicitado ao mesário que conecte o fone de ouvido | logd.dat
+13 VOTA Solicitado ao mesário que desconecte o fone de ouvido | logd.dat
+11 VOTA Ano de nascimento digitado é diferente do cadastro | logd.dat
+10 VOTA Mesário <N> já registrado | logd.dat
+9 VOTA Solicitado título eleitoral para suspensão do eleitor | logd.dat
+8 VOTA Mesário digitou o título para suspender o eleitor | logd.dat
+8 VOTA Título <N> é válido para suspender a votação | logd.dat
+8 VOTA Eleitor foi suspenso pelo mesário | logd.dat
+7 GAP Data e hora da geração da mídia de votação: 18/09/<N> 13:09:13 | logd.dat
+7 VOTA Eleitor impedido - título suspenso | logd.dat
+7 GAP Data e hora da geração da mídia de votação: 21/09/<N> 15:07:19 | logd.dat
+7 GAP Data e hora da geração da mídia de votação: 18/09/<N> 13:53:41 | logd.dat
+7 GAP Data e hora da geração da mídia de votação: 16/09/<N> 18:40:54 | logd.dat
+6 ATUE Operador escolheu a opção de reiniciar o ciclo de teste | logd.dat
+6 ATUE Ciclo de teste reiniciado | logd.dat
+6 GAP Data e hora da geração da mídia de votação: 17/09/<N> 14:08:18 | logd.dat
+6 GAP Data e hora da geração da mídia de votação: 29/09/<N> 11:06:44 | logd.dat
+6 GAP Data e hora da geração da mídia de votação: 22/09/<N> 09:52:42 | logd.dat
+6 GAP Data e hora da geração da mídia de votação: 28/09/<N> 09:09:49 | logd.dat
+6 GAP Data e hora da geração da mídia de votação: 23/09/<N> 10:45:27 | logd.dat
+6 GAP Data e hora da geração da mídia de votação: 16/09/<N> 18:03:25 | logd.dat
+6 GAP Data e hora da geração da mídia de votação: 21/09/<N> 15:59:09 | logd.dat
+6 GAP Data e hora da geração da mídia de votação: 17/09/<N> 12:33:41 | logd.dat
+5 GAP Data e hora da geração da mídia de votação: 17/09/<N> 11:31:33 | logd.dat
+5 GAP Data e hora da geração da mídia de votação: 17/09/<N> 13:06:49 | logd.dat
+5 GAP Data e hora da geração da mídia de votação: 17/09/<N> 14:57:48 | logd.dat
+5 GAP Data e hora da geração da mídia de votação: 21/09/<N> 11:15:57 | logd.dat
+5 GAP Data e hora da geração da mídia de votação: 21/09/<N> 10:56:58 | logd.dat
+5 VOTA Dado digitado está incompleto | logd.dat
+5 GAP Data e hora da geração da mídia de votação: 22/09/<N> 15:16:03 | logd.dat
+5 GAP Data e hora da geração da mídia de votação: 24/09/<N> 15:14:34 | logd.dat
+5 GAP Data e hora da geração da mídia de votação: 23/09/<N> 14:10:01 | logd.dat
+5 GAP Data e hora da geração da mídia de votação: 27/09/<N> 09:46:54 | logd.dat
+5 GAP Data e hora da geração da mídia de votação: 24/09/<N> 13:10:14 | logd.dat
+5 GAP Data e hora da geração da mídia de votação: 25/09/<N> 10:08:31 | logd.dat
+5 GAP Data e hora da geração da mídia de votação: 23/09/<N> 16:00:27 | logd.dat
+5 VOTA Operador selecionou: Registrar mesários | logd.dat
+5 GAP Data e hora da geração da mídia de votação: 23/09/<N> 10:43:38 | logd.dat
+5 GAP Data e hora da geração da mídia de votação: 23/09/<N> 11:15:57 | logd.dat
+5 GAP Data e hora da geração da mídia de votação: 23/09/<N> 10:06:23 | logd.dat
+5 GAP Data e hora da geração da mídia de votação: 24/09/<N> 10:20:41 | logd.dat
+4 VOTA Mesário cancelou entrada dos dados | logd.dat
+3 VOTA Registrando mesários durante a votação | logd.dat
+2 SCUE Mídia de carga gerada pelo computador (nome - tpm - instalação): ZBA<N>WKS01 - 10E0D<N> - 53B89C69 | logd.dat
+2 SCUE Mídia de carga gerada pelo computador (nome - tpm - instalação): RAMWSEVIN<N> - <N>DE0F<N>E<N> - D2C53DBE | logd.dat
+2 SCUE Mídia de carga gerada pelo computador (nome - tpm - instalação): RAMWSEVIN<N> - 1CDEA34C8E4CBE<N>D - 55A<N> | logd.dat
+2 VOTA Eleitor impedido - título cancelado | logd.dat
+2 SCUE Bateria interna com carga parcial | logd.dat
+2 SCUE Mídia de carga gerada pelo computador (nome - tpm - instalação): ZTO<N>WKS46 - 0D<N>ABC8CE2A7EF7E01 - D8F0C9E2 | logd.dat
+1 SCUE Data e hora que foi digitada pelo operador: 28/09/<N> - 09:26:00 | logd.dat
+1 SCUE Identificador da mídia de carga: A3A50F96 | logd.dat
+1 SCUE Mídia de carga gerada pelo computador (nome - tpm - instalação): ZBA<N>WKS01 - <N>E - AE8F57F1 | logd.dat
+1 SCUE Data e hora da geração da mídia de carga: 17/09/<N> 10:44:24 | logd.dat
+1 SCUE Data e hora que foi digitada pelo operador: 29/09/<N> - 09:58:00 | logd.dat
+1 SCUE Identificador da mídia de carga: 56E<N>E5 | logd.dat
+1 SCUE Mídia de carga gerada pelo computador (nome - tpm - instalação): ZBA<N>WKS01 - 4C4AD5A9 - 9B<N>E89 | logd.dat
+1 SCUE Data e hora da geração da mídia de carga: 17/09/<N> 11:21:18 | logd.dat
+1 SCUE Data e hora que foi digitada pelo operador: 30/09/<N> - 12:40:00 | logd.dat
+1 SCUE Identificador da mídia de carga: 60D<N>C | logd.dat
+1 SCUE Mídia de carga gerada pelo computador (nome - tpm - instalação): ZBA<N>WKS01 - 35D8C<N> - 73E43D9D | logd.dat
+1 SCUE Data e hora da geração da mídia de carga: 18/09/<N> 11:38:39 | logd.dat
+1 SCUE Data e hora que foi digitada pelo operador: 30/09/<N> - 16:43:00 | logd.dat
+1 SCUE Identificador da mídia de carga: DC7BE<N> | logd.dat
+1 SCUE Data e hora da geração da mídia de carga: 17/09/<N> 11:39:02 | logd.dat
+1 SCUE Data e hora que foi digitada pelo operador: 30/09/<N> - 12:11:00 | logd.dat
+1 SCUE Identificador da mídia de carga: DFF<N> | logd.dat
+1 SCUE Data e hora da geração da mídia de carga: 17/09/<N> 11:27:18 | logd.dat
+1 SCUE Data e hora que foi digitada pelo operador: 30/09/<N> - 10:06:00 | logd.dat
+1 SCUE Identificador da mídia de carga: 8DE<N> | logd.dat
+1 SCUE Mídia de carga gerada pelo computador (nome - tpm - instalação): ZAM<N>WKS<N> - 6D8ACE<N>AE2C0CBBF4 - 62B37E9E | logd.dat
+1 SCUE Data e hora da geração da mídia de carga: 29/09/<N> 12:08:18 | logd.dat
+1 SCUE Data e hora que foi digitada pelo operador: 24/09/<N> - 09:00:00 | logd.dat
+1 SCUE Identificador da mídia de carga: 3FC8B<N> | logd.dat
+1 SCUE Data e hora da geração da mídia de carga: 21/09/<N> 16:45:04 | logd.dat
+1 VOTA Mesário abortou processo de suspensão | logd.dat
+1 SCUE Data e hora que foi digitada pelo operador: 24/09/<N> - 08:57:00 | logd.dat
+1 SCUE Identificador da mídia de carga: E<N>C9 | logd.dat
+1 SCUE Data e hora da geração da mídia de carga: 21/09/<N> 16:36:49 | logd.dat
+1 SCUE Data e hora que foi digitada pelo operador: 28/09/<N> - 14:53:00 | logd.dat
+1 SCUE Identificador da mídia de carga: 21E6D<N> | logd.dat
+1 SCUE Data e hora da geração da mídia de carga: 22/09/<N> 15:28:48 | logd.dat
+1 SCUE Data e hora que foi digitada pelo operador: 24/09/<N> - 15:21:00 | logd.dat
+1 SCUE Identificador da mídia de carga: 96A7DD99 | logd.dat
+1 SCUE Data e hora da geração da mídia de carga: 22/09/<N> 10:08:00 | logd.dat
+1 SCUE Data e hora que foi digitada pelo operador: 28/09/<N> - 11:06:00 | logd.dat
+1 SCUE Identificador da mídia de carga: <N>D25 | logd.dat
+1 SCUE Mídia de carga gerada pelo computador (nome - tpm - instalação): ZAM<N>WKS<N> - 4AF97AAE89ABD2F<N> - <N>D23E | logd.dat
+1 SCUE Data e hora da geração da mídia de carga: 28/09/<N> 08:21:51 | logd.dat
+1 SCUE Data e hora que foi digitada pelo operador: 26/09/<N> - 11:48:00 | logd.dat
+1 SCUE Identificador da mídia de carga: F4BDF7CD | logd.dat
+1 SCUE Mídia de carga gerada pelo computador (nome - tpm - instalação): ZSP<N>STD01 - 1F3A<N> - C<N>E5D8 | logd.dat
+1 SCUE Data e hora da geração da mídia de carga: 25/09/<N> 10:08:07 | logd.dat
+1 SCUE Data e hora que foi digitada pelo operador: 24/09/<N> - 09:50:00 | logd.dat
+1 SCUE Identificador da mídia de carga: 9FD<N>D4 | logd.dat
+1 SCUE Mídia de carga gerada pelo computador (nome - tpm - instalação): ZSP<N>STD13 - FD9A40E1BF5A<N>EDA43 - 9D<N>D0 | logd.dat
+1 SCUE Data e hora da geração da mídia de carga: 23/09/<N> 13:40:39 | logd.dat
+1 VOTA Habilitação cancelada durante a captura de digital do mesário | logd.dat
+1 SCUE Data e hora que foi digitada pelo operador: 27/09/<N> - 12:13:00 | logd.dat
+1 SCUE Identificador da mídia de carga: 3E6B0FC9 | logd.dat
+1 SCUE Mídia de carga gerada pelo computador (nome - tpm - instalação): ZSP<N>STD14 - <N>EFE1 - 64E99A4E | logd.dat
+1 SCUE Data e hora da geração da mídia de carga: 24/09/<N> 09:40:14 | logd.dat
+1 SCUE Data e hora que foi digitada pelo operador: 26/09/<N> - 15:24:00 | logd.dat
+1 SCUE Identificador da mídia de carga: <N>BCC12 | logd.dat
+1 SCUE Mídia de carga gerada pelo computador (nome - tpm - instalação): ZSP<N>STD11 - 1F<N>D4 - 7EA08E1D | logd.dat
+1 SCUE Data e hora da geração da mídia de carga: 23/09/<N> 13:04:26 | logd.dat
+1 SCUE Data e hora que foi digitada pelo operador: 27/09/<N> - 09:11:00 | logd.dat
+1 SCUE Identificador da mídia de carga: 6A<N>B7 | logd.dat
+1 SCUE Mídia de carga gerada pelo computador (nome - tpm - instalação): ZSP<N>STD02 - <N>DEC9E - 22CABE9F | logd.dat
+1 SCUE Data e hora da geração da mídia de carga: 23/09/<N> 13:55:48 | logd.dat
+1 SCUE Data e hora que foi digitada pelo operador: 25/09/<N> - 10:06:00 | logd.dat
+1 SCUE Identificador da mídia de carga: A49E63B6 | logd.dat
+1 SCUE Mídia de carga gerada pelo computador (nome - tpm - instalação): ZSP<N>STD12 - <N>F86AA - 1EE<N>E1 | logd.dat
+1 SCUE Data e hora da geração da mídia de carga: 23/09/<N> 12:41:59 | logd.dat
+1 SCUE Data e hora que foi digitada pelo operador: 24/09/<N> - 16:44:00 | logd.dat
+1 SCUE Identificador da mídia de carga: C44F5B06 | logd.dat
+1 SCUE Data e hora da geração da mídia de carga: 23/09/<N> 17:57:18 | logd.dat
+1 SCUE Data e hora que foi digitada pelo operador: 24/09/<N> - 10:21:00 | logd.dat
+1 SCUE Identificador da mídia de carga: 6FE9EAFF | logd.dat
+1 SCUE Data e hora da geração da mídia de carga: 23/09/<N> 17:05:17 | logd.dat
+1 SCUE Data e hora que foi digitada pelo operador: 24/09/<N> - 17:10:00 | logd.dat
+1 SCUE Identificador da mídia de carga: 0F<N> | logd.dat
+1 SCUE Mídia de carga gerada pelo computador (nome - tpm - instalação): ZTO<N>WKS49 - 4ACF7D86E02CB<N>B<N> - B9D0B<N> | logd.dat
+1 SCUE Data e hora da geração da mídia de carga: 23/09/<N> 17:52:41 | logd.dat
+1 SCUE Data e hora que foi digitada pelo operador: 23/09/<N> - 11:43:00 | logd.dat
+1 SCUE Identificador da mídia de carga: E<N>B6 | logd.dat
+1 SCUE Mídia de carga gerada pelo computador (nome - tpm - instalação): ZTO<N>WKS88 - <N>AAC2EB41E<N>D41B9CE<N>A94 -  | logd.dat
+1 SCUE Data e hora da geração da mídia de carga: 23/09/<N> 09:34:00 | logd.dat
+1 SCUE Data e hora que foi digitada pelo operador: 24/09/<N> - 10:22:00 | logd.dat
+1 SCUE Identificador da mídia de carga: <N>FBEB | logd.dat
+1 SCUE Mídia de carga gerada pelo computador (nome - tpm - instalação): ZTO<N>WKS01 - 18BF<N>C<N>F<N> - 38FE2DBB | logd.dat
+1 SCUE Data e hora da geração da mídia de carga: 23/09/<N> 15:52:17 | logd.dat
+1 SCUE Data e hora que foi digitada pelo operador: 24/09/<N> - 09:15:00 | logd.dat
+1 SCUE Identificador da mídia de carga: A0E3E<N> | logd.dat
+1 SCUE Mídia de carga gerada pelo computador (nome - tpm - instalação): ZRS<N>WKS80 - B40D<N>BD42D9F<N>BE4 - B74AA<N> | logd.dat
+1 SCUE Data e hora da geração da mídia de carga: 21/09/<N> 12:37:59 | logd.dat
+1 SCUE Data e hora que foi digitada pelo operador: 21/09/<N> - 18:01:00 | logd.dat
+1 SCUE Identificador da mídia de carga: 7CE8CA05 | logd.dat
+1 SCUE Mídia de carga gerada pelo computador (nome - tpm - instalação): ZRS<N>WKS80 - 1DC2E1E98BD<N>A0CC - B42BBD24 | logd.dat
+1 SCUE Data e hora da geração da mídia de carga: 16/09/<N> 18:37:06 | logd.dat
+1 SCUE Data e hora que foi digitada pelo operador: 21/09/<N> - 13:57:00 | logd.dat
+1 SCUE Identificador da mídia de carga: 0D<N> | logd.dat
+1 SCUE Mídia de carga gerada pelo computador (nome - tpm - instalação): ZRS<N>WKS80 - C5EF<N>DB<N>ABAF7 - B<N>E5 | logd.dat
+1 SCUE Data e hora da geração da mídia de carga: 16/09/<N> 16:15:47 | logd.dat
+1 SCUE Data e hora que foi digitada pelo operador: 22/09/<N> - 14:37:00 | logd.dat
+1 SCUE Identificador da mídia de carga: <N>A | logd.dat
+1 SCUE Mídia de carga gerada pelo computador (nome - tpm - instalação): ZRS<N>WKS80 - D93F<N>A<N>C<N> - 43E<N> | logd.dat
+1 SCUE Data e hora da geração da mídia de carga: 16/09/<N> 17:21:27 | logd.dat
+1 SCUE Data e hora que foi digitada pelo operador: 25/09/<N> - 15:38:00 | logd.dat
+1 SCUE Identificador da mídia de carga: D<N>F76 | logd.dat
+1 SCUE Mídia de carga gerada pelo computador (nome - tpm - instalação): ZRS<N>WKS80 - <N>FFCB03AC3FF<N>D0C - A<N>A28 | logd.dat
+1 SCUE Data e hora da geração da mídia de carga: 21/09/<N> 14:36:47 | logd.dat
+1 SCUE Data e hora que foi digitada pelo operador: 22/09/<N> - 17:53:00 | logd.dat
+1 SCUE Identificador da mídia de carga: 0D32BBB8 | logd.dat
+1 SCUE Mídia de carga gerada pelo computador (nome - tpm - instalação): ZRS<N>WKS80 - <N>A<N>ABAB<N>B - <N>A<N>B | logd.dat
+1 SCUE Data e hora da geração da mídia de carga: 17/09/<N> 10:06:02 | logd.dat

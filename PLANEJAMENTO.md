@@ -12,6 +12,7 @@ ser editado livremente.
 | 02 Transferencia de votos | Exploratorio, sem codigo no repositorio | Publicar script Monte Carlo |
 | 03 Mesario pianista | Piloto TO concluido (emenda 02): nenhuma hipotese sustentada | Execucao nacional, priorizando UFs com votacao apos 17h49 |
 | 04 Auditabilidade | Proposta de artigo | Receber fichamento de Aranha et al. |
+| 05 Colisao de titulo de mesario | Pre-registrado (03, 25/11/2026); censo 2026 1T/2T e 2022 1T/2T em execucao | Simulacao, teste de caso e relatorio |
 
 Fato novo relevante para o Estudo 01: o TSE informou 34.393 votos registrados
 apos 17h no pais, contra margem de 4.430.191 votos. O teste de alteracao de
@@ -91,6 +92,7 @@ linguagem e referencias.
 |----|---------|--------|
 | D1 | Destino do modulo de cadencia (PR #2) | (a) PR como submodulo exploratorio em `estudos/03_pianista/contribuicoes/`; (b) estudo separado (05); (c) nao incorporar |
 | D2 | Site Arquiteto-Fiscal (PR #2; HTML autocontido, sem recursos externos) | (a) so link para o original; (b) HTML no repositorio sem publicacao; (c) publicar via GitHub Pages |
+| D4 | Estudo 05 le o 2T 2026 (apenas linhas do registro de mesario; protocolo 03, secao 14) | (a) aprovar; (b) restringir ao 1T 2026 ate a emenda do item 1.6 |
 | D3 | Fluxo de trabalho no main | Exigir pull request para alteracoes no main (recomendado: ja houve dois commits diretos) |
 
 ## 5 Pendencias de documentos

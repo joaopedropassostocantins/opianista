@@ -18,6 +18,7 @@ relatados com o mesmo destaque que resultados positivos.
 | [02 Transferencia de votos](estudos/02_transferencia_votos/) | A captacao entre turnos foi atipica frente a 2022? | Exploratorio; codigo a publicar |
 | [03 Mesario pianista](estudos/03_pianista/) | Ha assinaturas de insercao de votos pela mesa nos logs? | Piloto TO concluido: hipoteses nao sustentadas; execucao nacional pendente |
 | [04 Auditabilidade](estudos/04_auditabilidade/) | Que tamanho de adulteracao o sistema consegue detectar? | Proposta de artigo |
+| [05 Colisao de titulo de mesario](estudos/05_colisao_titulo_mesario/) | O mesmo titulo aparece como mesario em duas secoes mais do que o erro de digitacao explica? | Pre-registrado (03); censo 2026 e 2022 em execucao |
 
 Painel de coordenacao: [PLANEJAMENTO.md](PLANEJAMENTO.md).
 

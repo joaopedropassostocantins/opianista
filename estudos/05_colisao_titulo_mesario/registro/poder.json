@@ -1,0 +1,99 @@
+{
+  "secoes_piloto": 2000,
+  "tentativas": 18510,
+  "invalidas": 2805,
+  "p_inv": 0.15153970826580226,
+  "p2": 0.01336,
+  "p_err": 0.15359169328813171,
+  "titulos_unicos_por_secao": 3.9805,
+  "quase_dup_piloto": 2,
+  "taxa_titulo_valido_errado_via1": 0.0020519850223294396,
+  "taxa_titulo_valido_errado_empirica": 0.0001337971635001338,
+  "l0_minimo_para_poder80": 9.1,
+  "tabela": [
+    {
+      "f": 0.05,
+      "calibracao": "via1_ingenua",
+      "lambda0_total": 0.298,
+      "corte": 2,
+      "poder_razao2": 0.12
+    },
+    {
+      "f": 0.05,
+      "calibracao": "calibrada_quase_dup",
+      "lambda0_total": 0.019,
+      "corte": 1,
+      "poder_razao2": 0.038
+    },
+    {
+      "f": 0.1,
+      "calibracao": "via1_ingenua",
+      "lambda0_total": 1.191,
+      "corte": 4,
+      "poder_razao2": 0.218
+    },
+    {
+      "f": 0.1,
+      "calibracao": "calibrada_quase_dup",
+      "lambda0_total": 0.078,
+      "corte": 2,
+      "poder_razao2": 0.011
+    },
+    {
+      "f": 0.2,
+      "calibracao": "via1_ingenua",
+      "lambda0_total": 4.765,
+      "corte": 10,
+      "poder_razao2": 0.482
+    },
+    {
+      "f": 0.2,
+      "calibracao": "calibrada_quase_dup",
+      "lambda0_total": 0.311,
+      "corte": 2,
+      "poder_razao2": 0.129
+    },
+    {
+      "f": 0.3,
+      "calibracao": "via1_ingenua",
+      "lambda0_total": 10.722,
+      "corte": 17,
+      "poder_razao2": 0.859
+    },
+    {
+      "f": 0.3,
+      "calibracao": "calibrada_quase_dup",
+      "lambda0_total": 0.699,
+      "corte": 3,
+      "poder_razao2": 0.166
+    },
+    {
+      "f": 0.5,
+      "calibracao": "via1_ingenua",
+      "lambda0_total": 29.783,
+      "corte": 40,
+      "poder_razao2": 0.997
+    },
+    {
+      "f": 0.5,
+      "calibracao": "calibrada_quase_dup",
+      "lambda0_total": 1.942,
+      "corte": 5,
+      "poder_razao2": 0.349
+    },
+    {
+      "f": 1.0,
+      "calibracao": "via1_ingenua",
+      "lambda0_total": 119.133,
+      "corte": 138,
+      "poder_razao2": 1.0
+    },
+    {
+      "f": 1.0,
+      "calibracao": "calibrada_quase_dup",
+      "lambda0_total": 7.768,
+      "corte": 14,
+      "poder_razao2": 0.686
+    }
+  ]
+}
