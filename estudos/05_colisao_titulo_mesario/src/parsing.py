@@ -203,3 +203,59 @@ if __name__ == "__main__":
         print(f, h[:16], res)
         for r in regs:
             print("  ", r, titulo_valido(r["titulo"]))
+
+
+# ---------- contexto dos bloqueios (lido do cache seletivo de brutos; Etapa 2 da emenda 05)
+M_LOGD_INICIO = "Início das operações do logd"
+M_VOTO = "O voto do eleitor foi computado"
+
+
+def contexto_bloqueios(texto, ano, turno):
+    """Para cada "Mesário <T> já registrado" do dia do turno, devolve o contexto temporal na mesma urna:
+      reinicio_ts      : ultimo "Início das operações do logd" do dia ANTERIOR ao bloqueio e POSTERIOR ao
+                         primeiro do dia (a primeira partida da manha nao e reinicio)
+      votos_desde_reinicio : votos computados entre esse reinicio e o bloqueio
+      registro_ts      : ultimo "Mesário <T> registrado" do mesmo titulo antes do bloqueio
+      votos_desde_registro : votos computados entre esse registro e o bloqueio
+    """
+    data = DATAS[(ano, turno)]
+    out = []
+    partidas = []
+    votos = []
+    ult_reg = {}
+    for ln in texto.splitlines():
+        p = ln.split("\t")
+        if len(p) < 5 or not p[0].startswith(data):
+            continue
+        msg = p[4]
+        try:
+            ts = datetime.strptime(p[0], "%d/%m/%Y %H:%M:%S")
+        except ValueError:
+            continue
+        if p[3] == "LOGD" and msg.startswith(M_LOGD_INICIO):
+            partidas.append(ts)
+            continue
+        if p[3] != "VOTA":
+            continue
+        if msg == M_VOTO:
+            votos.append(ts)
+            continue
+        m = R_REG.match(msg)
+        if m:
+            ult_reg[(m.group(1), p[2])] = ts
+            continue
+        m = R_JA.match(msg)
+        if m:
+            t = m.group(1)
+            rein = [x for x in partidas[1:] if x <= ts]
+            r_ts = rein[-1] if rein else None
+            g_ts = ult_reg.get((t, p[2]))
+            out.append(dict(
+                titulo=t, ts=p[0], id_urna=p[2], hash_linha=p[5] if len(p) > 5 else "",
+                reinicio_ts=r_ts.strftime("%d/%m/%Y %H:%M:%S") if r_ts else "",
+                seg_desde_reinicio=(ts - r_ts).total_seconds() if r_ts else "",
+                votos_desde_reinicio=sum(1 for v in votos if r_ts and r_ts <= v <= ts) if r_ts else "",
+                registro_ts=g_ts.strftime("%d/%m/%Y %H:%M:%S") if g_ts else "",
+                seg_desde_registro=(ts - g_ts).total_seconds() if g_ts else "",
+                votos_desde_registro=sum(1 for v in votos if g_ts and g_ts <= v <= ts) if g_ts else ""))
+    return out

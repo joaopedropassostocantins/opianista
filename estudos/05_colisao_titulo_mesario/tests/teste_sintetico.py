@@ -94,11 +94,23 @@ def main():
                                  eleitor_secao="0", biometria="sem_conferencia", bio_ref=""))
     blq = [dict(secs[30], arquivo="log30.jez", titulo=alvo_b, ts="25/10/2026 07:12:00", id_urna="00000030",
                 hash_linha="BLQ1", momento="antes", antecedente="pedido_biometria"),
-           dict(secs[31], arquivo="log31.jez", titulo=mesarios[31][0], ts="25/10/2026 07:12:00", id_urna="00000031",
-                hash_linha="BLQ2", momento="antes", antecedente="pedido_biometria")]
+           dict(secs[31], arquivo="log31.jez", titulo=mesarios[31][0], ts="25/10/2026 15:00:00", id_urna="00000031",
+                hash_linha="BLQ2", momento="durante", antecedente="pedido_biometria"),
+           dict(secs[32], arquivo="log32.jez", titulo=mesarios[32][0], ts="25/10/2026 07:40:00", id_urna="00000032",
+                hash_linha="BLQ3", momento="antes", antecedente="pedido_biometria"),
+           dict(secs[33], arquivo="log33.jez", titulo=mesarios[33][0], ts="25/10/2026 07:13:00", id_urna="00000033",
+                hash_linha="BLQ4", momento="antes", antecedente="pedido_biometria")]
+    # contexto do cache: BLQ1 tem registro do mesmo titulo 2 min antes (a evidencia de erro deve prevalecer);
+    # BLQ2 re-registro horas depois com votos no meio; BLQ3 reinicio 10 min antes sem voto; BLQ4 redigitacao 3 min
+    ctx = []
+    for i, h, sr, vr, sg, vg in ((30, "BLQ1", "", "", 120, 0), (31, "BLQ2", "", "", 28000, 250),
+                                 (32, "BLQ3", 600, 0, 1800, 0), (33, "BLQ4", "", "", 180, 0)):
+        ctx.append(dict(secs[i], arquivo=f"log{i}.jez", titulo="", ts="", id_urna="", hash_linha=h, reinicio_ts="",
+                        seg_desde_reinicio=sr, votos_desde_reinicio=vr, registro_ts="", seg_desde_registro=sg,
+                        votos_desde_registro=vg))
     os.makedirs(os.path.join(td, "censo"))
     for nome, rows in (("registros_2026_t2_s0.csv", regs), ("logs_2026_t2_s0.csv", logs),
-                       ("bloqueios_2026_t2_s0.csv", blq)):
+                       ("bloqueios_2026_t2_s0.csv", blq), ("bloqueios_contexto_2026_t2.csv", ctx)):
         with open(os.path.join(td, "censo", nome), "w", newline="") as fh:
             w = csv.DictWriter(fh, list(rows[0]))
             w.writeheader()
@@ -130,7 +142,8 @@ def main():
           "(esperado 4); pares quase-dup excluidos", par.get("pares_quase_dup_excluidos"), "(esperado 1)")
     ok &= loo_ok
     b = {r["hash_linha"]: r["classificacao"] for r in csv.DictReader(open(os.path.join(out, "bloqueios.csv")))}
-    for h, c in (("BLQ1", "erro_digitacao_para_outro_mesario_da_secao"), ("BLQ2", "redigitacao_do_mesmo_titulo")):
+    for h, c in (("BLQ1", "erro_digitacao_para_outro_mesario_da_secao"), ("BLQ2", "redigitacao_ciclo_posterior"),
+                 ("BLQ3", "bloqueio_pos_reinicio"), ("BLQ4", "redigitacao_imediata")):
         print(("OK  " if b.get(h) == c else "FALHA"), "bloqueio", h, "esperado:", c, "obtido:", b.get(h))
         ok &= b.get(h) == c
     sys.exit(0 if ok else 1)

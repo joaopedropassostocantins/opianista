@@ -193,10 +193,28 @@ def colisoes_observadas(R_ok, geo, qd, nomes_mun):
     return pd.DataFrame(linhas)
 
 
-def classificar_bloqueios(B, R_ok):
+JANELA_REINICIO_S = 30 * 60   # congelado (emenda 05): reinicio ate 30 min antes, sem voto computado entre
+JANELA_REDIGITACAO_S = 10 * 60  # congelado (emenda 05): mesmo titulo, mesma urna, sem voto entre, ate 10 min
+
+
+def classificar_bloqueios(B, R_ok, ctx=None):
+    """Classes, em ordem de precedencia:
+      1 bloqueio_pos_reinicio        reinicio (partida do logd posterior a primeira do dia) ate 30 min antes,
+                                     sem voto computado entre o reinicio e o bloqueio
+      2 erro_digitacao_para_outro_mesario_da_secao   ha na secao titulo registrado X != T tal que T resulta
+                                     de X por um erro unico (classe usada na validacao cruzada, emenda 04)
+      3 redigitacao_imediata         mesmo titulo registrado na mesma urna ate 10 min antes, sem voto entre
+      4 redigitacao_ciclo_posterior  demais (mesmo titulo ja registrado, re-registro em outro ciclo)
+    Sem o contexto do cache (ctx), as classes 1 e 3 nao sao avaliaveis e ficam marcadas como tal.
+    Coluna classe_regra_temporal: aplica so o criterio temporal do prompt (pos_reinicio / redigitacao <=10 min /
+    bloqueio_por_erro), para comparacao."""
     if not len(B):
         return pd.DataFrame()
     reg_sec = R_ok.groupby("sec").titulo.apply(set).to_dict()
+    cidx = {}
+    if ctx is not None and len(ctx):
+        for r in ctx.to_dict("records"):
+            cidx[(r["sec"], r["hash_linha"])] = r
     out = []
     for r in B.to_dict("records"):
         regs = reg_sec.get(r["sec"], set())
@@ -204,8 +222,31 @@ def classificar_bloqueios(B, R_ok):
         r["titulo_registrado_na_secao"] = r["titulo"] in regs
         r["titulos_vizinhos_registrados"] = "|".join(origem)
         r["tipo_erro"] = "|".join(sorted({tipo_erro_dir(x, r["titulo"]) for x in origem}))
-        r["classificacao"] = ("erro_digitacao_para_outro_mesario_da_secao" if origem
-                              else "redigitacao_do_mesmo_titulo")
+        c = cidx.get((r["sec"], r["hash_linha"]))
+        num = lambda v: float(v) if v not in ("", None) and v == v else None
+        if c is not None:
+            sr, vr = num(c.get("seg_desde_reinicio")), num(c.get("votos_desde_reinicio"))
+            sg, vg = num(c.get("seg_desde_registro")), num(c.get("votos_desde_registro"))
+            pos_rein = sr is not None and sr <= JANELA_REINICIO_S and (vr or 0) == 0
+            redig = sg is not None and sg <= JANELA_REDIGITACAO_S and (vg or 0) == 0
+            r.update(contexto_disponivel=True, seg_desde_reinicio=sr, votos_desde_reinicio=vr,
+                     seg_desde_registro=sg, votos_desde_registro=vg)
+        else:
+            pos_rein = redig = None
+            r.update(contexto_disponivel=False)
+        if pos_rein:
+            classe = "bloqueio_pos_reinicio"
+        elif origem:
+            classe = "erro_digitacao_para_outro_mesario_da_secao"
+        elif redig:
+            classe = "redigitacao_imediata"
+        elif c is None:
+            classe = "redigitacao_do_mesmo_titulo(sem_contexto)"
+        else:
+            classe = "redigitacao_ciclo_posterior"
+        r["classificacao"] = classe
+        r["classe_regra_temporal"] = ("bloqueio_pos_reinicio" if pos_rein else "redigitacao" if redig
+                                      else "bloqueio_por_erro" if c is not None else "sem_contexto")
         out.append(r)
     return pd.DataFrame(out)
 
@@ -390,7 +431,12 @@ def main():
     # ---- observado
     col = colisoes_observadas(R_ok, geo, qd, nomes_mun)
     col.to_csv(os.path.join(saida, "colisoes.csv"), index=False)
-    blq = classificar_bloqueios(B, R_ok)
+    p_ctx = os.path.join(a.entrada, f"bloqueios_contexto_{a.ano}_t{a.turno}.csv")
+    ctx = pd.read_csv(p_ctx, dtype=str) if os.path.exists(p_ctx) else None
+    if ctx is not None:
+        ctx = zfill(ctx)
+        ctx["sec"] = ctx[SEC].agg("-".join, axis=1)
+    blq = classificar_bloqueios(B, R_ok, ctx)
     blq.to_csv(os.path.join(saida, "bloqueios.csv"), index=False)
     obs = col[col.exclusao == ""] if len(col) else pd.DataFrame(columns=["faixa_distancia", "faixa_intervalo"])
     n_blq_erro = int((blq.classificacao == "erro_digitacao_para_outro_mesario_da_secao").sum()) if len(blq) else 0
