@@ -16,3 +16,5 @@ Formato: data UTC | id | decisao | responsavel
 2026-11-25 | 0012 | E3: pino do Estudo 03 no commit 6adf40d; logs_urna.py sha256 8e1f3eb5...9792, bu.py sha256 a5474d86...6e99 | assistente
 2026-11-25 | 0013 | Inconsistencia registrada: lista de nomes da F2 tem 16 itens e a regra exige 15 (premissa P1); exterior ZZ pode tornar 28 UFs (P2). Ambas decididas pela F1, nao por ajuste | assistente
 2026-11-25 | 0014 | Selftest F2 verde (12 casos, fixtures sinteticas); pre-registro 03 registrado como entrada 07, carimbo freetsa 2026-11-25T03:51:09Z verificado | assistente
+2026-11-25 | 0015 | F1 tentada as 03:51:41Z no ambiente de nuvem: as 4 URLs retornaram HTTP 403 da CDN do TSE (Akamai, errors.edgesuite.net), apesar da liberacao no proxy. Estado: pendente (invariante 5). Gate F1 reprovado. Registro em out/f1_tentativa_20261125T035141Z.json | assistente
+2026-11-25 | 0016 | Nenhum contorno tentado (sem troca de User-Agent). Acionado o fallback D3: coletar_l1.sh na maquina do proponente | assistente

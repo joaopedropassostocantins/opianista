@@ -1,0 +1,51 @@
+{
+  "fase": "F1",
+  "tentativa_utc": "2026-11-25T03:51:41Z",
+  "ambiente": "nuvem (forense-tse), proxy liberado para www.tse.jus.br",
+  "resultado": "GATE F1 REPROVADO: HTTP 403 emitido pela CDN do TSE para o IP do ambiente; nenhum conteudo L1 obtido",
+  "regra_aplicada": "invariante 5 do PLANO: falha de acesso nao e achado; estado pendente, nao ausente",
+  "contorno": "nenhum; nao houve troca de User-Agent nem outra tentativa de contornar o bloqueio",
+  "proximo_passo": "fallback D3: coletar_l1.sh na maquina do proponente",
+  "itens": [
+    {
+      "url": "https://www.tse.jus.br/eleicoes/urna-eletronica/seguranca-da-urna/hash/resumos-digitais-hashes-das-eleicoes-2026-1o-e-2o-turnos",
+      "http": "403",
+      "bytes": 538,
+      "sha256": "57e94c8dd1e5773200d346cc32d629b4c203ea1dd5726a5cc4866d189496de9b",
+      "corpo": "pagina Access Denied da CDN (errors.edgesuite.net)",
+      "referencia_cdn": "18.",
+      "tsr_verificado": true,
+      "estado": "pendente"
+    },
+    {
+      "url": "https://www.tse.jus.br/eleicoes/urna-eletronica/seguranca-da-urna/hash",
+      "http": "403",
+      "bytes": 441,
+      "sha256": "7618b27f4a535482d54f6f818ece9acdf14079cb725571ea816755414b8dbbd3",
+      "corpo": "pagina Access Denied da CDN (errors.edgesuite.net)",
+      "referencia_cdn": "18.",
+      "tsr_verificado": true,
+      "estado": "pendente"
+    },
+    {
+      "url": "https://www.tse.jus.br/eleicoes/urna-eletronica/seguranca-da-urna/apresentacao-digital-e-lacracao",
+      "http": "403",
+      "bytes": 482,
+      "sha256": "87a407911df7a94c45a9416c7744a5ba81934a3cb29b2420b0c0a100885063e5",
+      "corpo": "pagina Access Denied da CDN (errors.edgesuite.net)",
+      "referencia_cdn": "18.",
+      "tsr_verificado": true,
+      "estado": "pendente"
+    },
+    {
+      "url": "https://www.tse.jus.br/legislacao/compilada/res/2021/resolucao-no-23-673-14-de-dezembro-de-2021",
+      "http": "403",
+      "bytes": 490,
+      "sha256": "62c969fdc3f0f192423324264890eae9a743fa9b9f822e18c30ba871322abfbc",
+      "corpo": "pagina Access Denied da CDN (errors.edgesuite.net)",
+      "referencia_cdn": "18.",
+      "tsr_verificado": true,
+      "estado": "pendente"
+    }
+  ]
+}

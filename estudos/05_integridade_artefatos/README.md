@@ -28,6 +28,6 @@ Dados brutos ficam em `data/estudo05/`, fora do Git.
 | Fase | Situacao |
 |------|----------|
 | F0 Bootstrap | Parcial: selftest F2 verde; buildinfo e minisign pendentes |
-| F1 Congelamento de L1 | Hosts liberados (D3); coleta apos o pre-registro |
+| F1 Congelamento de L1 | Gate reprovado em 25/11: CDN do TSE recusa o IP de nuvem (403). Fallback D3 na maquina do proponente |
 | Pre-registro | Registrado (entrada 07, 2026-11-25) |
 | F2-F5 | Nao iniciadas |
