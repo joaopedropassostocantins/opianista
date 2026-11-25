@@ -1,0 +1,74 @@
+{
+ "aviso": "FIXTURE SINTETICA - valores ficticios, nao derivados de pagina do TSE",
+ "cabecalho": [
+  "Sistema",
+  "Resumo digital"
+ ],
+ "esperado": {
+  "HALT": "F2_SEM_DIMENSAO_UF"
+ },
+ "fonte": "fixture:f2_d_sem_uf",
+ "linhas": [
+  [
+   "SIS01",
+   "530ab1ddec8837fbcab976f3efa90db6a4ca7e08b2b600f39ffb7bdc006e744a"
+  ],
+  [
+   "SIS02",
+   "c1db98d6fa3192c304c8e1eb06aae14e2e0e445c47d28c3377301cccffa9e664"
+  ],
+  [
+   "SIS03",
+   "bb837699339ca6c5d0bf9b62d54a66855ce364b5c21b09f556c1c3b4f2928b26"
+  ],
+  [
+   "SIS04",
+   "82dac49c95d3d5713d45ee9f76f0d5302087e3d575d7d4c08046d083109fce76"
+  ],
+  [
+   "SIS05",
+   "33e11efcf061fd39d348c45e551a3a83f7f1f1d02f92989c6c39ea284e29f8be"
+  ],
+  [
+   "SIS06",
+   "9104c0bc4d0f23a2c1f7625e6c7de73329f323baa13608b8f42aca2a8bad0bec"
+  ],
+  [
+   "SIS07",
+   "e9b034646e62eb435962a310e106a445475ba720963f0da51fc7b20858aa309e"
+  ],
+  [
+   "SIS08",
+   "566b0bed44bb5ed4a1b46f5c31caaa60b034d7963cab3587fcbae8b35d2c6436"
+  ],
+  [
+   "SIS09",
+   "7091d568182d197690c2488f4f4c529eb36b5856c294816b2a73b26571739fa1"
+  ],
+  [
+   "SIS10",
+   "8ea284ed78db49d3526cbc9a48cd29fb6d81fdf83f4c0b4b928d14d677f52401"
+  ],
+  [
+   "SIS11",
+   "e564f55bee0053b0bd787fb1078a70bb7abf4d78e2b1f1926a48003a67587eac"
+  ],
+  [
+   "SIS12",
+   "04c8a3243b79d38e0c595e5011561ce075aecd2a8a3c12ad5bce1053a8ed2a38"
+  ],
+  [
+   "SIS13",
+   "5bd7636bad7fe4eb089555ef66313e9a8143682cc8293c5561d7fcb90b556a21"
+  ],
+  [
+   "SIS14",
+   "1959af3f3030067cbf6326e09d13f0a6f8ab235081f3f529ac710b0b0ecdb5af"
+  ],
+  [
+   "SIS15",
+   "8b30d4c69f30216e3dbc1d5dc65ddf79c60b485ab8e3d73b33ba4c70a212ee6b"
+  ]
+ ],
+ "turno": 2
+}

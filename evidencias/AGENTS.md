@@ -1,11 +1,18 @@
 # CONTRATO DE EVIDENCIA - software de manipulacao de resultados, 2o turno 2026
 
-Versao: 1.0
+Versao: 1.1
 Data: 2026-11-25
+Versao anterior: `versoes/AGENTS_v1.0.md` (SHA-256 4f2e5002...ec2f62)
 Escopo: toda coleta, classificacao e publicacao de evidencia sob `evidencias/`.
 Este arquivo vale como instrucao para pessoas e para agentes de IA que operem
 neste diretorio. Alteracoes entram como nova versao registrada em
 `protocolos/REGISTRO.md`, nunca por edicao silenciosa.
+
+Mudancas da v1.1 (decisao D2 e emenda E5 do Estudo 05): sha512 obrigatorio,
+OpenTimestamps, assinatura minisign do coletor e gestao de chave, verificacao
+obrigatoria do TSR, registro de troca de TSA, campo `contrato` no manifesto.
+Por necessidade de classificacao, a definicao de L1 foi dividida em L1.1 e
+L1.2 (emenda E1). Metodologia de estudos nao pertence a este contrato.
 
 ## 0 Premissa
 
@@ -23,12 +30,19 @@ ser descoberta retroativa sem lastro temporal.
 
 ## 1 Camadas (campo obrigatorio `camada` no manifesto)
 
-- L1: software que o TSE usa e que pode estar alterado (VOTA, GAP, GEDAI,
-  lacracao, assinatura, totalizacao).
+- L1.1 `software`: software que o TSE usa e que pode estar alterado (VOTA,
+  GAP, GEDAI, lacracao, assinatura, totalizacao, firmwares,
+  `vota_web_wasm.wasm`, codigo-fonte).
+- L1.2 `saida`: o que esse software produz ou o que o TSE publica sobre ele
+  (BU, RDV, `.vsc`, imgbu, logjez, aux.json, lista de hashes, pagina de
+  lacracao).
 - L2: software de terceiro que le, simula ou altera artefato eleitoral.
 - L3: software hipotetico, descrito em texto, sem existencia demonstrada.
 
-L3 nunca e promovido a A ou B; teto = C.
+Tetos por camada:
+- L1.2 nunca passa de B.
+- L1.1 sem binario em maos (`binario_em_maos: false`) nunca passa de C.
+- L3 nunca e promovido a A ou B; teto = C.
 
 ## 2 Gate das 4 perguntas (todas obrigatorias, binarias)
 
@@ -54,12 +68,29 @@ razao registrada. Falha em G4: rebaixa um grau, nao descarta.
 
 Executar `scripts/coletar.sh <arquivo> <classe> <slug> <url_fonte>`, que faz:
 
-1. `sha256sum` do arquivo bruto, gravado antes de qualquer outra acao.
-2. Token RFC 3161 sobre o digest (TSA primaria: freetsa.org).
+1. `sha256sum` e `sha512sum` do arquivo bruto, gravados antes de qualquer
+   outra acao.
+2. Token RFC 3161 sobre o digest (TSA primaria: freetsa.org) e verificacao
+   obrigatoria com `openssl ts -verify` contra o certificado da TSA
+   (`tsa.crt` e `cacert.pem` da propria TSA, guardados com seus hashes).
+   Token que nao verifica conta como ausente.
 3. Entrada no log de transparencia Sigstore Rekor (`rekor-cli upload`),
    se o binario estiver instalado; o retorno traz indice e hora de inclusao.
 4. Gravar AMBOS. O Rekor v2 nao carimba sozinho; a hora vem da TSA. Um sem o
    outro nao prova nada.
+4a. OpenTimestamps (`ots stamp`) como segunda ancora temporal, independente da
+   TSA. O `.ots` e completado depois (`ots upgrade`), quando a transacao
+   Bitcoin confirma.
+4b. Assinatura minisign do coletor sobre o arquivo `.sha512`. Identifica quem
+   coletou; nao prova data. Chave privada fora do Git; chave publica
+   versionada em `keys/`; rotacao de chave registrada em `DECISOES.md` do
+   estudo ou neste contrato.
+4c. Situacao do carimbo gravada em `stamp.status`: `completo` (TSR
+   verificado + Rekor) ou `incompleto` (lista do que falta). Coleta com
+   carimbo incompleto e mantida, nunca descartada, e nao passa de C ate ser
+   completada.
+4d. Troca de TSA (indisponibilidade, custo, confiabilidade) registrada no
+   manifesto (`carimbo.tsa`) e em `DECISOES.md`.
 5. Limite declarado: a TSA prova que o digest existia ate `genTime` +
    `accuracy`, nao o instante exato; o campo `accuracy` costuma vir omitido.
    Registrar isso no manifesto (`carimbo.accuracy_ausente`).
@@ -103,10 +134,15 @@ Executar `scripts/coletar.sh <arquivo> <classe> <slug> <url_fonte>`, que faz:
 
 ```
 artefatos/<classe>/<slug>/
-  manifesto.json      (schema: manifesto.schema.json)
+  manifesto.json      (schema: manifesto.schema.json; campo contrato obrigatorio)
   <arquivo>.sha256
+  <arquivo>.sha512
+  <arquivo>.sha512.minisig  (assinatura do coletor)
   <arquivo>.tsq       (requisicao RFC 3161)
   <arquivo>.tsr       (resposta RFC 3161)
+  <arquivo>.tsr.verify      (saida de openssl ts -verify)
+  <arquivo>.ots       (OpenTimestamps)
+  stamp.status        (completo | incompleto: <faltas>)
   rekor.json          (quando houver)
   fonte.url
   arquivado.url

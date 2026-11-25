@@ -12,19 +12,30 @@ import sys
 from pathlib import Path
 
 ORDEM = ["A", "B", "C", "D"]
-CAMPOS = ["slug", "camada", "classe", "autor", "artefato", "hashes",
-          "carimbo", "arquivado", "gate", "faltas"]
+CAMPOS = ["contrato", "slug", "camada", "classe", "autor", "artefato",
+          "hashes", "carimbo", "arquivado", "gate", "faltas"]
+CAMADAS = {"v1.0": ("L1", "L2", "L3"), "v1.1": ("L1.1", "L1.2", "L2", "L3")}
 PENDENTE = "<preencher>"
 
 
 def teto(m: dict) -> str:
-    """Classe maxima admissivel pelas regras do contrato."""
+    """Classe maxima admissivel pelas regras da versao do contrato gravada."""
     g = m["gate"]
     if not (g.get("G1") and g.get("G2") and g.get("G3")):
         return "indicios_fracos"
     limite = 0
     if m["camada"] == "L3":
         limite = max(limite, ORDEM.index("C"))
+    if m["contrato"] == "v1.1":
+        if m["camada"] == "L1.2":
+            limite = max(limite, ORDEM.index("B"))
+        if m["camada"] == "L1.1" and not m.get("binario_em_maos"):
+            limite = max(limite, ORDEM.index("C"))
+        if m.get("anterioridade") == "nao_provada":
+            limite = max(limite, ORDEM.index("C"))
+        status = str(m["carimbo"].get("status", ""))
+        if not status.startswith("completo") or m["carimbo"].get("tsr_verificado") is not True:
+            limite = max(limite, ORDEM.index("C"))
     if not g.get("G4"):
         limite = max(limite, ORDEM.index("B"))
     build = m.get("build_reproduzivel", {})
@@ -45,8 +56,15 @@ def validar(caminho: Path) -> list[str]:
     faltando = [c for c in CAMPOS if c not in m]
     if faltando:
         return [f"{caminho}: campos ausentes {faltando}"]
-    if m["camada"] not in ("L1", "L2", "L3"):
-        erros.append(f"{caminho}: camada invalida {m['camada']!r}")
+    if m["contrato"] not in CAMADAS:
+        return [f"{caminho}: versao de contrato desconhecida {m['contrato']!r}"]
+    if m["camada"] not in CAMADAS[m["contrato"]]:
+        erros.append(f"{caminho}: camada {m['camada']!r} invalida no contrato {m['contrato']}")
+    if m["contrato"] == "v1.1":
+        if m["camada"] == "L1.1" and not isinstance(m.get("binario_em_maos"), bool):
+            erros.append(f"{caminho}: L1.1 exige binario_em_maos booleano")
+        if not m["hashes"].get("sha512"):
+            erros.append(f"{caminho}: v1.1 exige hashes.sha512")
     for g in ("G1", "G2", "G3", "G4"):
         if not isinstance(m["gate"].get(g), bool):
             erros.append(f"{caminho}: gate.{g} deve ser booleano")

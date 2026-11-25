@@ -4,8 +4,9 @@ Data: 2026-11-25
 Objeto: `PLANO.md` (versao 0) frente a `evidencias/AGENTS.md` (contrato v1.0,
 entrada 05 do REGISTRO), ao Estudo 03 (parser de logs e BU) e ao Estudo 04
 (poder de deteccao).
-Situacao: proposta. Os ajustes C01 a C14 so valem depois de aprovados pelo
-proponente e registrados como pre-registro do Estudo 05.
+Situacao: APROVADO pelo proponente em 2026-11-25 (D1), com as emendas E1-E6
+da secao 7, que prevalecem sobre o texto das secoes 3 a 6 em caso de
+conflito. Texto original das secoes 1 a 6 mantido para rastreabilidade.
 
 ## 1 Conclusao em uma frase
 
@@ -155,3 +156,116 @@ congelada em F1: o invariante 4 proibe adivinhar o esquema. O que pode ser
 feito ja, sem a pagina: `rules.py` com R01-R04, `uf_diff.py` sobre uma
 estrutura `HashEntry` neutra e as fixtures com divergencia plantada, mais o
 `selftest` (a) e (d) do plano.
+
+## 7 Emendas aprovadas (E1-E6)
+
+Correspondencia com os ajustes, por conteudo: E1 -> C01 e C03; E2 -> C07;
+E3 -> C10; E4 -> C09; E5 -> C06; E6 -> C12. Os demais ajustes (C02, C04,
+C05, C08, C11, C13, C14) foram aprovados sem emenda.
+
+### E1 - Divisao da camada L1 (substitui a resolucao de C01)
+
+Artefato do TSE nao e, por si, software. L1 se divide em:
+
+- L1.1 `software`: o que executa (rol dos sistemas do art. 3o da Res. 23.673,
+  `vota_web_wasm.wasm`, codigo-fonte, binarios, firmwares).
+- L1.2 `saida`: o que o software produz ou o TSE publica sobre ele (BU, RDV,
+  `.vsc`, imgbu, logjez, aux.json, lista de hashes, pagina de lacracao).
+
+Regras duras:
+- L1.2 nunca passa de B.
+- L1.1 sem binario em maos nunca passa de C.
+
+DataUrnas-BR e var-ue continuam L2. A conferencia tripla (essas duas
+ferramentas e o Estudo 05 sobre a mesma amostra de F3) e teste de ferramenta:
+divergencia entre implementacoes e defeito a corrigir, nunca achado.
+
+Todo achado do Estudo 05 descrito em C01 como L1 passa a L1.2, salvo se o
+objeto for o proprio binario.
+
+### E2 - Teto e ordem de busca da regra R04 (complementa C07)
+
+Enunciado de R04: hash publicado hoje diferente do hash publicado antes de
+25/10/2026, mesmo sistema e UF. Severidade alta.
+
+Limite declarado na propria regra: R04 detecta alteracao da LISTA PUBLICADA,
+nao do software na urna. Se o software da urna foi alterado e a lista nao, R04
+nao ve. Esse texto acompanha todo achado R04 no relatorio.
+
+Ordem obrigatoria de busca da ancora de anterioridade, antes de declarar
+ausencia:
+1. Internet Archive (Wayback Machine);
+2. archive.today;
+3. PDF ou DOC da lista com data de emissao no proprio documento;
+4. data da cerimonia de assinatura digital e lacracao de 04/09/2026
+   (a confirmar na fonte em F1), como referencia de conteudo esperado.
+
+Sem ancora anterior a 25/10/2026 nos quatro passos:
+- `anterioridade: nao_provada`;
+- todo achado sobre a lista de hashes fica limitado a classe C.
+
+O ETag da primeira coleta propria nao serve para anterioridade; serve apenas a
+R03 (mudanca entre coletas proprias).
+
+### E3 - Reuso do Estudo 03 com pino, adaptador e teste de contrato (complementa C10)
+
+- O Estudo 05 importa o codigo do Estudo 03 por commit SHA fixo, lido do
+  objeto Git daquele commit, nunca da arvore de trabalho.
+- O acesso passa por um adaptador (`src/adapter_estudo03.py`), unico ponto de
+  contato.
+- Teste de contrato: hash do arquivo-fonte no commit fixado e lista de funcoes
+  e assinaturas esperadas. Qualquer divergencia = HALT. Proibido contornar com
+  `try/except`.
+- Atualizar o pino exige nova linha em `DECISOES.md` e nova execucao do teste.
+
+### E4 - Novo objeto da fase F4 (substitui a F4 do PLANO e complementa C09)
+
+Com as metricas de habilitacao e ritmo excluidas (C09), cai a justificativa
+original de F4 (anomalia de log, T3). F4 passa a ser:
+
+- varredura nacional de ANCORAS: `.vsc`, aux.json e BU, 27 UFs, 2o turno
+  completo e 1o turno parcial, SEM logs;
+- R20 (encerramento BU x log) sai do Estudo 05 e migra para o Estudo 03;
+- R19 (fingerprint de QR) passa a opcional;
+- orcamento estimado: cerca de 50 GB (antes 500 GB);
+- ponto de parada mantido: F2 e F3 sem achado => F4 nao comeca sem decisao
+  humana.
+
+A pergunta terciaria do PLANO passa a ser: "existe ancora (assinatura, aux.json
+ou BU) que nao fecha em escala nacional?".
+
+### E5 - Limite do contrato v1.1 (complementa C06)
+
+O contrato v1.1 absorve somente mecanica de custodia:
+- sha512 obrigatorio ao lado do sha256;
+- OpenTimestamps como segunda ancora temporal, independente da TSA;
+- assinatura minisign do coletor e gestao de chave (chave privada fora do Git,
+  chave publica versionada, rotacao registrada);
+- verificacao obrigatoria do TSR (`openssl ts -verify`) contra o certificado
+  da TSA;
+- troca de TSA registrada.
+
+Metodologia (regras R, fases, amostras, tetos de achado) fica no `PLANO.md` e
+nesta conciliacao. Todo manifesto grava `contrato: "v1.1"` (ou a versao
+vigente na coleta).
+
+### E6 - Teto B no cabecalho do relatorio (complementa C12)
+
+`report.py` imprime, antes do primeiro achado de `dossie.md` e no topo de
+`resumo.md`, o aviso:
+
+> Nenhum achado deste relatorio fecha o elo entre o software lacrado e o
+> software executado na urna. Teto de classe: B (L1.2) e C (L1.1 sem binario
+> e achados sobre a lista sem anterioridade provada).
+
+O lint de redacao falha se o aviso estiver ausente ou depois do primeiro
+achado.
+
+## 8 Risco registrado pelo proponente: ausencia da dimensao UF
+
+Se a pagina de resumos digitais publicar apenas hash agregado por sistema, sem
+dimensao UF, R01 e R02 perdem o objeto e F2 perde a pergunta primaria. Regra:
+na primeira coleta, a primeira verificacao e estrutural (contar colunas e
+detectar a dimensao UF), antes de qualquer extracao de hash. Sem dimensao UF:
+HALT com codigo `F2_SEM_DIMENSAO_UF` e reabertura do desenho da fase 2 por
+decisao humana. Somente R03 e R04 continuam aplicaveis nesse cenario.

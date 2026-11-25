@@ -59,3 +59,10 @@ de 2026.
 | Ordem | Arquivo | Data (UTC) | SHA-256 | Situacao |
 |-------|---------|------------|---------|----------|
 | 05 | `evidencias/AGENTS.md` | 2026-11-25 | `4f2e5002b1acea394280240ebd0f22db06733ecd78a8087fc7e9922035ec2f62` | Contrato de evidencia v1.0 (gate G1-G4, carimbo RFC 3161 + Rekor). Alteracoes exigem nova versao registrada |
+
+## Registros de 2026-11-25 (Estudo 05 e contrato v1.1)
+
+| Ordem | Arquivo | Data (UTC) | SHA-256 | Situacao |
+|-------|---------|------------|---------|----------|
+| 06 | `evidencias/AGENTS.md` | 2026-11-25 | `2c7359ff65ff39ce5d7addf6f22e008c552f7187a8bfd6a4696cd39bc4ce5251` | Contrato de evidencia v1.1 (D2, E5); substitui a v1.0, arquivada sem alteracao em `evidencias/versoes/AGENTS_v1.0.md` (hash da entrada 05 confere) |
+| 07 | `protocolos/03_preregistro_estudo05_20261125.md` | 2026-11-25T03:51:09Z (freetsa, TSR verificado) | `6a3fb26522d1769e4c2434b41aa725eff76a971905bbeaf07474545c354f7271` | Pre-registro do Estudo 05 (D1 com E1-E6); congela PLANO v0, CONCILIACAO, R01-R04 e premissas P1-P4 antes da abertura da pagina de hashes. Carimbo em `protocolos/carimbos/` |

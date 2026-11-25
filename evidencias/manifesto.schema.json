@@ -3,83 +3,265 @@
   "$id": "evidencias/manifesto.schema.json",
   "title": "Manifesto de evidencia",
   "type": "object",
-  "required": ["slug", "camada", "classe", "autor", "artefato", "hashes", "carimbo", "arquivado", "gate", "faltas"],
+  "required": [
+    "contrato",
+    "slug",
+    "camada",
+    "classe",
+    "autor",
+    "artefato",
+    "hashes",
+    "carimbo",
+    "arquivado",
+    "gate",
+    "faltas"
+  ],
   "properties": {
-    "slug": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
-    "camada": {"enum": ["L1", "L2", "L3"]},
-    "classe": {"enum": ["A", "B", "C", "D", "indicios_fracos"]},
-    "verificado": {"type": "boolean", "description": "false enquanto os campos factuais nao forem conferidos em fonte primaria"},
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$"
+    },
+    "camada": {
+      "enum": [
+        "L1.1",
+        "L1.2",
+        "L2",
+        "L3",
+        "L1"
+      ],
+      "description": "L1 so e aceito em manifestos v1.0"
+    },
+    "classe": {
+      "enum": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "indicios_fracos"
+      ]
+    },
+    "verificado": {
+      "type": "boolean",
+      "description": "false enquanto os campos factuais nao forem conferidos em fonte primaria"
+    },
     "autor": {
       "type": "object",
-      "required": ["handle", "identidade_verificada"],
+      "required": [
+        "handle",
+        "identidade_verificada"
+      ],
       "properties": {
-        "handle": {"type": "string"},
-        "historico": {"type": "string"},
-        "identidade_verificada": {"type": "boolean"}
+        "handle": {
+          "type": "string"
+        },
+        "historico": {
+          "type": "string"
+        },
+        "identidade_verificada": {
+          "type": "boolean"
+        }
       }
     },
     "artefato": {
       "type": "object",
-      "required": ["tipo", "url"],
+      "required": [
+        "tipo",
+        "url"
+      ],
       "properties": {
-        "tipo": {"enum": ["repositorio", "binario", "documento", "video", "imagem", "outro"]},
-        "url": {"type": "string"},
-        "commit": {"type": "string"},
-        "commit_utc": {"type": "string"},
-        "anterior_ao_pleito": {"type": ["boolean", "null"]},
-        "acesso": {"enum": ["publico", "pago/fechado"]}
+        "tipo": {
+          "enum": [
+            "repositorio",
+            "binario",
+            "documento",
+            "video",
+            "imagem",
+            "outro"
+          ]
+        },
+        "url": {
+          "type": "string"
+        },
+        "commit": {
+          "type": "string"
+        },
+        "commit_utc": {
+          "type": "string"
+        },
+        "anterior_ao_pleito": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "acesso": {
+          "enum": [
+            "publico",
+            "pago/fechado"
+          ]
+        }
       }
     },
     "hashes": {
       "type": "object",
-      "required": ["algoritmo", "valor", "escopo"],
+      "required": [
+        "algoritmo",
+        "valor",
+        "escopo"
+      ],
       "properties": {
-        "algoritmo": {"enum": ["sha256", "sha512"]},
-        "valor": {"type": "string"},
-        "escopo": {"type": "string"}
+        "algoritmo": {
+          "enum": [
+            "sha256",
+            "sha512"
+          ]
+        },
+        "valor": {
+          "type": "string"
+        },
+        "escopo": {
+          "type": "string"
+        },
+        "sha512": {
+          "type": "string"
+        }
       }
     },
     "carimbo": {
       "type": "object",
-      "required": ["tsa", "genTime", "accuracy_ausente", "rekor_index"],
+      "required": [
+        "tsa",
+        "genTime",
+        "accuracy_ausente",
+        "rekor_index"
+      ],
       "properties": {
-        "tsa": {"type": "string"},
-        "genTime": {"type": "string"},
-        "accuracy_ausente": {"type": ["boolean", "null"]},
-        "rekor_index": {"type": "string"},
-        "tsa_secundaria": {"type": "string"}
+        "tsa": {
+          "type": "string"
+        },
+        "genTime": {
+          "type": "string"
+        },
+        "accuracy_ausente": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "rekor_index": {
+          "type": "string"
+        },
+        "tsa_secundaria": {
+          "type": "string"
+        },
+        "tsr_verificado": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "ots": {
+          "type": "string"
+        },
+        "minisign_chave": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "description": "completo | incompleto: <faltas> (v1.1)"
+        }
       }
     },
     "arquivado": {
       "type": "object",
-      "required": ["warc_sha256", "ipfs"],
+      "required": [
+        "warc_sha256",
+        "ipfs"
+      ],
       "properties": {
-        "warc_sha256": {"type": "string"},
-        "ipfs": {"type": "string"},
-        "wayback": {"type": "string"}
+        "warc_sha256": {
+          "type": "string"
+        },
+        "ipfs": {
+          "type": "string"
+        },
+        "wayback": {
+          "type": "string"
+        }
       }
     },
     "build_reproduzivel": {
       "type": "object",
       "properties": {
-        "reproduzido": {"type": "boolean"},
-        "receita": {"type": "string"},
-        "diffoscope": {"type": "string"}
+        "reproduzido": {
+          "type": "boolean"
+        },
+        "receita": {
+          "type": "string"
+        },
+        "diffoscope": {
+          "type": "string"
+        }
       }
     },
     "gate": {
       "type": "object",
-      "required": ["G1", "G2", "G3", "G4"],
+      "required": [
+        "G1",
+        "G2",
+        "G3",
+        "G4"
+      ],
       "properties": {
-        "G1": {"type": "boolean"},
-        "G2": {"type": "boolean"},
-        "G3": {"type": "boolean"},
-        "G4": {"type": "boolean"},
-        "G4_motivo": {"type": "string"}
+        "G1": {
+          "type": "boolean"
+        },
+        "G2": {
+          "type": "boolean"
+        },
+        "G3": {
+          "type": "boolean"
+        },
+        "G4": {
+          "type": "boolean"
+        },
+        "G4_motivo": {
+          "type": "string"
+        }
       }
     },
-    "sobrevivencia_pos_pleito": {"type": "string"},
-    "rechecagens": {"type": "array", "items": {"type": "object"}},
-    "faltas": {"type": "array", "items": {"type": "string"}}
+    "sobrevivencia_pos_pleito": {
+      "type": "string"
+    },
+    "rechecagens": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "faltas": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "contrato": {
+      "enum": [
+        "v1.0",
+        "v1.1"
+      ],
+      "description": "versao do contrato vigente na coleta (E5)"
+    },
+    "binario_em_maos": {
+      "type": "boolean",
+      "description": "obrigatorio para L1.1 (v1.1)"
+    },
+    "anterioridade": {
+      "enum": [
+        "provada",
+        "nao_provada",
+        "nao_aplicavel"
+      ]
+    }
   }
 }
