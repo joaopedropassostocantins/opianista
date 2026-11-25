@@ -92,7 +92,7 @@ linguagem e referencias.
 |----|---------|--------|
 | D1 | Destino do modulo de cadencia (PR #2) | (a) PR como submodulo exploratorio em `estudos/03_pianista/contribuicoes/`; (b) estudo separado (05); (c) nao incorporar |
 | D2 | Site Arquiteto-Fiscal (PR #2; HTML autocontido, sem recursos externos) | (a) so link para o original; (b) HTML no repositorio sem publicacao; (c) publicar via GitHub Pages |
-| D4 | Estudo 05 le o 2T 2026 (apenas linhas do registro de mesario; protocolo 03, secao 14) | (a) aprovar; (b) restringir ao 1T 2026 ate a emenda do item 1.6 |
+| D4 | Estudo 05 le o 2T 2026 (apenas linhas do registro de mesario; protocolo 03, secao 14) | DECIDIDO em 25/11/2026 pelo proponente: (a) aprovado, censo de 100% das secoes, sem amostragem |
 | D3 | Fluxo de trabalho no main | Exigir pull request para alteracoes no main (recomendado: ja houve dois commits diretos) |
 
 ## 5 Pendencias de documentos

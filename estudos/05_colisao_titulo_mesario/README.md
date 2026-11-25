@@ -68,7 +68,7 @@ Tudo o que e baixado ou gerado com titulo em claro fica em `data/` e
 | Fase 0 (vocabulario, regra de validacao) | Concluida |
 | Piloto de parametros (2.000 secoes, sem colisoes) | Concluido |
 | Pre-registro e congelamento do codigo | Concluido (2026-11-25) |
-| Censo 2026 1T e 2T | Em execucao |
+| Censo 2026 1T e 2T (100% das secoes; 2T aprovado pelo proponente em 25/11/2026, decisao D4) | Em execucao |
 | Censo 2022 1T e 2T (linha de base) | Em execucao |
 | 2018 | Nao executavel: pacotes nao publicados pelo TSE |
 | Simulacao, teste de caso e relatorio | Pendente do censo |
