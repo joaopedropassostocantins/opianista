@@ -105,7 +105,10 @@ def preparar(R, L, B, ano, turno):
     R = R[R.ts.str.startswith(data)]
     R_ok = R[[tuple(x) not in chave_inc for x in R[SEC + ["arquivo"]].values]].copy()
     R_ok["sec"] = R_ok[SEC].agg("-".join, axis=1)
-    R_ok["t_s"] = pd.to_datetime(R_ok.ts, format="%d/%m/%Y %H:%M:%S").astype("int64") // 10**9
+    # segundos desde 1970 independentemente da resolucao interna do pandas (ns no 2.x, us no 3.x); correcao da
+    # emenda 07: a versao anterior dividia por 10**9 e, com datetime64[us], encolhia todos os intervalos 1.000 vezes
+    R_ok["t_s"] = ((pd.to_datetime(R_ok.ts, format="%d/%m/%Y %H:%M:%S") - pd.Timestamp("1970-01-01"))
+                   .dt.total_seconds().round().astype("int64"))
     if len(B):
         B = B.drop_duplicates(SEC + ["arquivo", "hash_linha", "ts", "titulo"])
         B = B[B.ts.str.startswith(data)]

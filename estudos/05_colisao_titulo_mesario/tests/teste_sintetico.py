@@ -134,6 +134,11 @@ def main():
         print(("OK  " if r == c else "FALHA"), t, "esperado:", c, "obtido:", r)
         ok &= r == c
     print("colisoes detectadas:", len(col), "(esperadas 4)")
+    d1 = next((r for r in col if r["titulo"] == alvo), {})
+    dt_ok = d1.get("delta_s") == "3000" and d1.get("faixa_intervalo") == "30min-4h"
+    print(("OK  " if dt_ok else "FALHA"), "intervalo da colisao plantada: delta", d1.get("delta_s"), "(esperado 3000 s),",
+          d1.get("faixa_intervalo"), "(esperado 30min-4h)")
+    ok &= dt_ok
     ok &= len(col) == 4
     import json as _json
     par = _json.load(open(os.path.join(out, "parametros.json")))
