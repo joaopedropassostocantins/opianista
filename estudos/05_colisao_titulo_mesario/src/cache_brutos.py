@@ -13,8 +13,9 @@ Criterios (emenda 05):
              escrito na etapa de parametros)
   erro_alto  secoes com taxa de rejeicao (tentativas invalidas / tentativas) acima de 4x a mediana da UF
   colisoes   secoes envolvidas em colisoes; SO depois do commit dos parametros congelados (etapa 5c)
+  painel     todas as secoes dos municipios com colisao (painel local e teste conjunto, emenda 06); idem
 
-Uso: python cache_brutos.py ANO TURNO {bloqueios|quase_dup|erro_alto|colisoes} [--workers 16]
+Uso: python cache_brutos.py ANO TURNO {bloqueios|quase_dup|erro_alto|colisoes|painel} [--workers 16]
 """
 import csv
 import hashlib
@@ -58,7 +59,7 @@ def secoes_alvo(ano, turno, criterio):
         med = g.groupby("uf").taxa.median()
         g = g[g.taxa > 4 * g.uf.map(med).clip(lower=1e-9)]
         alvo = set(map(tuple, g[SEC].values))
-    elif criterio == "colisoes":
+    elif criterio in ("colisoes", "painel"):
         marca = os.path.join(ROOT, "registro", f"parametros_{turno}t{ano}.sha256")
         if not os.path.exists(marca):
             raise SystemExit("parametros ainda nao congelados (etapa 5c): cache de colisoes bloqueado")
@@ -66,6 +67,9 @@ def secoes_alvo(ano, turno, criterio):
         R["sec"] = R[SEC].agg("-".join, axis=1)
         n = R.groupby("titulo").sec.nunique()
         alvo = set(map(tuple, R[R.titulo.isin(n[n >= 2].index)][SEC].drop_duplicates().values))
+        if criterio == "painel":
+            muns = {(u, m) for u, m, _, _ in alvo}
+            alvo = {tuple(x) for x in L[SEC].drop_duplicates().values if (x[0], x[1]) in muns}
     else:
         raise SystemExit("criterio desconhecido")
     return L[[tuple(x) in alvo for x in L[SEC].values]]

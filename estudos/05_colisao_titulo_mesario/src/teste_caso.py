@@ -7,27 +7,33 @@ Entradas: data/outputs/<ano>_t<turno>/colisoes.csv (simulacao.py), parametros.js
           data/outputs/<ano>_t<turno>/votos_outlier.csv (votos.py; opcional).
 Saidas:   data/outputs/<ano>_t<turno>/colisoes_caso.csv e teste_caso_resumo.json
 
-Regras congeladas:
-  Faixa A (<1 km). Cada caso e "nao_explicado" ate prova em contrario. Prova:
-    explicado_por_digitacao     ha quase-duplicado do titulo em uma das pontas;
-    explicado_por_substituicao  na ponta de destino (registro mais tardio do par) o registro ocorreu num ciclo
-                                "durante a votacao" OU a mesa de destino abriu com menos de 3 mesarios no ciclo
-                                "antes"; E o intervalo e compativel com deslocamento a pe:
-                                delta >= max(60 s, distancia_m / 1,4 m/s).
-  Familias (ordem da mais estreita para a mais ampla; marca-se a primeira compativel; se nenhuma,
-  "nao_classificado"; nunca a familia 6 por default):
-    F0 erro_de_digitacao           compativel se ha quase-duplicado em uma ponta.
-    F1 nulo_mal_especificado        eliminada para todos os casos se a classe 2 esta dentro do previsto e ha
-                                    excesso agregado (parametros.json); compativel caso contrario.
-    F2 procedimento_nao_documentado eliminada se o par exige velocidade > 120 km/h (mesma pessoa nas duas pontas).
-    F3 erro_sistematico_software    eliminada se ha mensagem de digitacao ("Pedido de leitura da biometria do
-                                    mesário T") nas duas pontas, ou se modelo/versao da urna diferem entre as pontas.
-    F4 carga_ou_midia_compartilhada eliminada se as duas secoes nao compartilham nenhum outro titulo E os codigos
-                                    de carga e de flashcard (boletim de urna web) diferem entre as pontas.
-    F5 digitacao_intencional        eliminada se ha quase-duplicado (erro a uma distancia de titulo da secao).
-    F6 registro_ficticio            compativel so com sinal positivo: falta de mensagem de digitacao numa ponta,
-                                    assinatura divergente, lacuna > 300 s antes do registro, ou voto atipico
-                                    (> 3 desvios das vizinhas do mesmo local); eliminada sem nenhum desses sinais.
+Regras congeladas (emenda 06, substituem as da emenda 05):
+  Faixa A (<1 km). Estado "nao_explicado" ate prova; o quase-duplicado NAO tira o caso desse estado. Estados:
+    substituicao_compativel  na ponta de destino (registro mais tardio) o registro ocorreu num ciclo "durante a
+                             votacao" OU a mesa de destino abriu com menos de 3 mesarios; E delta >= max(60 s,
+                             distancia_m / 1,4 m/s);
+    nao_explicado            demais casos. O campo indicio_de_digitacao registra se ha quase-duplicado.
+  Rotulo do caso:
+    F0 (erro de digitacao) so cai quando o titulo pretendido e conhecido e a distancia de edicao ate o numero
+    gravado e grande. O unico titulo pretendido observavel e o quase-duplicado (segunda digitacao correta), que
+    tem distancia 1; logo F0 nunca cai por ausencia de quase-duplicado.
+    Com quase-duplicado: rotulo F0. Sem quase-duplicado: rotulo "nao_classificado_entre_F0_e_F5", com a razao de
+    verossimilhanca contra o acidente (1 - d), d = probabilidade de o erro ficar visivel (parametros).
+    Nunca F5 por falta de quase-duplicado; a separacao F0/F5 e agregada (teste binomial da fracao de colisoes
+    com quase-duplicado contra d).
+  Familias F1-F6 listadas como compativeis ou eliminadas:
+    F1 nulo mal especificado       eliminada se a classe 2 esta dentro do previsto e ha excesso agregado.
+    F2 procedimento nao documentado eliminada se a velocidade exigida passa de 120 km/h.
+    F3 erro sistematico de software eliminada se ha mensagem de digitacao nas duas pontas (so F3), ou se modelo
+                                    ou versao da urna diferem.
+    F4 carga ou midia compartilhada compativel se o codigo de carga 1 ou o numero da urna efetivada (unicos por
+                                    urna) coincidem entre as pontas, ou se 2+ outros titulos se repetem juntos;
+                                    o flashcard (compartilhado por desenho, grupos de ate 34 urnas no AC) nao conta.
+    F5 digitacao intencional        compativel sempre que nao houver titulo pretendido conhecido.
+    F6 registro ficticio            compativel so com sinal positivo: uma ponta sem mensagem de digitacao (sem
+                                    leitura de biometria), assinatura divergente, lacuna > 300 s antes do registro,
+                                    ou secao anomala no painel local (G1). Nunca por default.
+  Biometria da mesma pessoa nas duas pontas nao e observavel (a urna so compara com o cadastro da propria secao).
 Uso: python teste_caso.py ANO [--turno 2]
 """
 import argparse
@@ -84,41 +90,38 @@ def contexto_ponta(base, uf, mun, zona, secao, ano, turno, titulo):
 
 
 def familias(c, agregado):
-    """Devolve (compativeis, eliminadas, mais_estreita) segundo as regras congeladas do cabecalho."""
+    """Devolve (compativeis, eliminadas, rotulo) segundo as regras congeladas da emenda 06."""
     comp, elim = [], []
     qd = bool(c["quase_dup_na_secao_a"]) or bool(c["quase_dup_na_secao_b"])
-    (comp if qd else elim).append(FAMILIAS[0])
+    comp.append(FAMILIAS[0])  # F0 nunca cai sem titulo pretendido conhecido com distancia grande
     (elim if agregado["f1_eliminada"] else comp).append(FAMILIAS[1])
     v = c.get("velocidade_exigida_kmh")
-    (elim if (v is not None and float(v) > VEL_MAX_KMH) else comp).append(FAMILIAS[2])
+    (elim if (v not in (None, "") and float(v) > VEL_MAX_KMH) else comp).append(FAMILIAS[2])
     difere = ((c.get("modelo_bruto_a") and c.get("modelo_bruto_b") and c["modelo_bruto_a"] != c["modelo_bruto_b"]) or
               (c.get("versao_a") and c.get("versao_b") and c["versao_a"] != c["versao_b"]))
     (elim if ((c.get("digitacao_a") is True and c.get("digitacao_b") is True) or difere) else comp).append(FAMILIAS[3])
-    mesma_carga = bool(c.get("mesma_carga_ou_flashcard"))
-    (elim if (int(c.get("outros_titulos_compartilhados") or 0) == 0 and not mesma_carga) else comp).append(FAMILIAS[4])
-    (elim if qd else comp).append(FAMILIAS[5])
+    f4 = bool(c.get("mesma_carga1_ou_urna")) or int(c.get("outros_titulos_compartilhados") or 0) >= 2
+    (comp if f4 else elim).append(FAMILIAS[4])
+    comp.append(FAMILIAS[5])
     sinal6 = (c.get("digitacao_a") is False or c.get("digitacao_b") is False or
               c.get("assinatura_a") == "divergente" or c.get("assinatura_b") == "divergente" or
-              c.get("lacuna_a") is True or c.get("lacuna_b") is True or bool(c.get("voto_atipico")))
+              c.get("lacuna_a") is True or c.get("lacuna_b") is True or bool(c.get("g1_em_alguma_ponta")))
     (comp if sinal6 else elim).append(FAMILIAS[6])
-    estreita = next((f for f in FAMILIAS if f in comp), "nao_classificado")
-    return comp, elim, estreita
+    rotulo = FAMILIAS[0] if qd else "nao_classificado_entre_F0_e_F5"
+    return comp, elim, rotulo
 
 
 def prova_faixa_a(c, mesa_antes):
+    """Estado da faixa A: substituicao_compativel ou nao_explicado (o quase-duplicado nao tira do estado)."""
     if c["faixa_distancia"] != "A_<1km":
         return ""
-    if c["quase_dup_na_secao_a"] or c["quase_dup_na_secao_b"]:
-        return "explicado_por_digitacao"
     destino = "b" if c.get("ts_ref_b", 0) >= c.get("ts_ref_a", 0) else "a"
     sec_dest = "-".join(str(c[f"{k}_{destino}"]) for k in SEC)
     ciclo_dest = c.get(f"ciclo_{destino}", "")
     incompleta = mesa_antes.get(sec_dest, 0) < 3
     dist_m = float(c["distancia_km"] or 0) * 1000
     a_pe = float(c["delta_s"]) >= max(60.0, dist_m / VEL_PE_MS)
-    if (ciclo_dest == "durante" or incompleta) and a_pe:
-        return "explicado_por_substituicao"
-    return "nao_explicado"
+    return "substituicao_compativel" if (ciclo_dest == "durante" or incompleta) and a_pe else "nao_explicado"
 
 
 def main():
@@ -131,13 +134,19 @@ def main():
     col = pd.read_csv(os.path.join(saida, "colisoes.csv"), dtype=str).fillna("")
     par = json.load(open(os.path.join(saida, "parametros.json"), encoding="utf-8"))
     agregado = dict(f1_eliminada=par["veredito"].get("familia_1_nulo_mal_especificado") == "eliminada")
+    d_vis = float(par.get("visibilidade_d") or 0.0)
+    pc = os.path.join(saida, "painel_colisoes.csv")
+    g1 = set()
+    if os.path.exists(pc):
+        pcd = pd.read_csv(pc, dtype=str)
+        g1 = set(pcd[pcd.grupo == "G1_colisao_e_anomala"].sec)
     vo = os.path.join(saida, "votos_outlier.csv")
     atip, carga = set(), {}
     if os.path.exists(vo):
         v = pd.read_csv(vo, dtype=str).fillna("")
         atip = set(v[v.outlier_3dp.str.lower() == "true"].sec)
         for r in v.to_dict("records"):
-            carga[r["sec"]] = (r.get("carga1", ""), r.get("carga2", ""), r.get("flashcard", ""))
+            carga[r["sec"]] = (r.get("carga1", ""), r.get("urna_efetivada", ""))
     R = pd.concat([pd.read_csv(f, dtype=str) for f in glob.glob(os.path.join(ROOT, "data", "censo",
                                                                              f"registros_{a.ano}_t{a.turno}_s*.csv"))])
     R["sec"] = R[SEC].agg("-".join, axis=1)
@@ -165,23 +174,35 @@ def main():
             c[f"ts_ref_{p}"] = pd.to_datetime(ts[0], format="%d/%m/%Y %H:%M:%S").timestamp() if ts else 0
             c[f"voto_atipico_{p}"] = sec in atip
         c["voto_atipico"] = c["voto_atipico_a"] or c["voto_atipico_b"]
-        ka = carga.get("-".join(c[f"{k}_a"] for k in SEC), ("", "", ""))
-        kb = carga.get("-".join(c[f"{k}_b"] for k in SEC), ("", "", ""))
-        c["carga_a"], c["carga_b"] = "|".join(ka), "|".join(kb)
-        c["mesma_carga_ou_flashcard"] = any(x and x == y for x, y in zip(ka, kb))
-        c["faixa_A_prova"] = prova_faixa_a(c, mesa_antes)
+        ka = carga.get("-".join(c[f"{k}_a"] for k in SEC), ("", ""))
+        kb = carga.get("-".join(c[f"{k}_b"] for k in SEC), ("", ""))
+        c["carga1_urna_a"], c["carga1_urna_b"] = "|".join(ka), "|".join(kb)
+        c["mesma_carga1_ou_urna"] = any(x and x == y for x, y in zip(ka, kb))
+        c["g1_em_alguma_ponta"] = ("-".join(c[f"{k}_a"] for k in SEC) in g1) or ("-".join(c[f"{k}_b"] for k in SEC) in g1)
+        qd = bool(c["quase_dup_na_secao_a"]) or bool(c["quase_dup_na_secao_b"])
+        c["indicio_de_digitacao"] = qd
+        c["razao_verossimilhanca_contra_acidente"] = None if qd else (1 / max(1e-9, 1 - d_vis))
+        c["faixa_A_estado"] = prova_faixa_a(c, mesa_antes)
         if c["exclusao"]:
-            c["familias_compativeis"], c["familias_eliminadas"], c["familia_mais_estreita"] = "", "", "excluida"
+            c["familias_compativeis"], c["familias_eliminadas"], c["rotulo"] = "", "", "excluida"
         else:
             comp, elim, est = familias(c, agregado)
-            c["familias_compativeis"], c["familias_eliminadas"], c["familia_mais_estreita"] = "|".join(comp), "|".join(elim), est
+            c["familias_compativeis"], c["familias_eliminadas"], c["rotulo"] = "|".join(comp), "|".join(elim), est
         out.append(c)
     df = pd.DataFrame(out)
     df.to_csv(os.path.join(saida, "colisoes_caso.csv"), index=False)
     ok = df[df.exclusao == ""] if len(df) else df
+    from scipy.stats import binomtest
+    n_qd = int(ok.indicio_de_digitacao.sum()) if len(ok) else 0
+    bt = binomtest(n_qd, len(ok), d_vis, alternative="less") if len(ok) and 0 < d_vis < 1 else None
     res = dict(colisoes=len(df), nao_excluidas=len(ok),
-               familia_mais_estreita=ok.familia_mais_estreita.value_counts().to_dict() if len(ok) else {},
-               faixa_A=ok[ok.faixa_distancia == "A_<1km"].faixa_A_prova.value_counts().to_dict() if len(ok) else {},
+               rotulo=ok.rotulo.value_counts().to_dict() if len(ok) else {},
+               separacao_agregada_F0_F5=dict(
+                   colisoes_com_quase_duplicado=n_qd, fracao_observada=(n_qd / len(ok)) if len(ok) else None,
+                   fracao_esperada_sob_acidente=d_vis, p_binomial_menor=(bt.pvalue if bt else None),
+                   leitura=("fracao muito abaixo de d (p < 0,05): o conjunto nao tem a forma do erro de digitacao"
+                            if bt and bt.pvalue < 0.05 else "compativel com a forma do erro de digitacao")),
+               faixa_A=ok[ok.faixa_distancia == "A_<1km"].faixa_A_estado.value_counts().to_dict() if len(ok) else {},
                cache_ausente=int(((df.cache_a == "ausente") | (df.cache_b == "ausente")).sum()) if len(df) else 0,
                caso_nominal=ok[ok.caso_nominal_porto_seguro_casa_nova.astype(str) == "True"].drop(
                    columns=["titulo"]).to_dict("records") if len(ok) else [])

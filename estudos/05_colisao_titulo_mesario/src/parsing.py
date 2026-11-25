@@ -329,3 +329,38 @@ def caso_contexto(texto, ano, turno, titulo):
                assinatura=("divergente" if any(k != "SUCESSO" for k in assin) else
                            "conferida" if assin else "sem_verificacao_no_dia"))
     return out
+
+
+# ---------- metricas do painel local (emenda 06)
+M_HABIL = "Eleitor foi habilitado"
+M_HABIL_BIO = "Tipo de habilitação do eleitor [biométrica]"
+M_MANUAL = "Solicitação de dado pessoal do eleitor para habilitação manual"
+R_MES_HABIL = re.compile(r"^Mesário \d{12} habilitou o eleitor$")
+
+
+def metricas_painel(texto, ano, turno):
+    """Contagens do dia do turno (aplicacao VOTA) para o painel local:
+      habilitados, habilitados_biometricos, liberacoes_manuais, habilitados_por_mesario, votos e
+      a lista de horarios (segundos desde a meia-noite) dos votos computados (para a metrica de rajada)."""
+    data = DATAS[(ano, turno)]
+    c = dict(habilitados=0, habilitados_biometricos=0, liberacoes_manuais=0, habilitados_por_mesario=0, votos=0)
+    horas = []
+    for ln in texto.splitlines():
+        p = ln.split("\t")
+        if len(p) < 5 or p[3] != "VOTA" or not p[0].startswith(data):
+            continue
+        msg = p[4]
+        if msg == M_HABIL:
+            c["habilitados"] += 1
+        elif msg == M_HABIL_BIO:
+            c["habilitados_biometricos"] += 1
+        elif msg == M_MANUAL:
+            c["liberacoes_manuais"] += 1
+        elif msg == M_VOTO:
+            c["votos"] += 1
+            hh, mm, ss = p[0][11:19].split(":")
+            horas.append(int(hh) * 3600 + int(mm) * 60 + int(ss))
+        elif R_MES_HABIL.match(msg):
+            c["habilitados_por_mesario"] += 1
+    c["horarios_votos"] = horas
+    return c

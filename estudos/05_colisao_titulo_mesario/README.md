@@ -2,6 +2,13 @@
 
 ## Escopo vigente
 
+Emenda 06 (`protocolos/06_emenda_estudo05_porta_painel_local_20261125.md`): painel local obrigatorio em toda
+secao com colisao (src/painel.py), teste conjunto por permutacao, veredito de local (G1/G2), rotulo "nao
+classificado entre F0 e F5" sem quase-duplicado, F4 sem flashcard. A varredura nacional sem colisao (G3) e do
+Estudo 03: nao ter colisao nao inocenta as demais secoes do pais.
+
+### Emenda 05
+
 Emenda 05 (`protocolos/05_emenda_estudo05_v3_mecanismo_magnitude_20261125.md`): dois vereditos (mecanismo e
 magnitude), familias de fator externo F0-F6 por caso, faixa A com prova caso a caso, cruzamento com o
 movimento de votos e trava que impede escrever colisoes antes do commit dos parametros.
@@ -49,6 +56,7 @@ src/fase0.py                 Fase 0 do 2o turno (vocabulario com exemplo de linh
 src/cache_brutos.py          cache seletivo dos logs originais (bloqueios, quase-dup, colisoes), com SHA-256
 src/teste_caso.py            teste de caso de cada colisao, prova da faixa A e familias F0-F6
 src/votos.py                 cruzamento com o movimento de votos (outlier dentro do local de votacao)
+src/painel.py                painel local (7 metricas + porta estreita), teste conjunto, veredito de local
 src/pseudonimizar.py         saidas publicaveis (titulo -> HMAC; chave fora do Git)
 src/geo.py                   coordenadas e eleitorado por secao
 src/download_historico.py    quadro de secoes de 2022/2024 a partir dos pacotes por UF
@@ -75,7 +83,8 @@ python src/cache_brutos.py 2026 2 bloqueios ; python src/simulacao.py 2026 --som
 python src/cache_brutos.py 2026 2 quase_dup
 sha256sum data/outputs/2026_t2/parametros_nulo.json > registro/parametros_2t2026.sha256   # commit proprio
 python src/simulacao.py 2026 ; python src/cache_brutos.py 2026 2 colisoes
-python src/votos.py 2026 ; python src/teste_caso.py 2026
+python src/cache_brutos.py 2026 2 painel ; python src/votos.py 2026 ; python src/painel.py 2026
+python src/teste_caso.py 2026
 python tests/teste_familias.py        # deve imprimir 12 OK
 python src/pseudonimizar.py data/outputs/2026_t2 resultados/2026_t2
 ```
