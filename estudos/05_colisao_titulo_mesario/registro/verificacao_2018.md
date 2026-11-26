@@ -9,3 +9,4 @@
 | `https://dadosabertos.tse.jus.br/api/3/action/package_search?q=2018%20log%20urna&rows=50` | HTTP 200 ; recursos de log 2018 listados: 0 | 2026-11-25T02:10:14Z |
 
 | Vigia diario 2026-11-25T13:26Z | pacotes 2018 (2t_AC, 2t_SP, 1t_AC): HTTP 404; diretorio arqurnatot: HTTP 403; logsurna: 404; ele2018: 404; catalogo de dados abertos: 0 recursos de log 2018; catalogos do 2T 2026 (28): sem alteracao de data de geracao (corte 25/10/2026 23:22:31) | 2026-11-25T13:26:29Z |
+| Vigia diario 2026-11-26T13:24Z | pacotes 2018 (2t_AC, 2t_SP, 1t_AC): HTTP 404; diretorio arqurnatot: HTTP 403; logsurna: 404; ele2018: 404; catalogo de dados abertos: 0 recursos de log 2018; catalogos do 2T 2026 (28): sem alteracao de data de geracao | 2026-11-26T13:24:28Z |
