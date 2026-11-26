@@ -75,7 +75,8 @@ def secoes_alvo(ano, turno, criterio):
             g = geo.set_index(SEC)
             loc_col = {g.loc[s, "lk"] for s in alvo if s in g.index}
             zonas_peq = {tuple(l.split("-")[:3]) for l in loc_col if nloc[l] < 5}
-            sel = geo[geo.lk.isin(loc_col) | [(u, m, z) in zonas_peq for u, m, z in zip(geo.uf, geo.mun, geo.zona)]]
+            na_zona = pd.Series([(u, m, z) in zonas_peq for u, m, z in zip(geo.uf, geo.mun, geo.zona)], index=geo.index)
+            sel = geo[geo.lk.isin(loc_col) | na_zona]
             alvo = set(map(tuple, sel[SEC].values))
     else:
         raise SystemExit("criterio desconhecido")

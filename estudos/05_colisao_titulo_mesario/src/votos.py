@@ -68,13 +68,19 @@ def baixar(url, destdir, manifesto):
 
 
 def ler_presidente(path):
+    """Le o CSV do boletim de urna em blocos, guardando so as linhas de Presidente (economia de memoria)."""
     z = zipfile.ZipFile(path)
     nm = [n for n in z.namelist() if n.lower().endswith(".csv")][0]
     cols = ["SG_UF", "CD_MUNICIPIO", "NR_ZONA", "NR_SECAO", "NR_LOCAL_VOTACAO", "DS_CARGO_PERGUNTA", "QT_COMPARECIMENTO",
             "DS_TIPO_VOTAVEL", "NR_VOTAVEL", "QT_VOTOS", "NR_URNA_EFETIVADA", "CD_CARGA_1_URNA_EFETIVADA",
             "CD_CARGA_2_URNA_EFETIVADA", "CD_FLASHCARD_URNA_EFETIVADA", "DS_TIPO_URNA"]
-    df = pd.read_csv(io.BytesIO(z.read(nm)), sep=";", encoding="latin-1", dtype=str, usecols=cols)
-    df = df[df.DS_CARGO_PERGUNTA.str.upper() == "PRESIDENTE"].copy()
+    partes = []
+    with z.open(nm) as fh:
+        for ch in pd.read_csv(fh, sep=";", encoding="latin-1", dtype=str, usecols=cols, chunksize=400_000):
+            ch = ch[ch.DS_CARGO_PERGUNTA.str.upper() == "PRESIDENTE"]
+            if len(ch):
+                partes.append(ch)
+    df = pd.concat(partes, ignore_index=True)
     df["uf"] = df.SG_UF.str.lower()
     df["mun"] = df.CD_MUNICIPIO.str.zfill(5)
     df["zona"] = df.NR_ZONA.str.zfill(4)
