@@ -1,0 +1,184 @@
+{
+  "escopo": "2o turno de 2026, 25/10/2026",
+  "secoes_quadro": 517179,
+  "secoes_sem_arquivo": 18001,
+  "logs_validos": 499178,
+  "logs_relogio_inconsistente": 8,
+  "logs_erro_leitura": 0,
+  "secoes_com_log": 499178,
+  "registros_N": 3799442,
+  "ocorrencias_titulo_secao": 1992767,
+  "titulos_unicos": 1987827,
+  "tentativas_invalidas": 535327,
+  "bloqueios_ja_registrado": 188870,
+  "conferencias_biometricas_coincide": 880799,
+  "conferencias_biometricas_nao_coincide": 306641,
+  "registros_titulo_DV_invalido": 0,
+  "registros_nao_eleitor_da_secao": 0.6766475182408365,
+  "taxa_rejeicao_DV": 0.11833990289676077,
+  "nota_N": "N = registros de presenca em secoes principais com log lido (agregadas sem arquivo proprio nao tem urna; ver reconciliacao em registro/reconciliacao_N_2t2026.md)",
+  "data_corte_catalogo": "25/10/2026 23:22:31",
+  "loo": true,
+  "titulos_excluidos": 4811,
+  "titulos_erro_aceito_excluidos_de_D": 7149,
+  "registros_excluidos": 19499,
+  "pares_quase_dup_excluidos": 9,
+  "p1": 0.10303197556688107,
+  "p1_por_tipo": {
+    "sub_uf": 0.0007689522465276755,
+    "sub_corpo": 0.00776085190251813,
+    "sub_dv": null,
+    "trans": 0.0013641997370954831,
+    "omissao": 0.09295905133292691,
+    "salto": 0.00010057368560537438,
+    "gemeo": 7.83466622074914e-05
+  },
+  "pesos_caminho": {
+    "sub_uf": 0.007463238885762471,
+    "sub_corpo": 0.0753246927453151,
+    "sub_dv": 0.0,
+    "trans": 0.01324054721449014,
+    "omissao": 0.902234969498226,
+    "salto": 0.0009761405141658092,
+    "gemeo": 0.0007604111420404075
+  },
+  "p2_por_tipo": {
+    "sub_uf": 0.006772222222222222,
+    "sub_corpo": 0.017930555555555557,
+    "sub_dv": 0.0,
+    "trans": 0.011239732454225687,
+    "omissao": 0.009289893130375008,
+    "salto": 0.011506246965799327,
+    "gemeo": 0.10708670712534141
+  },
+  "p2_ponderado": 0.010024304592662868,
+  "quase_duplicados": 3793,
+  "visibilidade_d": 0.9097501068941569,
+  "D": 3.0164730298456065e-05,
+  "D_mesma_secao": 5.683619307025904e-07,
+  "via1_esperado_N_p1_D": 11.808406443430572,
+  "via3_segunda_ordem": 0.12,
+  "via2": {
+    "central": {
+      "media_colisoes": 22.4314,
+      "IC95_colisoes": [
+        10.0,
+        36.0
+      ],
+      "media_bloqueios": 0.2213
+    },
+    "p1_x0.5_ou_D_x0.5": {
+      "media_colisoes": 11.184,
+      "IC95_colisoes": [
+        3.0,
+        21.0
+      ],
+      "media_bloqueios": 0.117
+    },
+    "D_x1.5": {
+      "media_colisoes": 33.2555,
+      "IC95_colisoes": [
+        18.0,
+        50.0
+      ],
+      "media_bloqueios": 0.323
+    },
+    "p1_x2": {
+      "media_colisoes": 44.792,
+      "IC95_colisoes": [
+        28.0,
+        64.0
+      ],
+      "media_bloqueios": 0.4335
+    },
+    "p1_pelas_tentativas_invalidas": {
+      "media_colisoes": 30.988,
+      "IC95_colisoes": [
+        16.0,
+        46.0
+      ],
+      "media_bloqueios": 0.312
+    }
+  },
+  "via2_por_faixa_distancia": {
+    "A_<1km": {
+      "media": 0.6659,
+      "IC95": [
+        0.0,
+        4.0
+      ]
+    },
+    "B_1-50km": {
+      "media": 5.0355,
+      "IC95": [
+        0.0,
+        12.0
+      ]
+    },
+    "C_>50km": {
+      "media": 16.5168,
+      "IC95": [
+        6.0,
+        28.0
+      ]
+    },
+    "ND": {
+      "media": 0.2132,
+      "IC95": [
+        0.0,
+        2.0
+      ]
+    }
+  },
+  "via2_por_uf": {
+    "sp": 4.4885,
+    "am": 0.3891,
+    "pe": 0.8938,
+    "mg": 2.4635,
+    "sc": 0.6486,
+    "go": 1.1714,
+    "pb": 0.625,
+    "rs": 1.2482,
+    "pr": 1.1525,
+    "rn": 0.3865,
+    "ba": 1.2937,
+    "ma": 1.1313,
+    "ro": 0.1717,
+    "ce": 1.0869,
+    "se": 0.7056,
+    "to": 0.1167,
+    "rj": 1.4779,
+    "al": 0.1992,
+    "ms": 0.2718,
+    "pa": 0.6823,
+    "df": 0.4485,
+    "es": 0.4311,
+    "mt": 0.307,
+    "pi": 0.4383,
+    "ap": 0.0612,
+    "ac": 0.0594,
+    "rr": 0.0435,
+    "zz": 0.0382
+  },
+  "via2_por_faixa_e_periodo": {
+    "A_<1km|manha_<12h": 0.1697,
+    "A_<1km|tarde_12-17h": 0.0267,
+    "A_<1km|pos_17h": 0.4695,
+    "B_1-50km|manha_<12h": 1.2987,
+    "B_1-50km|tarde_12-17h": 0.191,
+    "B_1-50km|pos_17h": 3.5458,
+    "C_>50km|manha_<12h": 4.2761,
+    "C_>50km|tarde_12-17h": 0.6955,
+    "C_>50km|pos_17h": 11.5452,
+    "ND|manha_<12h": 0.0591,
+    "ND|tarde_12-17h": 0.0157,
+    "ND|pos_17h": 0.1384
+  },
+  "horarios": {
+    "fracao_apos_9h": 0.49553381786062267,
+    "fracao_apos_17h": 0.458958447056173,
+    "limiar": 0.05,
+    "estratificar_por_periodo": true
+  },
+  "exclusoes_loo": "titulos em colisao e titulos de quase-duplicados de p1 fora de D; pares com titulo em colisao fora de p1"
+}
