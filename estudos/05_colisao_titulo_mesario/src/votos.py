@@ -120,18 +120,22 @@ def main():
         m["delta_A"] = m.sa_2t - m.sa_1t
         m["delta_B"] = m.sb_2t - m.sb_1t
         m["local_key"] = m.uf + "-" + m.mun + "-" + m.zona + "-" + m.NR_LOCAL_VOTACAO
+        m_idx = m.set_index("sec")
+        por_local = m.groupby("local_key").sec.apply(list).to_dict()
         for s in sorted(x for x in trat if x.startswith(uf + "-")):
-            row = m[m.sec == s]
-            if not len(row):
+            if s not in m_idx.index:
                 linhas.append(dict(sec=s, situacao="secao_sem_bu_em_um_dos_turnos"))
                 continue
-            r = row.iloc[0]
-            viz = m[(m.local_key == r.local_key) & (~m.sec.isin(trat))]
-            n = len(viz)
-            mu, dp = (float(viz.delta.mean()), float(viz.delta.std(ddof=1))) if n >= 2 else (np.nan, np.nan)
+            r = m_idx.loc[s]
+            if isinstance(r, pd.DataFrame):
+                r = r.iloc[0]
+            vizs = [x for x in por_local.get(r.local_key, []) if x not in trat and x != s]
+            vd = m_idx.loc[vizs, "delta"] if vizs else pd.Series(dtype=float)
+            n = len(vizs)
+            mu, dp = (float(vd.mean()), float(vd.std(ddof=1))) if n >= 2 else (np.nan, np.nan)
             z = (r.delta - mu) / dp if n >= MIN_VIZINHAS and dp and dp > 0 else np.nan
             linhas.append(dict(sec=s, local=r.NR_LOCAL_VOTACAO, candidato_A=A, candidato_B=B, n_vizinhas=n,
-                               vizinhas="|".join(viz.sec), delta_margem=r.delta, delta_A=r.delta_A, delta_B=r.delta_B,
+                               vizinhas="|".join(vizs), delta_margem=r.delta, delta_A=r.delta_A, delta_B=r.delta_B,
                                media_vizinhas=mu, dp_vizinhas=dp, z=z,
                                outlier_3dp=bool(abs(z) > LIMIAR_Z) if z == z else False,
                                situacao="ok" if n >= MIN_VIZINHAS else "vizinhas_insuficientes"))
