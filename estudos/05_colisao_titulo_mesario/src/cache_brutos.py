@@ -13,7 +13,7 @@ Criterios (emenda 05):
              escrito na etapa de parametros)
   erro_alto  secoes com taxa de rejeicao (tentativas invalidas / tentativas) acima de 4x a mediana da UF
   colisoes   secoes envolvidas em colisoes; SO depois do commit dos parametros congelados (etapa 5c)
-  painel     todas as secoes dos municipios com colisao (painel local e teste conjunto, emenda 06); idem
+  painel     secoes dos locais com colisao + zona dos locais com < 5 secoes (painel local; errata E06-1)
 
 Uso: python cache_brutos.py ANO TURNO {bloqueios|quase_dup|erro_alto|colisoes|painel} [--workers 16]
 """
@@ -68,8 +68,15 @@ def secoes_alvo(ano, turno, criterio):
         n = R.groupby("titulo").sec.nunique()
         alvo = set(map(tuple, R[R.titulo.isin(n[n >= 2].index)][SEC].drop_duplicates().values))
         if criterio == "painel":
-            muns = {(u, m) for u, m, _, _ in alvo}
-            alvo = {tuple(x) for x in L[SEC].drop_duplicates().values if (x[0], x[1]) in muns}
+            # errata E06-1: universo = secoes dos locais com colisao + (locais com < 5 secoes) secoes da mesma zona
+            geo = pd.read_csv(os.path.join(ROOT, "data", "processed", f"geo_{ano}.csv"), dtype=str)
+            geo["lk"] = geo.uf + "-" + geo.mun + "-" + geo.zona + "-" + geo.local
+            nloc = geo.groupby("lk").size()
+            g = geo.set_index(SEC)
+            loc_col = {g.loc[s, "lk"] for s in alvo if s in g.index}
+            zonas_peq = {tuple(l.split("-")[:3]) for l in loc_col if nloc[l] < 5}
+            sel = geo[geo.lk.isin(loc_col) | [(u, m, z) in zonas_peq for u, m, z in zip(geo.uf, geo.mun, geo.zona)]]
+            alvo = set(map(tuple, sel[SEC].values))
     else:
         raise SystemExit("criterio desconhecido")
     return L[[tuple(x) in alvo for x in L[SEC].values]]
