@@ -152,36 +152,55 @@ def titulos_em_colisao(R_ok):
 
 
 def aplicar_loo(R_ok, qd, loo=True):
-    """Leave-one-out nos dois sentidos (emenda 05):
-      - D: exclui todos os registros de titulos em colisao E de titulos usados como quase-duplicados em p1;
-      - p1: exclui pares de quase-duplicados em que algum dos titulos esteja em colisao.
+    """Leave-one-out (emenda 07):
+      - p1: usa so os pares de ERRO ACEITO (qd.erro_aceito) cujos titulos nao estao em colisao;
+      - D: exclui os titulos em colisao e os dois membros de cada par de erro aceito (nao se sabe qual e o
+        numero errado, e o errado nao e alvo legitimo). Os pares de vizinhos legitimos permanecem em D.
     Devolve (R_para_D, qd_para_p1, resumo)."""
     if not loo:
-        return R_ok, qd, dict(loo=False, titulos_excluidos=0, titulos_quase_dup_excluidos_de_D=0,
+        qd = qd[qd.erro_aceito] if len(qd) else qd
+        return R_ok, qd, dict(loo=False, titulos_excluidos=0, titulos_erro_aceito_excluidos_de_D=0,
                               registros_excluidos=0, pares_quase_dup_excluidos=0)
     ex = titulos_em_colisao(R_ok)
-    m = (qd.titulo_a.isin(ex) | qd.titulo_b.isin(ex)) if len(qd) else pd.Series([], dtype=bool)
-    qd_p1 = qd[~m] if len(qd) else qd
-    ex_qd = (set(qd_p1.titulo_a) | set(qd_p1.titulo_b)) - ex if len(qd_p1) else set()
+    if len(qd):
+        m = qd.titulo_a.isin(ex) | qd.titulo_b.isin(ex)
+        qd_p1 = qd[qd.erro_aceito & ~m]
+        ea = qd[qd.erro_aceito]
+        ex_qd = (set(ea.titulo_a) | set(ea.titulo_b)) - ex
+        pares_excl = int((qd.erro_aceito & m).sum())
+    else:
+        qd_p1, ex_qd, pares_excl = qd, set(), 0
     R_d = R_ok[~R_ok.titulo.isin(ex | ex_qd)]
-    return R_d, qd_p1, dict(loo=True, titulos_excluidos=len(ex), titulos_quase_dup_excluidos_de_D=len(ex_qd),
-                            registros_excluidos=int(len(R_ok) - len(R_d)),
-                            pares_quase_dup_excluidos=int(m.sum()) if len(qd) else 0)
+    return R_d, qd_p1, dict(loo=True, titulos_excluidos=len(ex), titulos_erro_aceito_excluidos_de_D=len(ex_qd),
+                            registros_excluidos=int(len(R_ok) - len(R_d)), pares_quase_dup_excluidos=pares_excl)
 
 
 def quase_duplicados(R_ok):
-    """Pares de titulos distintos registrados na MESMA secao a um unico erro (rastro do erro aceito)."""
-    occ = R_ok.groupby(["sec", "titulo"]).size().rename("n").reset_index()
+    """Pares de titulos distintos na MESMA secao a um unico erro (emenda 07).
+    erro_aceito = um dos dois titulos aparece uma unica vez na secao E os conjuntos de ciclos (antes / durante /
+    apos) em que cada um aparece sao disjuntos: o numero digitado errado foi registrado num ciclo e o correto
+    no outro. Os demais pares (mesmos ciclos) sao vizinhos legitimos de mesarios: saem de p1 e do indicio de
+    digitacao, mas continuam em D.
+    d = probabilidade de o erro ficar visivel: fracao das ocorrencias (titulo, secao) fora de pares de erro
+    aceito que foram registradas duas ou mais vezes."""
+    occ = R_ok.groupby(["sec", "titulo"]).agg(n=("ts", "size"), cic=("momento", lambda x: frozenset(x))).reset_index()
     linhas = []
-    for sec, ts in occ.groupby("sec").titulo:
-        if len(ts) < 2:
+    for sec, g in occ.groupby("sec"):
+        if len(g) < 2:
             continue
-        for a, b in itertools.combinations(sorted(ts), 2):
-            tp = tipo_erro(a, b)
+        rows = g.to_dict("records")
+        for a, b in itertools.combinations(rows, 2):
+            tp = tipo_erro(a["titulo"], b["titulo"])
             if tp:
-                linhas.append(dict(sec=sec, titulo_a=a, titulo_b=b, tipo=tp, caminho=CAMINHO[tp]))
-    qd = pd.DataFrame(linhas, columns=["sec", "titulo_a", "titulo_b", "tipo", "caminho"])
-    env = set(zip(qd.sec, qd.titulo_a)) | set(zip(qd.sec, qd.titulo_b))
+                ea = (a["n"] == 1 or b["n"] == 1) and a["cic"].isdisjoint(b["cic"])
+                x, y = sorted((a["titulo"], b["titulo"]))
+                linhas.append(dict(sec=sec, titulo_a=x, titulo_b=y, tipo=tp, caminho=CAMINHO[tp], erro_aceito=bool(ea),
+                                   n_a=a["n"] if a["titulo"] == x else b["n"],
+                                   n_b=b["n"] if b["titulo"] == y else a["n"]))
+    qd = pd.DataFrame(linhas, columns=["sec", "titulo_a", "titulo_b", "tipo", "caminho", "erro_aceito", "n_a", "n_b"])
+    qd["erro_aceito"] = qd.erro_aceito.astype(bool)
+    env = set(zip(qd[qd.erro_aceito].sec, qd[qd.erro_aceito].titulo_a)) | set(
+        zip(qd[qd.erro_aceito].sec, qd[qd.erro_aceito].titulo_b))
     limpo = occ[[(s, t) not in env for s, t in zip(occ.sec, occ.titulo)]]
     d = float((limpo.n >= 2).mean()) if len(limpo) else float("nan")
     return qd, d

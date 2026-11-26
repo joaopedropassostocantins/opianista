@@ -108,6 +108,9 @@ def main():
         ctx.append(dict(secs[i], arquivo=f"log{i}.jez", titulo="", ts="", id_urna="", hash_linha=h, reinicio_ts="",
                         seg_desde_reinicio=sr, votos_desde_reinicio=vr, registro_ts="", seg_desde_registro=sg,
                         votos_desde_registro=vg))
+    # erro aceito (emenda 07): o titulo correto da secao 0 aparece so no ciclo "apos" e o digitado so no "antes"
+    regs = [r for r in regs if not (r["secao"] == secs[0]["secao"] and r["titulo"] == certo and r["momento"] == "antes")]
+    regs = [r for r in regs if not (r["secao"] == secs[0]["secao"] and r["titulo"] == alvo and r["momento"] == "apos")]
     os.makedirs(os.path.join(td, "censo"))
     for nome, rows in (("registros_2026_t2_s0.csv", regs), ("logs_2026_t2_s0.csv", logs),
                        ("bloqueios_2026_t2_s0.csv", blq), ("bloqueios_contexto_2026_t2.csv", ctx)):

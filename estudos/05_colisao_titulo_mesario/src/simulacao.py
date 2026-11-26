@@ -487,7 +487,8 @@ def main():
         raise SystemExit(f"trava: {marca} ausente; commite os parametros antes de escrever colisoes")
     modelo_sec = L.assign(sec=L[SEC].agg("-".join, axis=1)).dropna(subset=["modelo"]).groupby("sec").modelo.agg(
         lambda x: "|".join(sorted(set(x)))).to_dict() if "modelo" in L.columns else {}
-    col = colisoes_observadas(R_ok, geo, qd, nomes_mun, modelo_sec)
+    # indicio de digitacao no teste de caso: so o erro aceito (emenda 07)
+    col = colisoes_observadas(R_ok, geo, qd[qd.erro_aceito] if len(qd) else qd, nomes_mun, modelo_sec)
     col.to_csv(os.path.join(saida, "colisoes.csv"), index=False)
     p_ctx = os.path.join(a.entrada, f"bloqueios_contexto_{a.ano}_t{a.turno}.csv")
     ctx = pd.read_csv(p_ctx, dtype=str) if os.path.exists(p_ctx) else None
